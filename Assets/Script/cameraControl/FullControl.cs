@@ -29,6 +29,11 @@ public class FullControl : MonoBehaviour
     [SerializeField]
     private Vector3 velocity; // for falling speed
 
+    //Fire  
+    public GameObject bulletPrefab;
+    public Transform bulletSpawn;
+
+
     void Start()
     {
         MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
@@ -85,5 +90,22 @@ public class FullControl : MonoBehaviour
         velocity.y += gravity * Time.deltaTime; // falling : ∆y = 1/2g * t^2 
 
         controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Fire();
+        }
+    }
+
+    void Fire()
+    {
+        var bullet = (GameObject)Instantiate(
+            bulletPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+
+        Destroy(bullet, 2.0f);
     }
 }

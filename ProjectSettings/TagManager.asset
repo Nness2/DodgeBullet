@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - RedField
+  - BlueField
+  - RedPrison
+  - BluePrison
+  - Neutre1
+  - Neutre2
+  - MainCharacter
   layers:
   - Default
   - TransparentFX
