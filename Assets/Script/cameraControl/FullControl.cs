@@ -45,6 +45,9 @@ public class FullControl : MonoBehaviour
     void Update()
     {
         Jump();
+        if (Input.GetMouseButtonDown(0))
+            Fire();
+        
         transform.rotation = new Quaternion(transform.localRotation.x, MainCamera.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
 
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -91,10 +94,7 @@ public class FullControl : MonoBehaviour
 
         controller.Move(velocity * Time.deltaTime);
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Fire();
-        }
+
     }
 
     void Fire()
