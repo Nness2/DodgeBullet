@@ -11,14 +11,22 @@ public class Health : MonoBehaviour
 
     public RectTransform healthBar;
 
+    void Start()
+    {
+        
+    }
+
     //take Damage
     public void TakeDamage(int amount)
     {
+        var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
 
         if (currentHealth <= 0)
         {
-            currentHealth = 0;
+            ZL.state++;
+            currentHealth = 100;
+            ZL.NextZone();
             Debug.Log("Dead");
         }
 

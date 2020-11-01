@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class ZoneLimitations : MonoBehaviour
 {
-    private GameObject BlueField;
+    /*private GameObject BlueField;
     private GameObject RedField;
     private GameObject BluePrison;
     private GameObject RedPrison;
     private GameObject NeutreField1;
-    private GameObject NeutreField2;
+    private GameObject NeutreField2;*/
+    public CharacterController controller;
+    public List<GameObject> SpawnsZone;
 
     public bool teamBlue;
     public int state = 0;
@@ -17,12 +19,12 @@ public class ZoneLimitations : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BlueField = GameObject.FindGameObjectWithTag("BlueField");
+        /*BlueField = GameObject.FindGameObjectWithTag("BlueField");
         RedField = GameObject.FindGameObjectWithTag("RedField");
         BluePrison = GameObject.FindGameObjectWithTag("BluePrison");
         RedPrison = GameObject.FindGameObjectWithTag("RedPrison");
         NeutreField1 = GameObject.FindGameObjectWithTag("Neutre1");
-        NeutreField2 = GameObject.FindGameObjectWithTag("Neutre2");
+        NeutreField2 = GameObject.FindGameObjectWithTag("Neutre2");*/
     }
 
     // Update is called once per frame
@@ -31,7 +33,7 @@ public class ZoneLimitations : MonoBehaviour
         
     }
 
-    void OnTriggerStay(Collider collision)
+    /*void OnTriggerStay(Collider collision)
     {
         if (collision.gameObject.tag == "BlueField" && !teamBlue || collision.gameObject.tag == "BlueField" && teamBlue && state != 0)
         {
@@ -63,6 +65,15 @@ public class ZoneLimitations : MonoBehaviour
             Debug.Log("20 Damage");
         }
 
+    }*/
+
+    public void NextZone()
+    {
+        Debug.Log(state);
+        controller.enabled = false;
+        transform.position = SpawnsZone[state].transform.position;
+        transform.rotation = SpawnsZone[state].transform.localRotation;
+        controller.enabled = true;
     }
 
 }

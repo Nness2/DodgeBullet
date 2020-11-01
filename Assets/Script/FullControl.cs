@@ -42,7 +42,7 @@ public class FullControl : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Jump();
         if (Input.GetMouseButtonDown(0))

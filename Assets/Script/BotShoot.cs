@@ -8,6 +8,7 @@ public class BotShoot : MonoBehaviour
 
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+
     void Start()
     {
         
