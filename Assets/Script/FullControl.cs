@@ -33,6 +33,7 @@ public class FullControl : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
 
+    public GameObject gun;
 
     void Start()
     {
@@ -42,13 +43,14 @@ public class FullControl : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         Jump();
         if (Input.GetMouseButtonDown(0))
             Fire();
         
         transform.rotation = new Quaternion(transform.localRotation.x, MainCamera.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
+        gun.transform.rotation = new Quaternion(MainCamera.transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
