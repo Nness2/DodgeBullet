@@ -224,7 +224,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 167784144}
   m_LocalRotation: {x: -0, y: -0.54136306, z: -0, w: 0.840789}
-  m_LocalPosition: {x: 10, y: 0.95, z: -11.33}
+  m_LocalPosition: {x: 9.1, y: 0.95, z: -11.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 658605523}
@@ -291,11 +291,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 167784147}
-  SpawnsZone:
-  - {fileID: 172809458}
+  BlueSpawnsZone:
+  - {fileID: 561817193}
   - {fileID: 982829888}
   - {fileID: 1542653465}
   - {fileID: 770013347}
+  RedSpawnsZone:
+  - {fileID: 1764536677}
+  - {fileID: 455670249}
+  - {fileID: 770013347}
+  - {fileID: 1542653465}
   teamBlue: 1
   state: 0
 --- !u!114 &167784149
@@ -643,7 +648,7 @@ GameObject:
   m_Component:
   - component: {fileID: 455670250}
   m_Layer: 8
-  m_Name: Spawner1
+  m_Name: RedPrisonSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -776,6 +781,36 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &561817193
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 561817194}
+  m_Layer: 8
+  m_Name: BlueFieldSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &561817194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561817193}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.17200005, y: -0.27000007, z: -1}
+  m_LocalScale: {x: 0.5000001, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2065044800}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &658605518
 GameObject:
   m_ObjectHideFlags: 0
@@ -960,7 +995,7 @@ GameObject:
   m_Component:
   - component: {fileID: 770013348}
   m_Layer: 8
-  m_Name: Spawner1
+  m_Name: NeutreFieldSpawner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1267,7 +1302,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.15624218, y: 0.000000022482359, z: -0.0000000035563694, w: 0.9877188}
-  m_LocalPosition: {x: 10, y: 6.2599998, z: -25.869999}
+  m_LocalPosition: {x: 9.1, y: 6.2599998, z: -25.869999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1317,7 +1352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 982829889}
   m_Layer: 8
-  m_Name: Spawner1
+  m_Name: BluePrisonSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1478,7 +1513,7 @@ GameObject:
   - component: {fileID: 1152653988}
   - component: {fileID: 1152653987}
   m_Layer: 8
-  m_Name: BlueField2
+  m_Name: BluePrison
   m_TagString: BluePrison
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2111,7 +2146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1542653466}
   m_Layer: 8
-  m_Name: Spawner1
+  m_Name: NeutreFieldSpawner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2233,7 +2268,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666697578}
-  m_LocalRotation: {x: 0.1382978, y: -0.000000017041037, z: 0.0000000023796043, w: 0.9903907}
+  m_LocalRotation: {x: 0.1382978, y: 0.00000001704104, z: -0.0000000023796047, w: 0.9903907}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2441,7 +2476,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1747501842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10, y: 6.2599998, z: -25.869999}
+  m_LocalPosition: {x: 9.1, y: 6.2599998, z: -25.869999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1722301633}
@@ -2449,6 +2484,36 @@ Transform:
   - {fileID: 1666697580}
   m_Father: {fileID: 0}
   m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1764536677
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1764536678}
+  m_Layer: 8
+  m_Name: RedFieldSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1764536678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764536677}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.173, y: 0.22770017, z: -1}
+  m_LocalScale: {x: 0.50000006, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2133536553}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1816151908
 GameObject:
@@ -2715,7 +2780,7 @@ GameObject:
   - component: {fileID: 1944902524}
   - component: {fileID: 1944902523}
   m_Layer: 8
-  m_Name: RedField2
+  m_Name: RedPrison
   m_TagString: RedPrison
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2890,7 +2955,7 @@ GameObject:
   - component: {fileID: 2065044798}
   - component: {fileID: 2065044797}
   m_Layer: 8
-  m_Name: BlueField1
+  m_Name: BlueField
   m_TagString: BlueField
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2969,6 +3034,7 @@ Transform:
   m_LocalScale: {x: 18, y: 36, z: 1}
   m_Children:
   - {fileID: 172809459}
+  - {fileID: 561817194}
   m_Father: {fileID: 1573980296}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
@@ -3064,7 +3130,7 @@ GameObject:
   - component: {fileID: 2133536551}
   - component: {fileID: 2133536550}
   m_Layer: 8
-  m_Name: RedField1
+  m_Name: RedField
   m_TagString: RedField
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3143,6 +3209,7 @@ Transform:
   m_LocalScale: {x: 18, y: 36, z: 1}
   m_Children:
   - {fileID: 381248700}
+  - {fileID: 1764536678}
   m_Father: {fileID: 1573980296}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
