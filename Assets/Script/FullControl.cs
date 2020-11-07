@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 public class FullControl : MonoBehaviour
 {
     public CharacterController controller;
-    public Transform cam;
+    public GameObject cam;
 
     public float speed = 6f;
     public float turnSmoothTime = 0.0f;
@@ -37,6 +37,8 @@ public class FullControl : MonoBehaviour
 
     void Start()
     {
+        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         controller = gameObject.GetComponent<CharacterController>();
         Assert.IsNotNull(groundCheck);
@@ -48,7 +50,8 @@ public class FullControl : MonoBehaviour
         Jump();
         if (Input.GetMouseButtonDown(0))
             Fire();
-        
+
+
         transform.rotation = new Quaternion(transform.localRotation.x, MainCamera.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
         gun.transform.rotation = new Quaternion(MainCamera.transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
 
@@ -58,7 +61,7 @@ public class FullControl : MonoBehaviour
          
         if(direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
             //float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             //transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
@@ -67,6 +70,8 @@ public class FullControl : MonoBehaviour
         }
 
     }
+
+
 
 
     /*private void MovePlayer()
@@ -106,7 +111,18 @@ public class FullControl : MonoBehaviour
             bulletSpawn.position,
             bulletSpawn.rotation);
 
-        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+        int layerMask = 1 << 8;
+        RaycastHit hit;
+        if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+        {
+            Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            Debug.Log(hit.point);
+            Vector3 dir = hit.point - bullet.transform.position;
+            dir = dir.normalized;
+            bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
+        }
+        else
+            bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
 
         Destroy(bullet, 2.0f);
     }
