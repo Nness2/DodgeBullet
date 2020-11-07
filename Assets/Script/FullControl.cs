@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Networking;
 
 
-public class FullControl : MonoBehaviour
+public class FullControl : NetworkBehaviour
 {
+    private GameObject LocalPlayer;
+
     public CharacterController controller;
-    public GameObject cam;
+    private GameObject cam;
 
     public float speed = 6f;
     public float turnSmoothTime = 0.0f;
@@ -37,16 +40,42 @@ public class FullControl : MonoBehaviour
 
     void Start()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-        controller = gameObject.GetComponent<CharacterController>();
-        Assert.IsNotNull(groundCheck);
+        if (isLocalPlayer)
+        {
+            Transform[] children = GetComponentsInChildren<Transform>();
+            foreach (Transform child in children)
+            {
+
+                if (child.CompareTag("CameraTop"))
+                {
+                    Transform topCam = child;
+                    LocalPlayer = GameObject.FindGameObjectWithTag("LocalPlayer");
+                    LocalPlayer.transform.parent = topCam;
+                    LocalPlayer.transform.localPosition = new Vector3();
+                }
+            }
+
+
+            cam = GameObject.FindGameObjectWithTag("MainCamera");
+            //Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+            controller = gameObject.GetComponent<CharacterController>();
+            Assert.IsNotNull(groundCheck);
+
+        }
+
+        
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        if (!isLocalPlayer)
+            return;
+
         Jump();
         if (Input.GetMouseButtonDown(0))
             Fire();
@@ -115,8 +144,8 @@ public class FullControl : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
         {
-            Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            Debug.Log(hit.point);
+            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
             bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
@@ -126,4 +155,6 @@ public class FullControl : MonoBehaviour
 
         Destroy(bullet, 2.0f);
     }
+
+
 }

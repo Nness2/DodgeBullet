@@ -11,8 +11,8 @@ public class ZoneLimitations : MonoBehaviour
     private GameObject NeutreField1;
     private GameObject NeutreField2;*/
     public CharacterController controller;
-    public List<GameObject> BlueSpawnsZone;
-    public List<GameObject> RedSpawnsZone;
+    private List<GameObject> BlueSpawnsZone = new List<GameObject>();
+    private List<GameObject> RedSpawnsZone = new List<GameObject>();
 
 
     public bool teamBlue;
@@ -27,6 +27,15 @@ public class ZoneLimitations : MonoBehaviour
 
         health = GetComponent<Health>();
 
+        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BlueFieldSpawner"));
+        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BluePrisonFieldSpawner"));
+        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
+        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
+
+        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedFieldSpawner"));
+        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedPrisonFieldSpawner"));
+        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
+        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
 
         /*BlueField = GameObject.FindGameObjectWithTag("BlueField");
         RedField = GameObject.FindGameObjectWithTag("RedField");

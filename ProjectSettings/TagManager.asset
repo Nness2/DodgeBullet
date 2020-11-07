@@ -11,6 +11,14 @@ TagManager:
   - Neutre1
   - Neutre2
   - MainCharacter
+  - BlueFieldSpawner
+  - RedFieldSpawner
+  - BluePrisonFieldSpawner
+  - RedPrisonFieldSpawner
+  - NeutreFieldSpawner1
+  - NeutreFieldSpawner2
+  - LocalPlayer
+  - CameraTop
   layers:
   - Default
   - TransparentFX
