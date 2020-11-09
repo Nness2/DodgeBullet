@@ -19,6 +19,9 @@ TagManager:
   - NeutreFieldSpawner2
   - LocalPlayer
   - CameraTop
+  - Body
+  - LocalBody
+  - tmp
   layers:
   - Default
   - TransparentFX

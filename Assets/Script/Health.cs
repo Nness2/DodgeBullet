@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
-public class Health : MonoBehaviour
+public class Health : NetworkBehaviour
 {
 
     public const int maxHealth = 100;
@@ -19,6 +20,10 @@ public class Health : MonoBehaviour
     //take Damage
     public void TakeDamage(int amount)
     {
+
+        if (!isLocalPlayer)
+            return;
+
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
 

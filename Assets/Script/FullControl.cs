@@ -7,6 +7,8 @@ using UnityEngine.Networking;
 
 public class FullControl : NetworkBehaviour
 {
+    private int playerNumber;
+
     private GameObject LocalPlayer;
 
     public CharacterController controller;
@@ -38,8 +40,16 @@ public class FullControl : NetworkBehaviour
 
     public GameObject gun;
 
+    [SyncVar(hook = "OnChangeNumber")]
+    public int selfNumber;
+
+    private NetworkManager nm;
+    
     void Start()
     {
+
+        playerNumber = cmptPlayers();
+        var ZL = GetComponent<ZoneLimitations>();
         if (isLocalPlayer)
         {
             Transform[] children = GetComponentsInChildren<Transform>();
@@ -62,11 +72,23 @@ public class FullControl : NetworkBehaviour
             MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
-
+            selfNumber = cmptPlayers();
+            teamManager();
         }
+        /*Transform[] ColorChildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child2 in ColorChildren)
+        {
 
+            if (child2.CompareTag("Body"))
+            {
+                child2.transform.GetComponent<MeshRenderer>().material.color = Color.blue;
+            }
+        }µ*/
+
+        //Debug.Log(cmptPlayers());
+        //teamManager();
+        //StartCoroutine("LoadTeam");
         
-
     }
 
     // Update is called once per frame
@@ -78,7 +100,11 @@ public class FullControl : NetworkBehaviour
 
         Jump();
         if (Input.GetMouseButtonDown(0))
-            Fire();
+        {
+            CmdFire();
+
+        }
+
 
 
         transform.rotation = new Quaternion(transform.localRotation.x, MainCamera.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
@@ -100,7 +126,15 @@ public class FullControl : NetworkBehaviour
 
     }
 
-
+    private void FixedUpdate()
+    {
+        if (cmptPlayers() != playerNumber)
+        {
+            selfNumber = selfNumber;
+            teamManager();
+            playerNumber = cmptPlayers();
+        }
+    }
 
 
     /*private void MovePlayer()
@@ -133,7 +167,8 @@ public class FullControl : NetworkBehaviour
 
     }
 
-    void Fire()
+    //[Command]
+    void CmdFire()
     {
         var bullet = (GameObject)Instantiate(
             bulletPrefab,
@@ -153,8 +188,66 @@ public class FullControl : NetworkBehaviour
         else
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
 
+        //Network.Spawn(bullet);
         Destroy(bullet, 2.0f);
     }
 
+    void teamManager()
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
+        foreach (GameObject child in characters)
+        {
+            var childFC = child.GetComponent<FullControl>();
+            var ZL = child.GetComponent<ZoneLimitations>();
+            if (childFC.selfNumber % 2 == 1)
+            {
+                ZL.teamBlue = true;
+                child.transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+                Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
+                foreach (Transform child2 in ColorChildren)
+                {
+
+                    if (child2.CompareTag("Body"))
+                    {
+                        child2.transform.GetComponent<MeshRenderer>().material.color = Color.blue;
+                    }
+                }
+            }
+
+            else
+            {
+                ZL.teamBlue = false;
+                child.transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+                Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
+                foreach (Transform child2 in ColorChildren)
+                {
+
+                    if (child2.CompareTag("Body"))
+                    {
+                        child2.transform.GetComponent<MeshRenderer>().material.color = Color.red;
+                    }
+                }
+            }
+
+        }
+    }
+
+    int cmptPlayers()
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        return characters.Length;
+    }
+
+    void OnChangeNumber(int nb)
+    {
+        selfNumber = nb;
+    }
+
+    /*IEnumerator LoadTeam()
+    {
+        yield return new WaitForSeconds(5f);
+        teamManager();
+        Debug.Log(cmptPlayers());
+    }*/
 }
