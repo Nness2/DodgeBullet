@@ -86,6 +86,7 @@ MonoBehaviour:
     type: 3}
   bulletSpawn: {fileID: 5268804951552393924}
   gun: {fileID: 5268804950971348556}
+  selfNumber: 0
 --- !u!114 &5268804950879806652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +184,7 @@ GameObject:
   - component: {fileID: 5268804950971348557}
   m_Layer: 0
   m_Name: Gun
-  m_TagString: Untagged
+  m_TagString: BodyChild
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -336,7 +337,7 @@ GameObject:
   - component: {fileID: 5268804951552393924}
   m_Layer: 0
   m_Name: BulletSpawn
-  m_TagString: Untagged
+  m_TagString: BodyChild
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -601,7 +602,7 @@ GameObject:
   - component: {fileID: 5268804952807404182}
   m_Layer: 0
   m_Name: Glasses
-  m_TagString: Untagged
+  m_TagString: BodyChild
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -75,19 +75,20 @@ public class FullControl : NetworkBehaviour
             selfNumber = cmptPlayers();
             teamManager();
         }
-        /*Transform[] ColorChildren = GetComponentsInChildren<Transform>();
-        foreach (Transform child2 in ColorChildren)
+        else
         {
-
-            if (child2.CompareTag("Body"))
+            Transform[] Children = GetComponentsInChildren<Transform>();
+            foreach (Transform child in Children)
             {
-                child2.transform.GetComponent<MeshRenderer>().material.color = Color.blue;
-            }
-        }µ*/
+                //Destroy(child.gameObject.GetComponent<ZoneLimitations>());
+                //Destroy(child.gameObject.GetComponent<Health>());
+                if (child.CompareTag("Untagged"))
+                {
+                    Destroy(child.gameObject);
+                }
 
-        //Debug.Log(cmptPlayers());
-        //teamManager();
-        //StartCoroutine("LoadTeam");
+            }
+        }
         
     }
 
@@ -128,6 +129,9 @@ public class FullControl : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (!isLocalPlayer)
+            return;
+
         if (cmptPlayers() != playerNumber)
         {
             selfNumber = selfNumber;
@@ -188,7 +192,7 @@ public class FullControl : NetworkBehaviour
         else
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
 
-        //Network.Spawn(bullet);
+        //NetworkServer.Spawn(bullet);
         Destroy(bullet, 2.0f);
     }
 

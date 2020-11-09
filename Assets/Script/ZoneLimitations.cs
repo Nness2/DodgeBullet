@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class ZoneLimitations : MonoBehaviour
+public class ZoneLimitations : NetworkBehaviour
 {
     /*private GameObject BlueField;
     private GameObject RedField;
@@ -25,24 +26,22 @@ public class ZoneLimitations : MonoBehaviour
     void Start()
     {
 
-        health = GetComponent<Health>();
+        if (isLocalPlayer)
+        {
+            health = transform.GetComponent<Health>();
 
-        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BlueFieldSpawner"));
-        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BluePrisonFieldSpawner"));
-        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
-        BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BlueFieldSpawner"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BluePrisonFieldSpawner"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
 
-        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedFieldSpawner"));
-        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedPrisonFieldSpawner"));
-        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
-        RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedFieldSpawner"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedPrisonFieldSpawner"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
+        }
 
-        /*BlueField = GameObject.FindGameObjectWithTag("BlueField");
-        RedField = GameObject.FindGameObjectWithTag("RedField");
-        BluePrison = GameObject.FindGameObjectWithTag("BluePrison");
-        RedPrison = GameObject.FindGameObjectWithTag("RedPrison");
-        NeutreField1 = GameObject.FindGameObjectWithTag("Neutre1");
-        NeutreField2 = GameObject.FindGameObjectWithTag("Neutre2");*/
+        
     }
 
     // Update is called once per frame
@@ -53,6 +52,9 @@ public class ZoneLimitations : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
+        if (!isLocalPlayer)
+            return;
+
         StopAllCoroutines();
 
         if (collision.gameObject.tag == "BlueField" && !teamBlue || collision.gameObject.tag == "BlueField" && teamBlue && state != 0)
@@ -139,22 +141,22 @@ public class ZoneLimitations : MonoBehaviour
 
 
         public void NextZone()
-    {
-        if (teamBlue)
         {
-            controller.enabled = false;
-            transform.position = BlueSpawnsZone[state].transform.position;
-            transform.rotation = BlueSpawnsZone[state].transform.localRotation;
-            controller.enabled = true;
-        }
+            if (teamBlue)
+            {
+                controller.enabled = false;
+                transform.position = BlueSpawnsZone[state].transform.position;
+                transform.rotation = BlueSpawnsZone[state].transform.localRotation;
+                controller.enabled = true;
+            }
 
-        if (!teamBlue)
-        {
-            controller.enabled = false;
-            transform.position = RedSpawnsZone[state].transform.position;
-            transform.rotation = RedSpawnsZone[state].transform.localRotation;
-            controller.enabled = true;
-        }
+            if (!teamBlue)
+            {
+                controller.enabled = false;
+                transform.position = RedSpawnsZone[state].transform.position;
+                transform.rotation = RedSpawnsZone[state].transform.localRotation;
+                controller.enabled = true;
+            }
 
     }
 

@@ -21,8 +21,6 @@ public class Health : NetworkBehaviour
     public void TakeDamage(int amount)
     {
 
-        if (!isLocalPlayer)
-            return;
 
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
