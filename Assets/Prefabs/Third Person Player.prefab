@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 5268804950879806654}
-  speed: 13
+  speed: 20
   turnSmoothTime: 0
   gravity: -30
   jumpHeight: 1.5
@@ -87,6 +87,7 @@ MonoBehaviour:
   bulletSpawn: {fileID: 5268804951552393924}
   gun: {fileID: 5268804950971348556}
   selfNumber: 0
+  isLocal: 0
 --- !u!114 &5268804950879806652
 MonoBehaviour:
   m_ObjectHideFlags: 0

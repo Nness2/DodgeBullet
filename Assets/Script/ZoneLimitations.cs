@@ -140,7 +140,7 @@ public class ZoneLimitations : NetworkBehaviour
     }*/
 
 
-        public void NextZone()
+        public void UpdateZone()
         {
             if (teamBlue)
             {

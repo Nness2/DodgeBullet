@@ -23,6 +23,7 @@ TagManager:
   - LocalBody
   - tmp
   - BodyChild
+  - Bullet
   layers:
   - Default
   - TransparentFX

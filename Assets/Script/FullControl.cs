@@ -19,18 +19,16 @@ public class FullControl : NetworkBehaviour
     float turnSmoothVelocity;
     // Start is called before the first frame update
 
-    private GameObject MainCamera;
+    //private GameObject MainCamera;
 
     //JUMP
     public float gravity = -9.81f; // default : Earth gravity
     public float jumpHeight = 3f;
-
     public Transform groundCheck;
     public float groundDistance = 0.1f;
     public LayerMask groundMask;
     private bool isGrounded;
     private Vector3 _move;
-
     [SerializeField]
     private Vector3 velocity; // for falling speed
 
@@ -44,14 +42,18 @@ public class FullControl : NetworkBehaviour
     public int selfNumber;
 
     private NetworkManager nm;
+
+    public bool isLocal;
     
     void Start()
     {
 
-        playerNumber = cmptPlayers();
+        playerNumber = 0;
         var ZL = GetComponent<ZoneLimitations>();
+        cam = GameObject.FindGameObjectWithTag("MainCamera");
         if (isLocalPlayer)
         {
+            isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
             {
@@ -65,18 +67,24 @@ public class FullControl : NetworkBehaviour
                 }
             }
 
-
-            cam = GameObject.FindGameObjectWithTag("MainCamera");
-            //Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+            //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
             selfNumber = cmptPlayers();
+            
             teamManager();
+
+            //Set Position
+            if (selfNumber % 2 == 1)
+                transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+            else
+                transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
         }
         else
         {
+            isLocal = false;
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
             {
@@ -89,7 +97,7 @@ public class FullControl : NetworkBehaviour
 
             }
         }
-        
+
     }
 
     // Update is called once per frame
@@ -102,14 +110,16 @@ public class FullControl : NetworkBehaviour
         Jump();
         if (Input.GetMouseButtonDown(0))
         {
-            CmdFire();
+            Vector3 position = cam.transform.position;
+            Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+            CmdFire(selfNumber, position, forward);
 
         }
 
 
 
-        transform.rotation = new Quaternion(transform.localRotation.x, MainCamera.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
-        gun.transform.rotation = new Quaternion(MainCamera.transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
+        transform.rotation = new Quaternion(transform.localRotation.x, cam.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
+        gun.transform.rotation = new Quaternion(cam.transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -131,15 +141,28 @@ public class FullControl : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
-
         if (cmptPlayers() != playerNumber)
         {
+
+            ////// L'ip de chaque joeur devrait être update automatiquement grace à la valeur sync mais ce n'est pas le cas quand un joeur arrive les precedants ne reccup pas la bonne valeur
+            ///// Solution de debug à corriger
+            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+            foreach (GameObject child in characters)
+            {
+                if (child.GetComponent<FullControl>().selfNumber == 0)
+                {
+                    child.GetComponent<FullControl>().selfNumber = cmptPlayers();
+                }
+            }
+            //////
+            ///
             selfNumber = selfNumber;
             teamManager();
             playerNumber = cmptPlayers();
+            
         }
     }
-
 
     /*private void MovePlayer()
     {
@@ -171,17 +194,21 @@ public class FullControl : NetworkBehaviour
 
     }
 
-    //[Command]
-    void CmdFire()
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdFire(int nb, Vector3 position, Vector3 forward)
     {
+        //Transform camInfo = CamInfo;
         var bullet = (GameObject)Instantiate(
             bulletPrefab,
             bulletSpawn.position,
             bulletSpawn.rotation);
 
+        
+
         int layerMask = 1 << 8;
         RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask)) 
         {
             //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.point);
@@ -192,12 +219,15 @@ public class FullControl : NetworkBehaviour
         else
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
 
-        //NetworkServer.Spawn(bullet);
-        Destroy(bullet, 2.0f);
+        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        bullet.GetComponent<Bullet>().player = nb;
+        Destroy(bullet, 10.0f);
     }
 
     void teamManager()
     {
+
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -207,7 +237,7 @@ public class FullControl : NetworkBehaviour
             if (childFC.selfNumber % 2 == 1)
             {
                 ZL.teamBlue = true;
-                child.transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+                    
                 Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
                 foreach (Transform child2 in ColorChildren)
                 {
@@ -222,7 +252,6 @@ public class FullControl : NetworkBehaviour
             else
             {
                 ZL.teamBlue = false;
-                child.transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
                 Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
                 foreach (Transform child2 in ColorChildren)
                 {
