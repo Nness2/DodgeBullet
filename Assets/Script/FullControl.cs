@@ -44,7 +44,9 @@ public class FullControl : NetworkBehaviour
     private NetworkManager nm;
 
     public bool isLocal;
-    
+
+    public int killNb;
+
     void Start()
     {
 
@@ -53,6 +55,7 @@ public class FullControl : NetworkBehaviour
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         if (isLocalPlayer)
         {
+            killNb = 0;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -72,8 +75,8 @@ public class FullControl : NetworkBehaviour
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
-            selfNumber = cmptPlayers();
-            
+            //selfNumber = cmptPlayers();
+            InitSelfNb(cmptPlayers());
             teamManager();
             
             //Set Position
@@ -149,7 +152,7 @@ public class FullControl : NetworkBehaviour
 
             ////// L'ip de chaque joeur devrait être update automatiquement grace à la valeur sync mais ce n'est pas le cas quand un joeur arrive les precedants ne reccup pas la bonne valeur
             ///// Solution de debug à corriger
-            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+            /*GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
             foreach (GameObject child in characters)
             {
@@ -157,16 +160,22 @@ public class FullControl : NetworkBehaviour
                 {
                     child.GetComponent<FullControl>().selfNumber = cmptPlayers();
                 }
-            }
+            }*/
             //////
             ///
-            selfNumber = selfNumber;
+            //selfNumber = selfNumber;
             teamManager();
             playerNumber = cmptPlayers();
             
         }
     }
 
+
+    [Command] //Appelé par le client mais lu par le serveur
+    void InitSelfNb(int nb)
+    {
+        selfNumber = nb;
+    }
     /*private void MovePlayer()
     {
         _move = transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical");
@@ -175,7 +184,7 @@ public class FullControl : NetworkBehaviour
         controller.Move(_move);
     }*/
 
-    
+
     private void Jump()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);

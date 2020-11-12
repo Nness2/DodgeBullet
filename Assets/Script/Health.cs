@@ -30,14 +30,14 @@ public class Health : NetworkBehaviour
 
         if (currentHealth <= 0)
         {
-            ZL.state++;
+            //ZL.state++;
             if(ZL.state > 3)
             {
                 Destroy(transform.gameObject);
                 return false;
             }
             currentHealth = 100;
-            ZL.UpdateZone();
+            //ZL.UpdateZone();
             //Debug.Log("Dead");
             isDead = true;
         }

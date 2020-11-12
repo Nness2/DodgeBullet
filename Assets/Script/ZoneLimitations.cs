@@ -168,13 +168,25 @@ public class ZoneLimitations : NetworkBehaviour
         while (true)
         {
             var wait = new WaitForSeconds(1f);
-            health.TakeDamage(damages);
+            bool kill = health.TakeDamage(damages);
+            if (kill)
+            {
+                upState();
+                UpdateZone();
+            }
+                
             yield return wait;
         }
 
     }
 
-    void OnChangeState(int oldValue, int newValue)
+    [Command] //Appelé par le client mais lu par le serveur
+    void upState()
+    {
+        state++;
+    }
+
+        void OnChangeState(int oldValue, int newValue)
     {
         state = newValue;
     }
