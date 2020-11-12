@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class Bullet : NetworkBehaviour
 {
     // Start is called before the first frame update
+    [SyncVar(hook = nameof(OnChangePlayer))]
     public int player;
 
     private void Start()
@@ -38,12 +39,17 @@ public class Bullet : NetworkBehaviour
                         //killer.UpZone();
                         int killer = child.GetComponent<FullControl>().selfNumber;
                         int killed = hit.GetComponent<FullControl>().selfNumber;
-                        //health.KillManager(killer, killed);
+                        health.KillManager(killer, killed);
                     }
                 }
             }
         }
         Destroy(gameObject);
+    }
+
+    void OnChangePlayer(int oldValue, int newValue)
+    {
+        player = newValue;
     }
 
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class ZoneLimitations : NetworkBehaviour
 {
@@ -11,13 +11,14 @@ public class ZoneLimitations : NetworkBehaviour
     private GameObject RedPrison;
     private GameObject NeutreField1;
     private GameObject NeutreField2;*/
+    
     public CharacterController controller;
     private List<GameObject> BlueSpawnsZone = new List<GameObject>();
     private List<GameObject> RedSpawnsZone = new List<GameObject>();
 
 
     public bool teamBlue;
-    [SyncVar(hook = "OnChangeState")]
+    [SyncVar(hook = nameof(OnChangeState))]
     public int state;
 
     private Health health;
@@ -140,7 +141,7 @@ public class ZoneLimitations : NetworkBehaviour
         StopAllCoroutines();
     }*/
 
-
+    
     public void UpdateZone()
     {
         if (!isLocalPlayer)
@@ -173,9 +174,11 @@ public class ZoneLimitations : NetworkBehaviour
 
     }
 
-    void OnChangeState(int nb)
+    void OnChangeState(int oldValue, int newValue)
     {
-        state = nb;
+        state = newValue;
     }
+
+
 
 }

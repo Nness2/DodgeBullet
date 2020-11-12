@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Networking;
+using Mirror;
 
 
 public class FullControl : NetworkBehaviour
@@ -38,7 +38,7 @@ public class FullControl : NetworkBehaviour
 
     public GameObject gun;
 
-    [SyncVar(hook = "OnChangeNumber")]
+    [SyncVar(hook = nameof(OnChangeNumber))]
     public int selfNumber;
 
     private NetworkManager nm;
@@ -75,10 +75,12 @@ public class FullControl : NetworkBehaviour
             selfNumber = cmptPlayers();
             
             teamManager();
-
+            
             //Set Position
             if (selfNumber % 2 == 1)
                 transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+            
+
             else
                 transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
         }
@@ -173,7 +175,7 @@ public class FullControl : NetworkBehaviour
         controller.Move(_move);
     }*/
 
-
+    
     private void Jump()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -273,9 +275,9 @@ public class FullControl : NetworkBehaviour
         return characters.Length;
     }
 
-    void OnChangeNumber(int nb)
+    void OnChangeNumber(int oldValue, int newValue)
     {
-        selfNumber = nb;
+        selfNumber = newValue;
     }
 
     /*IEnumerator LoadTeam()

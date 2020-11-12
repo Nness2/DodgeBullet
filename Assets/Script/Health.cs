@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
+using Mirror;
 
 public class Health : NetworkBehaviour
 {
@@ -61,7 +61,7 @@ public class Health : NetworkBehaviour
         ZL.state--;
         ZL.UpdateZone();
     }
-    /*
+    
 
     public void KillManager(int killer, int killed)
     {
@@ -75,13 +75,13 @@ public class Health : NetworkBehaviour
     [Command] //Appelé par le client mais lu par le serveur
     void CmdKillNotification(int killer, int killed)
     {
-        TargetpropagateInfos(killer, killed);
+        propagateInfos(killer, killed);
     }
 
-    [TargetRpc] //Appelé par le client mais lu par le serveur
-    void TargetpropagateInfos(int killer, int killed)
+    [ClientRpc] 
+    void propagateInfos(int killer, int killed)
     {
         Debug.Log("Killer = " + killer + " - Killed = " + killed);
     }
-    */
+    
 }
