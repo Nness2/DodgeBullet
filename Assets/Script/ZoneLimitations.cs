@@ -17,7 +17,8 @@ public class ZoneLimitations : NetworkBehaviour
 
 
     public bool teamBlue;
-    public int state = 0;
+    [SyncVar(hook = "OnChangeState")]
+    public int state;
 
     private Health health;
 
@@ -25,7 +26,7 @@ public class ZoneLimitations : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        state = 0;
         if (isLocalPlayer)
         {
             health = transform.GetComponent<Health>();
@@ -140,24 +141,25 @@ public class ZoneLimitations : NetworkBehaviour
     }*/
 
 
-        public void UpdateZone()
+    public void UpdateZone()
+    {
+        if (!isLocalPlayer)
+            return;
+        if (teamBlue)
         {
-            if (teamBlue)
-            {
-                controller.enabled = false;
-                transform.position = BlueSpawnsZone[state].transform.position;
-                transform.rotation = BlueSpawnsZone[state].transform.localRotation;
-                controller.enabled = true;
-            }
+            controller.enabled = false;
+            transform.position = BlueSpawnsZone[state].transform.position;
+            transform.rotation = BlueSpawnsZone[state].transform.localRotation;
+            controller.enabled = true;
+        }
 
-            if (!teamBlue)
-            {
-                controller.enabled = false;
-                transform.position = RedSpawnsZone[state].transform.position;
-                transform.rotation = RedSpawnsZone[state].transform.localRotation;
-                controller.enabled = true;
-            }
-
+        if (!teamBlue)
+        {
+            controller.enabled = false;
+            transform.position = RedSpawnsZone[state].transform.position;
+            transform.rotation = RedSpawnsZone[state].transform.localRotation;
+            controller.enabled = true;
+        }
     }
 
     IEnumerator ZoneDamage(int damages)
@@ -169,6 +171,11 @@ public class ZoneLimitations : NetworkBehaviour
             yield return wait;
         }
 
+    }
+
+    void OnChangeState(int nb)
+    {
+        state = nb;
     }
 
 }

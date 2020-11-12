@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 public class Bullet : NetworkBehaviour
 {
     // Start is called before the first frame update
-    [SyncVar(hook = "OnSpawnBall")]
     public int player;
 
     private void Start()
@@ -30,14 +29,16 @@ public class Bullet : NetworkBehaviour
                 foreach (GameObject child in characters)
                 {
                     //Debug.Log("child = "+ child.GetComponent<FullControl>().selfNumber);
-                    var ZLScript = child.GetComponent<ZoneLimitations>();
-                    Debug.Log("self"+child.GetComponent<FullControl>().selfNumber);
-                    Debug.Log("player"+player);
+                    //var ZLScript = child.GetComponent<ZoneLimitations>();
+                    //Debug.Log("self"+child.GetComponent<FullControl>().selfNumber);
+                    //Debug.Log("player"+player);
                     if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
                     {
-                        Debug.Log("test");
-                        ZLScript.state--;
-                        ZLScript.UpdateZone();
+                        //var killer = child.GetComponent<Health>();
+                        //killer.UpZone();
+                        int killer = child.GetComponent<FullControl>().selfNumber;
+                        int killed = hit.GetComponent<FullControl>().selfNumber;
+                        //health.KillManager(killer, killed);
                     }
                 }
             }
@@ -45,11 +46,6 @@ public class Bullet : NetworkBehaviour
         Destroy(gameObject);
     }
 
-
-    void OnSpawnBall(int nb)
-    {
-        player = nb;
-    }
 }
 
 

@@ -84,11 +84,12 @@ public class FullControl : NetworkBehaviour
         }
         else
         {
+            gameObject.layer = 9;
             isLocal = false;
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
             {
-                //Destroy(child.gameObject.GetComponent<ZoneLimitations>());
+                //Destroy(child.gameObject.GetComponent<CharacterController>());
                 //Destroy(child.gameObject.GetComponent<Health>());
                 if (child.CompareTag("Untagged"))
                 {

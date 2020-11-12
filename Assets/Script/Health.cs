@@ -21,8 +21,9 @@ public class Health : NetworkBehaviour
     public bool TakeDamage(int amount) //return true si il y a kill
     {
         
-        if (!isLocalPlayer)
-            return false;
+        //if (!isLocalPlayer)
+        //    return false;
+        //Debug.Log("test");
         bool isDead = false;
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
@@ -48,4 +49,39 @@ public class Health : NetworkBehaviour
         return false;
     }
 
+    public void UpZone() 
+    {
+
+        //if (!isLocalPlayer)
+        //    return;
+        Debug.Log("moins");
+        var ZL = GetComponent<ZoneLimitations>();
+
+        currentHealth = 100;
+        ZL.state--;
+        ZL.UpdateZone();
+    }
+    /*
+
+    public void KillManager(int killer, int killed)
+    {
+        if (!isLocalPlayer)
+            return;
+
+        CmdKillNotification(killer, killed);
+    }
+
+    
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdKillNotification(int killer, int killed)
+    {
+        TargetpropagateInfos(killer, killed);
+    }
+
+    [TargetRpc] //Appelé par le client mais lu par le serveur
+    void TargetpropagateInfos(int killer, int killed)
+    {
+        Debug.Log("Killer = " + killer + " - Killed = " + killed);
+    }
+    */
 }

@@ -34,8 +34,8 @@ TagManager:
   - 
   - 
   - Ground
-  - 
-  - 
+  - NotLocal
+  - Bullet
   - 
   - 
   - 
