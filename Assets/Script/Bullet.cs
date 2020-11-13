@@ -28,6 +28,8 @@ public class Bullet : NetworkBehaviour
             if (kill) //Si y a kill le joueur redescend
             {
                 ZLScript.upState();
+                ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation
+                //ZLScript.state++;
                 ZLScript.UpdateZone();
                 GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
                 
@@ -42,7 +44,8 @@ public class Bullet : NetworkBehaviour
                         //tester d'appeler hook de self ici
                         //var killer = child.GetComponent<Health>();
                         //killer.UpZone();
-                        child.GetComponent<ZoneLimitations>().downState();
+                        //if(isServer)
+                        //child.GetComponent<ZoneLimitations>().CmdDownState();
                         int killer = child.GetComponent<FullControl>().selfNumber;
                         int killed = hit.GetComponent<FullControl>().selfNumber;
                         health.KillManager(killer, killed);

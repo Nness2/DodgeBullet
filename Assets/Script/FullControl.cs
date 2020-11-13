@@ -169,11 +169,7 @@ public class FullControl : NetworkBehaviour
     }
 
 
-    [Command] //Appelé par le client mais lu par le serveur
-    void InitSelfNb(int nb)
-    {
-        selfNumber = nb;
-    }
+
     /*private void MovePlayer()
     {
         _move = transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical");
@@ -280,6 +276,12 @@ public class FullControl : NetworkBehaviour
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         return characters.Length;
+    }
+
+    [Command] //Appelé par le client mais lu par le serveur
+    void InitSelfNb(int nb)
+    {
+        selfNumber = nb;
     }
 
     void OnChangeNumber(int oldValue, int newValue)
