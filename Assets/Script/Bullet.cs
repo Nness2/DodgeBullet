@@ -22,9 +22,13 @@ public class Bullet : NetworkBehaviour
 
         if (health != null)
         {
+            var ZLScript = hit.GetComponent<ZoneLimitations>();
             bool kill = health.TakeDamage(10);
+
             if (kill) //Si y a kill le joueur redescend
             {
+                ZLScript.upState();
+                ZLScript.UpdateZone();
                 GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
                 
                 foreach (GameObject child in characters)
@@ -35,8 +39,10 @@ public class Bullet : NetworkBehaviour
                     //Debug.Log("player"+player);
                     if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
                     {
+                        //tester d'appeler hook de self ici
                         //var killer = child.GetComponent<Health>();
                         //killer.UpZone();
+                        child.GetComponent<ZoneLimitations>().downState();
                         int killer = child.GetComponent<FullControl>().selfNumber;
                         int killed = hit.GetComponent<FullControl>().selfNumber;
                         health.KillManager(killer, killed);

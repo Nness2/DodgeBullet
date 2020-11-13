@@ -49,7 +49,7 @@ public class Health : NetworkBehaviour
         return false;
     }
 
-    public void UpZone() 
+    /*public void UpZone() 
     {
 
         //if (!isLocalPlayer)
@@ -60,7 +60,7 @@ public class Health : NetworkBehaviour
         currentHealth = 100;
         ZL.state--;
         ZL.UpdateZone();
-    }
+    }*/
     
 
     public void KillManager(int killer, int killed)

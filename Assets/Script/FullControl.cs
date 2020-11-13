@@ -45,7 +45,6 @@ public class FullControl : NetworkBehaviour
 
     public bool isLocal;
 
-    public int killNb;
 
     void Start()
     {
@@ -55,7 +54,6 @@ public class FullControl : NetworkBehaviour
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         if (isLocalPlayer)
         {
-            killNb = 0;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)

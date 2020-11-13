@@ -181,12 +181,18 @@ public class ZoneLimitations : NetworkBehaviour
     }
 
     [Command] //Appelé par le client mais lu par le serveur
-    void upState()
+    public void upState()
     {
         state++;
     }
 
-        void OnChangeState(int oldValue, int newValue)
+    [Command] //Appelé par le client mais lu par le serveur
+    public void downState()
+    {
+        state--;
+    }
+
+    void OnChangeState(int oldValue, int newValue)
     {
         state = newValue;
     }
