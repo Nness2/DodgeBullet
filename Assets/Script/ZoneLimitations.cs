@@ -20,14 +20,17 @@ public class ZoneLimitations : NetworkBehaviour
     public bool teamBlue;
     [SyncVar(hook = nameof(OnChangeState))]
     public int state;
-
+    private int currentState;
     private Health health;
 
     private IEnumerator coroutine;
+
+
     // Start is called before the first frame update
     void Start()
     {
         state = 0;
+        currentState = 0;
         if (isLocalPlayer)
         {
             health = transform.GetComponent<Health>();
@@ -50,6 +53,16 @@ public class ZoneLimitations : NetworkBehaviour
     void Update()
     {
         
+    }
+
+
+    private void FixedUpdate()
+    {
+        if (currentState != state)
+        {
+            UpdateZone();
+            currentState = state;
+        }
     }
 
     void OnTriggerEnter(Collider collision)
@@ -171,10 +184,10 @@ public class ZoneLimitations : NetworkBehaviour
             bool kill = health.TakeDamage(damages);
             if (kill)
             {
-                //upState();
+                upState();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation, peut etre ajouter un rst
-                state++;
-                UpdateZone();
+                //state++;
+                //UpdateZone();
             }
                 
             yield return wait;
@@ -188,17 +201,16 @@ public class ZoneLimitations : NetworkBehaviour
         state++;
     }
 
-    /*
+    
     [Command] //Appelé par le client mais lu par le serveur
     public void CmdDownState()
     {
         DownState();
     }
-    */
+    
     //[TargetRpc] //Appelé par le client mais lu par le serveur
     public void DownState()
     {
-        Debug.Log("oui");
         state--;
     }
 
@@ -206,7 +218,5 @@ public class ZoneLimitations : NetworkBehaviour
     {
         state = newValue;
     }
-
-
 
 }

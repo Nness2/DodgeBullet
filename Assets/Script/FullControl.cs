@@ -76,14 +76,13 @@ public class FullControl : NetworkBehaviour
             //selfNumber = cmptPlayers();
             InitSelfNb(cmptPlayers());
             teamManager();
-            
-            //Set Position
-            if (selfNumber % 2 == 1)
-                transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
-            
 
-            else
-                transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+            //Set Position
+            StartCoroutine(LateStart(1));
+
+
+
+
         }
         else
         {
@@ -102,6 +101,17 @@ public class FullControl : NetworkBehaviour
             }
         }
 
+    }
+
+    IEnumerator LateStart(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        if (selfNumber % 2 == 1)
+            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+
+        else
+            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+        controller.Move(Vector3.zero);
     }
 
     // Update is called once per frame

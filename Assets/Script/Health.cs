@@ -88,7 +88,7 @@ public class Health : NetworkBehaviour
                 if (child.GetComponent<ZoneLimitations>().state == 0)
                     return;
                 child.GetComponent<ZoneLimitations>().DownState();
-                child.GetComponent<ZoneLimitations>().UpdateZone();
+                //child.GetComponent<ZoneLimitations>().UpdateZone();
 
             }
             //Debug.Log(child.GetComponent<FullControl>().selfNumber);

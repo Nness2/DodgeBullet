@@ -30,22 +30,13 @@ public class Bullet : NetworkBehaviour
                 ZLScript.upState();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation
                 //ZLScript.state++;
-                ZLScript.UpdateZone();
+                //ZLScript.UpdateZone();
                 GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
                 
                 foreach (GameObject child in characters)
                 {
-                    //Debug.Log("child = "+ child.GetComponent<FullControl>().selfNumber);
-                    //var ZLScript = child.GetComponent<ZoneLimitations>();
-                    //Debug.Log("self"+child.GetComponent<FullControl>().selfNumber);
-                    //Debug.Log("player"+player);
                     if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
                     {
-                        //tester d'appeler hook de self ici
-                        //var killer = child.GetComponent<Health>();
-                        //killer.UpZone();
-                        //if(isServer)
-                        //child.GetComponent<ZoneLimitations>().CmdDownState();
                         int killer = child.GetComponent<FullControl>().selfNumber;
                         int killed = hit.GetComponent<FullControl>().selfNumber;
                         health.KillManager(killer, killed);
