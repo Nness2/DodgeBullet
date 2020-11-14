@@ -31,9 +31,9 @@ public class Health : NetworkBehaviour
         if (currentHealth <= 0)
         {
             //ZL.state++;
-            if(ZL.state > 3) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
+            if(ZL.state > 2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
             {
-                Destroy(transform.gameObject);
+                DestroyPlayer(transform.gameObject);
                 return false;
             }
             currentHealth = 100;
@@ -47,6 +47,12 @@ public class Health : NetworkBehaviour
             return true;
 
         return false;
+    }
+
+    [Command]
+    void DestroyPlayer(GameObject player)
+    {
+        Destroy(player);
     }
 
     /*public void UpZone() 

@@ -118,6 +118,7 @@ public class FullControl : NetworkBehaviour
             return;
 
         Jump();
+
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 position = cam.transform.position;
@@ -126,10 +127,9 @@ public class FullControl : NetworkBehaviour
 
         }
 
-
-
-        transform.rotation = new Quaternion(transform.localRotation.x, cam.transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
-        gun.transform.rotation = new Quaternion(cam.transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w);
+        transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, transform.eulerAngles.z);
+        gun.transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -209,6 +209,12 @@ public class FullControl : NetworkBehaviour
     [Command] //Appelé par le client mais lu par le serveur
     void CmdFire(int nb, Vector3 position, Vector3 forward)
     {
+        ClientFire(nb, position, forward);
+    }
+
+    [ClientRpc]
+    void ClientFire(int nb, Vector3 position, Vector3 forward)
+    {
         //Transform camInfo = CamInfo;
         var bullet = (GameObject)Instantiate(
             bulletPrefab,
@@ -222,20 +228,26 @@ public class FullControl : NetworkBehaviour
 
         if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask)) 
         {
-            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            //Debug.Log(hit.point);
+            Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
             bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
         }
         else
+        {
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+            Debug.Log("NOIP");
+        }
 
-        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+        //NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         bullet.GetComponent<Bullet>().player = nb;
         Destroy(bullet, 10.0f);
     }
+
+
+
 
     void teamManager()
     {

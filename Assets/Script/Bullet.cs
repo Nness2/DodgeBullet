@@ -45,13 +45,19 @@ public class Bullet : NetworkBehaviour
                         }
                     }
                 }
-                Destroy(gameObject);
+                //DestroyBullet(gameObject);
             }
             
         }
         else
             Destroy(gameObject);
 
+    }
+
+    [Command]
+    void DestroyBullet(GameObject player)
+    {
+        Destroy(player);
     }
 
     void OnChangePlayer(int oldValue, int newValue)

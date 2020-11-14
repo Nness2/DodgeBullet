@@ -782,7 +782,7 @@ GameObject:
   - component: {fileID: 3597815750259175368}
   - component: {fileID: 5444891030088158337}
   - component: {fileID: 1788662193344810223}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Third Person Player 2.0
   m_TagString: MainCharacter
   m_Icon: {fileID: 0}
@@ -933,7 +933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0
   clientAuthority: 1
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
