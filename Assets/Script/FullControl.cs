@@ -73,8 +73,8 @@ public class FullControl : NetworkBehaviour
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
-            InitSelfNb(cmptPlayers());
             selfNumber = cmptPlayers();
+            InitSelfNb(cmptPlayers());
             teamManager();
 
             //Set Position
@@ -92,6 +92,7 @@ public class FullControl : NetworkBehaviour
         else
         {
             //gameObject.layer = 9;
+            selfNumber = cmptPlayers();
             isLocal = false;
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
@@ -228,11 +229,11 @@ public class FullControl : NetworkBehaviour
 
         if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask)) 
         {
-            Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            Debug.Log(hit.point);
+            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(dir * 60000);
+            bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
         }
         else
         {
