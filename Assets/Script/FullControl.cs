@@ -232,12 +232,11 @@ public class FullControl : NetworkBehaviour
             Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
+            bullet.GetComponent<Rigidbody>().AddForce(dir * 60000);
         }
         else
         {
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
-            Debug.Log("NOIP");
         }
 
         //NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients

@@ -16,7 +16,6 @@ public class Bullet : NetworkBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-
         var hit = collision.gameObject;
         var health = hit.GetComponent<Health>();
 
@@ -45,20 +44,11 @@ public class Bullet : NetworkBehaviour
                         }
                     }
                 }
-                //DestroyBullet(gameObject);
             }
-            
         }
-        else
-            Destroy(gameObject);
-
+        Destroy(gameObject);
     }
 
-    [Command]
-    void DestroyBullet(GameObject player)
-    {
-        Destroy(player);
-    }
 
     void OnChangePlayer(int oldValue, int newValue)
     {
