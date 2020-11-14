@@ -91,7 +91,7 @@ public class FullControl : NetworkBehaviour
         }
         else
         {
-            gameObject.layer = 9;
+            //gameObject.layer = 9;
             isLocal = false;
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)

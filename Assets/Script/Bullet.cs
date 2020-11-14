@@ -22,29 +22,36 @@ public class Bullet : NetworkBehaviour
 
         if (health != null)
         {
-            var ZLScript = hit.GetComponent<ZoneLimitations>();
-            bool kill = health.TakeDamage(10);
-
-            if (kill) //Si y a kill le joueur redescend
+            if (hit.GetComponent<FullControl>().isLocal)
             {
-                ZLScript.upState();
-                ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation
-                //ZLScript.state++;
-                //ZLScript.UpdateZone();
-                GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-                
-                foreach (GameObject child in characters)
+                var ZLScript = hit.GetComponent<ZoneLimitations>();
+                bool kill = health.TakeDamage(10);
+
+                if (kill) //Si y a kill le joueur redescend
                 {
-                    if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
+                    ZLScript.upState();
+                    ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation
+                    //ZLScript.state++;
+                    //ZLScript.UpdateZone();
+                    GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+                    foreach (GameObject child in characters)
                     {
-                        int killer = child.GetComponent<FullControl>().selfNumber;
-                        int killed = hit.GetComponent<FullControl>().selfNumber;
-                        health.KillManager(killer, killed);
+                        if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
+                        {
+                            int killer = child.GetComponent<FullControl>().selfNumber;
+                            int killed = hit.GetComponent<FullControl>().selfNumber;
+                            health.KillManager(killer, killed);
+                        }
                     }
                 }
+                Destroy(gameObject);
             }
+            
         }
-        Destroy(gameObject);
+        else
+            Destroy(gameObject);
+
     }
 
     void OnChangePlayer(int oldValue, int newValue)
