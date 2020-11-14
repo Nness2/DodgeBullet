@@ -73,13 +73,18 @@ public class FullControl : NetworkBehaviour
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
-            //selfNumber = cmptPlayers();
             InitSelfNb(cmptPlayers());
+            selfNumber = cmptPlayers();
             teamManager();
 
             //Set Position
-            StartCoroutine(LateStart(1));
+            controller.enabled = false;
+            if (selfNumber % 2 == 1)
+                transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
 
+            else
+                transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+            controller.enabled = true;
 
 
 
@@ -103,16 +108,7 @@ public class FullControl : NetworkBehaviour
 
     }
 
-    IEnumerator LateStart(float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        if (selfNumber % 2 == 1)
-            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
 
-        else
-            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
-        controller.Move(Vector3.zero);
-    }
 
     // Update is called once per frame
     void Update()
