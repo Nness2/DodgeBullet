@@ -24,6 +24,8 @@ TagManager:
   - tmp
   - BodyChild
   - Bullet
+  - NotLocalPlayer
+  - 3DModel
   layers:
   - Default
   - TransparentFX

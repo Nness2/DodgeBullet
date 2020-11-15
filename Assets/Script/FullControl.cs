@@ -268,7 +268,8 @@ public class FullControl : NetworkBehaviour
 
                     if (child2.CompareTag("Body"))
                     {
-                        child2.transform.GetComponent<MeshRenderer>().material.color = Color.blue;
+                        
+                        child2.transform.GetComponent<SkinnedMeshRenderer>().material.color = Color.blue;
                     }
                 }
             }
@@ -282,7 +283,7 @@ public class FullControl : NetworkBehaviour
 
                     if (child2.CompareTag("Body"))
                     {
-                        child2.transform.GetComponent<MeshRenderer>().material.color = Color.red;
+                        child2.transform.GetComponent<SkinnedMeshRenderer>().material.color = Color.red;
                     }
                 }
             }
