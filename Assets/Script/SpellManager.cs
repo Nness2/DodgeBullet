@@ -22,7 +22,6 @@ public class SpellManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(wallReady);
         if (!isLocalPlayer)
             return;
 
