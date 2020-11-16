@@ -1,24 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class FallingRespawn : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
+    public bool firstKill;
     void Start()
     {
-
+        firstKill = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-    }
-
-    void OnTriggerEnter(Collider collision)
-    {
-        gameObject.GetComponent<ZoneLimitations>().upState();
+        
     }
 }

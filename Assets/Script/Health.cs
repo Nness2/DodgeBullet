@@ -69,17 +69,16 @@ public class Health : NetworkBehaviour
     }*/
     
 
-    public void KillManager(int killer, int killed)
+    public void KillManager(int killer, int killed)  // à appeler quand il y a une mecanique de kills
     {
         if (!isLocalPlayer)
             return;
-
         CmdKillNotification(killer, killed);
     }
 
     //On peut modifier la valeur d'un local en modiffient son player depuis le serveur.
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdKillNotification(int killer, int killed)
+    void CmdKillNotification(int killer, int killed) 
     {
         //propagateInfos(killer, killed);
         Debug.Log("Killer = " + killer + " - Killed = " + killed);

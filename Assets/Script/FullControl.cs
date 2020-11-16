@@ -45,15 +45,18 @@ public class FullControl : NetworkBehaviour
 
     public bool isLocal;
 
+    public bool GotBall;
 
     void Start()
     {
-
+        
         playerNumber = 0;
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         if (isLocalPlayer)
         {
+
+            GotBall = true;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -122,10 +125,13 @@ public class FullControl : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            Vector3 position = cam.transform.position;
-            Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-            CmdBallFire(selfNumber, position, forward);
-
+            if (GotBall)
+            {
+                GotBall = false;
+                Vector3 position = cam.transform.position;
+                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+                CmdBallFire(selfNumber, position, forward);
+            }
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -256,7 +262,7 @@ public class FullControl : NetworkBehaviour
         //NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         bullet.GetComponent<Bullet>().player = nb;
-        Destroy(bullet, 10.0f);
+        //Destroy(bullet, 10.0f);
     }
 
     ////////////BALLFIRE///////////
@@ -270,29 +276,6 @@ public class FullControl : NetworkBehaviour
     ////////////FIRE///////////
     ////////////FIRE///////////
     ////////////FIRE///////////
-    void Fire(Vector3 position, Vector3 forward)
-    {
-        int layerMask = 1 << 8;
-        RaycastHit hit;
-
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
-        {
-            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            //Debug.Log(hit.point);
-            //Vector3 dir = hit.point - bullet.transform.position;
-            //dir = dir.normalized;
-            //bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
-            if (hit.transform.gameObject.GetComponent<FullControl>() != null)
-            {
-                //Debug.Log(hit.transform.gameObject.GetComponent<FullControl>().selfNumber);
-                int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().selfNumber;
-                //CmdFire(playerTouched);
-            }
-
-        }
-    }
-    
-
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
@@ -310,29 +293,36 @@ public class FullControl : NetworkBehaviour
             {
                 //Debug.Log(hit.transform.gameObject.GetComponent<FullControl>().selfNumber);
                 int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().selfNumber;
-                ClientFire(playerTouched);
+                int shooter = selfNumber;
+                ClientFire(shooter, playerTouched);
             }
         }
     }
 
     [ClientRpc]
-    void ClientFire(int playerTouched)
+    void ClientFire(int shooter, int playerTouched)
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
         {
-            if(child.GetComponent<FullControl>().selfNumber == playerTouched)
+            if (child.GetComponent<FullControl>().isLocal)
             {
 
-                bool kill = child.GetComponent<Health>().TakeDamage(20);
-
-                if (kill) //Si y a kill le joueur redescend
+                if (child.GetComponent<FullControl>().selfNumber == playerTouched)
                 {
 
-                    child.GetComponent<ZoneLimitations>().upState();
+                    bool kill = child.GetComponent<Health>().TakeDamage(20);
+
+                    if (kill) //Si y a kill le joueur redescend
+                    {
+                        child.GetComponent<Health>().KillManager(shooter, playerTouched);
+                        child.GetComponent<ZoneLimitations>().UpState();
+                    }
                 }
+
             }
+            
         }
     }
 

@@ -24,14 +24,11 @@ public class Bullet : NetworkBehaviour
             if (hit.GetComponent<FullControl>().isLocal)
             {
                 var ZLScript = hit.GetComponent<ZoneLimitations>();
-                bool kill = health.TakeDamage(10);
+                bool kill = health.TakeDamage(70);
 
                 if (kill) //Si y a kill le joueur redescend
                 {
-                    ZLScript.upState();
-                    ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation
-                    //ZLScript.state++;
-                    //ZLScript.UpdateZone();
+                    ZLScript.UpState();
                     GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
                     foreach (GameObject child in characters)
@@ -46,7 +43,7 @@ public class Bullet : NetworkBehaviour
                 }
             }
         }
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
 

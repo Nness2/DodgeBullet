@@ -184,7 +184,7 @@ public class ZoneLimitations : NetworkBehaviour
             bool kill = health.TakeDamage(damages);
             if (kill)
             {
-                upState();
+                UpState();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation, peut etre ajouter un rst
                 //state++;
                 //UpdateZone();
@@ -196,7 +196,7 @@ public class ZoneLimitations : NetworkBehaviour
     }
 
     [Command] //Appelé par le client mais lu par le serveur
-    public void upState()
+    public void UpState()
     {
         state++;
     }
@@ -208,7 +208,7 @@ public class ZoneLimitations : NetworkBehaviour
         DownState();
     }
     
-    //[TargetRpc] //Appelé par le client mais lu par le serveur
+    [TargetRpc] 
     public void DownState()
     {
         state--;
