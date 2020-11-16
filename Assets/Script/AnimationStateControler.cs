@@ -26,17 +26,21 @@ public class AnimationStateControler : NetworkBehaviour
         {
             int upDateState = 0;
 
-            if (Input.GetKey("w"))
-                upDateState = 1;
-
-            if (Input.GetKey("d"))
-                upDateState = 3;
-
-            if (Input.GetKey("w") && Input.GetKey("d"))
+            if (Input.GetKey("a") && Input.GetKey("w"))
                 upDateState = 5;
 
-            if (Input.GetKey("space"))
+            else if (Input.GetKey("space"))
                 upDateState = 9;
+
+            else if (Input.GetKey("w"))
+                upDateState = 1;
+
+            else if (Input.GetKey("d"))
+                upDateState = 3;
+
+
+            else
+                upDateState = 0;
 
             if (state != upDateState)
             {
