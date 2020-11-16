@@ -120,13 +120,22 @@ public class FullControl : NetworkBehaviour
 
         Jump();
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            Vector3 position = cam.transform.position;
+            Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+            CmdBallFire(selfNumber, position, forward);
+
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-            CmdFire(selfNumber, position, forward);
+            CmdFire(position, forward);
 
         }
+
 
         transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
         transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, transform.eulerAngles.z);
@@ -207,14 +216,18 @@ public class FullControl : NetworkBehaviour
 
     }
 
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdFire(int nb, Vector3 position, Vector3 forward)
+    void CmdBallFire(int nb, Vector3 position, Vector3 forward)
     {
-        ClientFire(nb, position, forward);
+        ClientBallFire(nb, position, forward);
     }
 
     [ClientRpc]
-    void ClientFire(int nb, Vector3 position, Vector3 forward)
+    void ClientBallFire(int nb, Vector3 position, Vector3 forward)
     {
         //Transform camInfo = CamInfo;
         var bullet = (GameObject)Instantiate(
@@ -246,8 +259,87 @@ public class FullControl : NetworkBehaviour
         Destroy(bullet, 10.0f);
     }
 
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
+    ////////////BALLFIRE///////////
+    
 
 
+    ////////////FIRE///////////
+    ////////////FIRE///////////
+    ////////////FIRE///////////
+    ////////////FIRE///////////
+    void Fire(Vector3 position, Vector3 forward)
+    {
+        int layerMask = 1 << 8;
+        RaycastHit hit;
+
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
+        {
+            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.Log(hit.point);
+            //Vector3 dir = hit.point - bullet.transform.position;
+            //dir = dir.normalized;
+            //bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
+            if (hit.transform.gameObject.GetComponent<FullControl>() != null)
+            {
+                //Debug.Log(hit.transform.gameObject.GetComponent<FullControl>().selfNumber);
+                int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().selfNumber;
+                //CmdFire(playerTouched);
+            }
+
+        }
+    }
+    
+
+    [Command]
+    void CmdFire(Vector3 position, Vector3 forward)
+    {
+        int layerMask = 1 << 8;
+        RaycastHit hit;
+
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
+        {
+            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.Log(hit.point);
+            //Vector3 dir = hit.point - bullet.transform.position;
+            //dir = dir.normalized;
+            //bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
+            if (hit.transform.gameObject.GetComponent<FullControl>() != null)
+            {
+                //Debug.Log(hit.transform.gameObject.GetComponent<FullControl>().selfNumber);
+                int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().selfNumber;
+                ClientFire(playerTouched);
+            }
+        }
+    }
+
+    [ClientRpc]
+    void ClientFire(int playerTouched)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if(child.GetComponent<FullControl>().selfNumber == playerTouched)
+            {
+
+                bool kill = child.GetComponent<Health>().TakeDamage(20);
+
+                if (kill) //Si y a kill le joueur redescend
+                {
+
+                    child.GetComponent<ZoneLimitations>().upState();
+                }
+            }
+        }
+    }
+
+    ////////////FIRE///////////
+    ////////////FIRE///////////
+    ////////////FIRE///////////
+    ////////////FIRE///////////
 
     void teamManager()
     {
