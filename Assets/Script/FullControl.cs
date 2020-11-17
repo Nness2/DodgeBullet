@@ -127,7 +127,7 @@ public class FullControl : NetworkBehaviour
         {
             if (GotBall)
             {
-                GotBall = false;
+                GotBall = true;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
                 CmdBallFire(selfNumber, position, forward);
@@ -169,38 +169,12 @@ public class FullControl : NetworkBehaviour
             return;
         if (cmptPlayers() != playerNumber)
         {
-
-            ////// L'ip de chaque joeur devrait être update automatiquement grace à la valeur sync mais ce n'est pas le cas quand un joeur arrive les precedants ne reccup pas la bonne valeur
-            ///// Solution de debug à corriger
-            /*GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-
-            foreach (GameObject child in characters)
-            {
-                if (child.GetComponent<FullControl>().selfNumber == 0)
-                {
-                    child.GetComponent<FullControl>().selfNumber = cmptPlayers();
-                }
-            }*/
-            //////
-            ///
-            //selfNumber = selfNumber;
             teamManager();
             playerNumber = cmptPlayers();
             
         }
     }
-
-
-
-    /*private void MovePlayer()
-    {
-        _move = transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical");
-        _move *= speed * Time.deltaTime;
-
-        controller.Move(_move);
-    }*/
-
-
+    
     private void Jump()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -222,10 +196,7 @@ public class FullControl : NetworkBehaviour
 
     }
 
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
+    #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur
     void CmdBallFire(int nb, Vector3 position, Vector3 forward)
     {
@@ -252,7 +223,7 @@ public class FullControl : NetworkBehaviour
             //Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
+            bullet.GetComponent<Rigidbody>().AddForce(dir * 20000);
         }
         else
         {
@@ -265,17 +236,9 @@ public class FullControl : NetworkBehaviour
         //Destroy(bullet, 10.0f);
     }
 
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
-    ////////////BALLFIRE///////////
-    
+#endregion
 
-
-    ////////////FIRE///////////
-    ////////////FIRE///////////
-    ////////////FIRE///////////
-    ////////////FIRE///////////
+    #region Unity Shoot
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
@@ -316,8 +279,15 @@ public class FullControl : NetworkBehaviour
 
                     if (kill) //Si y a kill le joueur redescend
                     {
-                        child.GetComponent<Health>().KillManager(shooter, playerTouched);
+
+                        
+                        if (!GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill) //Si permier kill, on donne la balle et on bloque  
+                            child.GetComponent<Health>().KillManager(shooter, playerTouched, true);
+                        else
+                            child.GetComponent<Health>().KillManager(shooter, playerTouched, false);
+
                         child.GetComponent<ZoneLimitations>().UpState();
+                        
                     }
                 }
 
@@ -325,11 +295,25 @@ public class FullControl : NetworkBehaviour
             
         }
     }
+#endregion
 
-    ////////////FIRE///////////
-    ////////////FIRE///////////
-    ////////////FIRE///////////
-    ////////////FIRE///////////
+    #region Unity FirstKill
+
+    [Command]
+    void CmdFirstKill()
+    {
+        ClientFirstKill();
+    }
+
+    [ClientRpc]
+    void ClientFirstKill()
+    {
+        Debug.Log("Il y a eu un kill.");
+        //GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill = true;
+    }
+
+    #endregion
+
 
     void teamManager()
     {
@@ -390,10 +374,4 @@ public class FullControl : NetworkBehaviour
         selfNumber = newValue;
     }
 
-    /*IEnumerator LoadTeam()
-    {
-        yield return new WaitForSeconds(5f);
-        teamManager();
-        Debug.Log(cmptPlayers());
-    }*/
 }

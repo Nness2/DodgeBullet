@@ -26,6 +26,8 @@ TagManager:
   - Bullet
   - NotLocalPlayer
   - 3DModel
+  - GameManager
+  - GroundField
   layers:
   - Default
   - TransparentFX

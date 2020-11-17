@@ -8,17 +8,23 @@ public class Bullet : NetworkBehaviour
     // Start is called before the first frame update
     [SyncVar(hook = nameof(OnChangePlayer))]
     public int player;
+    public bool touchedGround;
+
 
     private void Start()
     {
-        //player = 1;
+        touchedGround = false;
 
     }
     void OnCollisionEnter(Collision collision)
     {
+        
         var hit = collision.gameObject;
         var health = hit.GetComponent<Health>();
 
+        if (touchedGround)
+            return;
+       
         if (health != null)
         {
             if (hit.GetComponent<FullControl>().isLocal)
@@ -37,13 +43,41 @@ public class Bullet : NetworkBehaviour
                         {
                             int killer = child.GetComponent<FullControl>().selfNumber;
                             int killed = hit.GetComponent<FullControl>().selfNumber;
-                            health.KillManager(killer, killed);
+                            health.KillManager(killer, killed, false);
+                            Destroy(gameObject);
                         }
                     }
                 }
             }
+            return;
+        }
+        if (hit.tag == "GroundField")
+        {
+            touchedGround = true;
+            return;
         }
         //Destroy(gameObject);
+    }
+
+    private void FixedUpdate()
+    {
+        PickUp();
+    }
+
+    void PickUp()
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            float distance = Vector3.Distance(child.transform.position, transform.position);
+            if(touchedGround)
+            {
+                if (distance <= 2)
+                {
+                    Destroy(gameObject);
+                }
+            }
+        }
     }
 
 

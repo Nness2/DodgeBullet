@@ -69,19 +69,21 @@ public class Health : NetworkBehaviour
     }*/
     
 
-    public void KillManager(int killer, int killed)  // à appeler quand il y a une mecanique de kills
+    public void KillManager(int killer, int killed, bool firstKill)  // à appeler quand il y a une mecanique de kills
     {
         if (!isLocalPlayer)
             return;
-        CmdKillNotification(killer, killed);
+        CmdKillNotification(killer, killed, firstKill);
     }
 
     //On peut modifier la valeur d'un local en modiffient son player depuis le serveur.
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdKillNotification(int killer, int killed) 
+    void CmdKillNotification(int killer, int killed, bool firstKill) 
     {
         //propagateInfos(killer, killed);
         Debug.Log("Killer = " + killer + " - Killed = " + killed);
+        if (firstKill)
+            ClientFirstKill(killer);
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -100,13 +102,20 @@ public class Health : NetworkBehaviour
         }
     }
 
-    /*[ClientRpc] 
-    void propagateInfos(int killer, int killed)
+    [ClientRpc] 
+    void ClientFirstKill(int killer)  
     {
-        Debug.Log("Killer = " + killer + " - Killed = " + killed);
-        //if (!isLocalPlayer)
-        //    return;
-        //Debug.Log("i'm " + GetComponent<FullControl>().selfNumber);
-    }*/
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill = true;
+
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().selfNumber == killer)
+            {
+                child.GetComponent<FullControl>().GotBall = true;
+            }
+        }
+    }
 
 }
