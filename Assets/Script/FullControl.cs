@@ -47,6 +47,8 @@ public class FullControl : NetworkBehaviour
 
     public bool GotBall;
 
+
+
     void Start()
     {
         
@@ -56,7 +58,7 @@ public class FullControl : NetworkBehaviour
         if (isLocalPlayer)
         {
 
-            GotBall = true;
+            GotBall = false;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -127,7 +129,7 @@ public class FullControl : NetworkBehaviour
         {
             if (GotBall)
             {
-                GotBall = true;
+                GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
                 CmdBallFire(selfNumber, position, forward);
@@ -163,6 +165,8 @@ public class FullControl : NetworkBehaviour
 
     }
 
+
+
     private void FixedUpdate()
     {
         if (!isLocalPlayer)
@@ -175,6 +179,8 @@ public class FullControl : NetworkBehaviour
         }
     }
     
+
+
     private void Jump()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -196,6 +202,8 @@ public class FullControl : NetworkBehaviour
 
     }
 
+
+
     #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur
     void CmdBallFire(int nb, Vector3 position, Vector3 forward)
@@ -203,7 +211,7 @@ public class FullControl : NetworkBehaviour
         ClientBallFire(nb, position, forward);
     }
 
-    [ClientRpc]
+    //[ClientRpc]
     void ClientBallFire(int nb, Vector3 position, Vector3 forward)
     {
         //Transform camInfo = CamInfo;
@@ -227,16 +235,21 @@ public class FullControl : NetworkBehaviour
         }
         else
         {
+            Debug.Log("WRONNG");
             bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
 
-        //NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         bullet.GetComponent<Bullet>().player = nb;
         //Destroy(bullet, 10.0f);
     }
 
+
+
 #endregion
+
+
 
     #region Unity Shoot
     [Command]
@@ -297,8 +310,10 @@ public class FullControl : NetworkBehaviour
     }
 #endregion
 
-    #region Unity FirstKill
 
+
+    #region Unity FirstKill
+    //NON UTILISE
     [Command]
     void CmdFirstKill()
     {
@@ -308,7 +323,6 @@ public class FullControl : NetworkBehaviour
     [ClientRpc]
     void ClientFirstKill()
     {
-        Debug.Log("Il y a eu un kill.");
         //GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill = true;
     }
 
@@ -357,11 +371,15 @@ public class FullControl : NetworkBehaviour
         }
     }
 
+
+
     int cmptPlayers()
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         return characters.Length;
     }
+
+
 
     [Command] //Appelé par le client mais lu par le serveur
     void InitSelfNb(int nb)
@@ -369,9 +387,32 @@ public class FullControl : NetworkBehaviour
         selfNumber = nb;
     }
 
+
+
     void OnChangeNumber(int oldValue, int newValue)
     {
         selfNumber = newValue;
     }
 
+    #region PickUp
+    [Command]
+    public void CmdPickUp(int plyr)
+    {
+        ClientPickUp(plyr);
+    }
+
+    [ClientRpc]
+    void ClientPickUp(int plyr)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().selfNumber == plyr)
+            {
+                child.GetComponent<FullControl>().GotBall = true;
+            }
+        }
+
+    }
+    #endregion
 }

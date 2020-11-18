@@ -44,7 +44,7 @@ public class Bullet : NetworkBehaviour
                             int killer = child.GetComponent<FullControl>().selfNumber;
                             int killed = hit.GetComponent<FullControl>().selfNumber;
                             health.KillManager(killer, killed, false);
-                            Destroy(gameObject);
+                            //Destroy(gameObject);
                         }
                     }
                 }
@@ -74,11 +74,18 @@ public class Bullet : NetworkBehaviour
             {
                 if (distance <= 2)
                 {
+
+                    
+                    int player = child.GetComponent<FullControl>().selfNumber;
+                    child.GetComponent<FullControl>().CmdPickUp(player);
                     Destroy(gameObject);
                 }
             }
         }
     }
+
+
+
 
 
     void OnChangePlayer(int oldValue, int newValue)
