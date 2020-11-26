@@ -32,6 +32,9 @@ public class FullControl : NetworkBehaviour
     [SerializeField]
     private Vector3 velocity; // for falling speed
 
+    //FireVFX
+    public GameObject bulletVFXPrefab;
+
     //Fire  
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
@@ -142,6 +145,7 @@ public class FullControl : NetworkBehaviour
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+            CmdFireVFX(selfNumber, position);
             CmdFire(position, forward);
 
         }
@@ -204,7 +208,32 @@ public class FullControl : NetworkBehaviour
 
     }
 
+    #region Unity FireVFXBall
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdFireVFX(int nb, Vector3 position)
+    {
+        ClientFireVFX(nb, position);
+    }
 
+    //[ClientRpc]
+    void ClientFireVFX(int nb, Vector3 position)
+    {
+        //Transform camInfo = CamInfo;
+        var bullet = (GameObject)Instantiate(
+            bulletVFXPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+
+        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+        bullet.GetComponent<FireVFX>().player = nb;
+
+        Destroy(bullet, 0.1f);
+    }
+
+
+
+    #endregion
 
     #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur

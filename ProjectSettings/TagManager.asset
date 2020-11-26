@@ -30,6 +30,7 @@ TagManager:
   - GroundField
   - name
   - killManager
+  - BallPose
   layers:
   - Default
   - TransparentFX

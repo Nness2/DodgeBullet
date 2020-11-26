@@ -10,9 +10,24 @@ public class AnimationStateControler : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeState))]
     public int state;
     private int currentState;
+
+    bool isRunning;
+    bool currentRunnig;
+
+    //sound
+    private AudioSource[] mySounds;
+    private AudioSource RunSd;
+
     // Start is called before the first frame update
     void Start()
     {
+        isRunning = false;
+        currentRunnig = false;
+        mySounds = GetComponents<AudioSource>();
+        RunSd = mySounds[0];
+
+
+
         currentState = 0;
         state = 0;
         animator = player.GetComponent<Animator>();
@@ -62,10 +77,27 @@ public class AnimationStateControler : NetworkBehaviour
                 else
                     upDateState = 0;
 
+                
+
                 if (state != upDateState)
                 {
                     CmdUpdateState(upDateState);
                     state = upDateState;
+                }
+
+                if (state > 0 && state < 9)
+                    isRunning = true;
+                else
+                    isRunning = false;
+
+                if (currentRunnig != isRunning)
+                {
+                    currentRunnig = isRunning;
+                    if (isRunning)
+                        RunSd.Play();
+                    else
+                        RunSd.Stop();
+
                 }
 
             }
