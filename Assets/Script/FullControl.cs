@@ -27,7 +27,7 @@ public class FullControl : NetworkBehaviour
     public Transform groundCheck;
     public float groundDistance = 0.1f;
     public LayerMask groundMask;
-    private bool isGrounded;
+    public bool isGrounded;
     private Vector3 _move;
     [SerializeField]
     private Vector3 velocity; // for falling speed
@@ -45,9 +45,10 @@ public class FullControl : NetworkBehaviour
 
     public bool isLocal;
 
+    [SyncVar(hook = nameof(OnChangeGotBall))]
     public bool GotBall;
 
-
+    public int killNbr;
 
     void Start()
     {
@@ -55,6 +56,7 @@ public class FullControl : NetworkBehaviour
         playerNumber = 0;
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
+        killNbr = 0;
         if (isLocalPlayer)
         {
 
@@ -114,7 +116,7 @@ public class FullControl : NetworkBehaviour
 
     }
 
-
+        
 
     // Update is called once per frame
     void Update()
@@ -147,7 +149,7 @@ public class FullControl : NetworkBehaviour
 
         transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
         transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, transform.eulerAngles.z);
-        gun.transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
+        //gun.transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -231,7 +233,7 @@ public class FullControl : NetworkBehaviour
             //Debug.Log(hit.point);
             Vector3 dir = hit.point - bullet.transform.position;
             dir = dir.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(dir * 20000);
+            bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
         }
         else
         {
@@ -412,7 +414,15 @@ public class FullControl : NetworkBehaviour
                 child.GetComponent<FullControl>().GotBall = true;
             }
         }
+        GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
+        Destroy(ball);
+    }
 
+    void OnChangeGotBall(bool oldValue, bool newValue)
+    {
+        GotBall = newValue;
     }
     #endregion
+
+
 }

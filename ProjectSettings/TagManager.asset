@@ -28,6 +28,8 @@ TagManager:
   - 3DModel
   - GameManager
   - GroundField
+  - name
+  - killManager
   layers:
   - Default
   - TransparentFX

@@ -39,6 +39,7 @@ public class Health : NetworkBehaviour
             currentHealth = 100;
             //ZL.UpdateZone();
             //Debug.Log("Dead");
+
             isDead = true;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 public class Bullet : NetworkBehaviour
 {
@@ -34,6 +35,10 @@ public class Bullet : NetworkBehaviour
 
                 if (kill) //Si y a kill le joueur redescend
                 {
+                    //UpCounter
+                    //var FC = GetComponent<FullControl>().killNbr++;
+                    //GameObject.FindGameObjectWithTag("killManager").GetComponent<Text>().text = GetComponent<FullControl>().killNbr.ToString();
+
                     ZLScript.UpState();
                     GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
@@ -78,7 +83,7 @@ public class Bullet : NetworkBehaviour
                     
                     int player = child.GetComponent<FullControl>().selfNumber;
                     child.GetComponent<FullControl>().CmdPickUp(player);
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
                 }
             }
         }
