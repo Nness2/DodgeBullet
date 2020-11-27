@@ -21,7 +21,6 @@ public class FireVFX : NetworkBehaviour
                 {
                     if (child2.CompareTag("BallPose"))
                     {
-                        var r = 0;
                         gameObject.transform.parent = child2.transform;
 
                     }

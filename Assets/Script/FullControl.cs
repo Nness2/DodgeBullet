@@ -78,24 +78,23 @@ public class FullControl : NetworkBehaviour
                 }
             }
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
             selfNumber = cmptPlayers();
             InitSelfNb(cmptPlayers());
-            teamManager();
+            //teamManager();
 
             //Set Position
-            controller.enabled = false;
+            /*controller.enabled = false;
             if (selfNumber % 2 == 1)
                 transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
 
             else
                 transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
             controller.enabled = true;
-
+            */
 
 
         }
@@ -107,7 +106,7 @@ public class FullControl : NetworkBehaviour
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
             {
-                //Destroy(child.gameObject.GetComponent<CharacterController>());
+                Destroy(child.gameObject.GetComponent <GameInfos>());
                 //Destroy(child.gameObject.GetComponent<Health>());
                 if (child.CompareTag("Untagged"))
                 {
@@ -188,7 +187,7 @@ public class FullControl : NetworkBehaviour
             return;
         if (cmptPlayers() != playerNumber)
         {
-            teamManager();
+            //teamManager();
             playerNumber = cmptPlayers();
             
         }
@@ -380,7 +379,7 @@ public class FullControl : NetworkBehaviour
     #endregion
 
 
-    void teamManager()
+    public void teamManager(bool isBlue)
     {
 
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
@@ -389,7 +388,7 @@ public class FullControl : NetworkBehaviour
         {
             var childFC = child.GetComponent<FullControl>();
             var ZL = child.GetComponent<ZoneLimitations>();
-            if (childFC.selfNumber % 2 == 1)
+            if (isBlue)
             {
                 ZL.teamBlue = true;
                     
@@ -420,6 +419,14 @@ public class FullControl : NetworkBehaviour
             }
 
         }
+
+        controller.enabled = false;
+        if (isBlue)
+            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+
+        else
+            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+        controller.enabled = true;
     }
 
 
@@ -473,5 +480,16 @@ public class FullControl : NetworkBehaviour
     }
     #endregion
 
-
+    //Canvas team 
+    public void MouseLock(bool Lock)
+    {
+        if (!Lock)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+            Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 }
