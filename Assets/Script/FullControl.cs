@@ -130,6 +130,15 @@ public class FullControl : NetworkBehaviour
 
         Jump();
 
+
+        Vector3 posit = cam.transform.position;
+        Vector3 forwa = cam.transform.TransformDirection(Vector3.forward);
+        int layerMask = 1 << 8;
+        RaycastHit hit;
+        Physics.Raycast(posit, forwa, out hit, Mathf.Infinity, layerMask);
+        Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+        
+
         if (Input.GetMouseButtonDown(1))
         {
             if (GotBall)
@@ -137,7 +146,7 @@ public class FullControl : NetworkBehaviour
                 GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                CmdBallFire(selfNumber, position, forward);
+                BallFire(selfNumber, position, forward);
             }
         }
 
@@ -215,7 +224,7 @@ public class FullControl : NetworkBehaviour
         ClientFireVFX(nb, position);
     }
 
-    //[ClientRpc]
+    [ClientRpc]
     void ClientFireVFX(int nb, Vector3 position)
     {
         //Transform camInfo = CamInfo;
@@ -225,7 +234,7 @@ public class FullControl : NetworkBehaviour
             bulletSpawn.rotation);
 
 
-        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+        //NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
         bullet.GetComponent<FireVFX>().player = nb;
 
         Destroy(bullet, 0.1f);
@@ -235,46 +244,57 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    #region Unity BallKill
-    [Command] //Appelé par le client mais lu par le serveur
-    void CmdBallFire(int nb, Vector3 position, Vector3 forward)
+    void BallFire(int nb, Vector3 position, Vector3 forward)
     {
-        ClientBallFire(nb, position, forward);
-    }
-
-    //[ClientRpc]
-    void ClientBallFire(int nb, Vector3 position, Vector3 forward)
-    {
-        //Transform camInfo = CamInfo;
-        var bullet = (GameObject)Instantiate(
-            bulletPrefab,
-            bulletSpawn.position,
-            bulletSpawn.rotation);
-
-        
-
         int layerMask = 1 << 8;
         RaycastHit hit;
-
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask)) 
+        Vector3 dir;
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
         {
             //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.point);
-            Vector3 dir = hit.point - bullet.transform.position;
+            dir = hit.point - bulletSpawn.position;
             dir = dir.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
+            //bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
         }
         else
         {
             Debug.Log("WRONNG");
-            bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+            dir = Vector3.zero;
+            //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
+
+        CmdBallFire(nb, dir);
+    }
+
+
+    #region Unity BallKill
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdBallFire(int nb, Vector3 dir)
+    {
+        var bullet = (GameObject)Instantiate(
+        bulletPrefab,
+        bulletSpawn.position,
+        bulletSpawn.rotation);
+
+        bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
+
+        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        bullet.GetComponent<Bullet>().player = nb;
+    }
+
+    //[ClientRpc]
+    /*void ClientBallFire(int nb, Vector3 position, Vector3 forward)
+    {
+        //Transform camInfo = CamInfo;
+        
 
         NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         bullet.GetComponent<Bullet>().player = nb;
         //Destroy(bullet, 10.0f);
-    }
+    }*/
 
 
 
