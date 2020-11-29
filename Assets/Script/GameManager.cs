@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         LocalName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
-        Debug.Log(LocalName);
+        //Debug.Log(LocalName);
         firstKill = false;
 
     }

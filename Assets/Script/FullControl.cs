@@ -62,7 +62,7 @@ public class FullControl : NetworkBehaviour
         killNbr = 0;
         if (isLocalPlayer)
         {
-
+            GetComponent<GameInfos>().addGetNames();
             GotBall = false;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
@@ -106,7 +106,7 @@ public class FullControl : NetworkBehaviour
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
             {
-                Destroy(child.gameObject.GetComponent <GameInfos>());
+                //Destroy(child.gameObject.GetComponent <GameInfos>());
                 //Destroy(child.gameObject.GetComponent<Health>());
                 if (child.CompareTag("Untagged"))
                 {
@@ -126,6 +126,9 @@ public class FullControl : NetworkBehaviour
 
         if (!isLocalPlayer)
             return;
+        if (GetComponent<GameInfos>().selfColor == 0)
+            return;
+
 
         Jump();
 
@@ -489,7 +492,11 @@ public class FullControl : NetworkBehaviour
             Cursor.visible = true;
         }
         else
+        {
             Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+            Cursor.visible = false;
+
+        }
+
     }
 }
