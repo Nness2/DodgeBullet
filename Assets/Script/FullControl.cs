@@ -188,9 +188,11 @@ public class FullControl : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
+
         if (cmptPlayers() != playerNumber)
         {
-            //teamManager();
+            var ZL = GetComponent<ZoneLimitations>();
+            //teamManager(ZL.teamBlue);
             playerNumber = cmptPlayers();
             
         }
@@ -384,24 +386,58 @@ public class FullControl : NetworkBehaviour
 
     public void teamManager(bool isBlue)
     {
+        var ZL = GetComponent<ZoneLimitations>();
+
+        if (isBlue)
+        {
+            ZL.teamBlue = true; //Edit en direct ou le joueur prend des degats psq trop long
+            CmdChangeTeam(true);
+
+        }
+
+        else
+        {
+            ZL.teamBlue = false; //Edit en direct ou le joueur prend des degats psq trop long
+            CmdChangeTeam(false);
+
+        }
+
+        controller.enabled = false;
+
+        if (isBlue)
+            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+        else
+            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+
+        controller.enabled = true;
+    }
+
+    //Edit sur le server pour syncroniser, besoin pour color manager
+    [Command]
+    void CmdChangeTeam(bool blueTeam)
+    {
+        var ZL = GetComponent<ZoneLimitations>();
+        ZL.teamBlue = blueTeam;
+    }
+
+    public void ColorManager()
+    {
+
 
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
         {
-            var childFC = child.GetComponent<FullControl>();
             var ZL = child.GetComponent<ZoneLimitations>();
-            if (isBlue)
+            if (ZL.teamBlue)
             {
-                ZL.teamBlue = true;
-                    
                 Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
                 foreach (Transform child2 in ColorChildren)
                 {
 
                     if (child2.CompareTag("Body"))
                     {
-                        
+
                         child2.transform.GetComponent<SkinnedMeshRenderer>().material.color = Color.blue;
                     }
                 }
@@ -409,7 +445,6 @@ public class FullControl : NetworkBehaviour
 
             else
             {
-                ZL.teamBlue = false;
                 Transform[] ColorChildren = child.GetComponentsInChildren<Transform>();
                 foreach (Transform child2 in ColorChildren)
                 {
@@ -422,17 +457,7 @@ public class FullControl : NetworkBehaviour
             }
 
         }
-
-        controller.enabled = false;
-        if (isBlue)
-            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
-
-        else
-            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
-        controller.enabled = true;
     }
-
-
 
     int cmptPlayers()
     {

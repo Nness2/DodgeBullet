@@ -16,7 +16,7 @@ public class ZoneLimitations : NetworkBehaviour
     private List<GameObject> BlueSpawnsZone = new List<GameObject>();
     private List<GameObject> RedSpawnsZone = new List<GameObject>();
 
-
+    [SyncVar(hook = nameof(OnChangeState))]
     public bool teamBlue;
     [SyncVar(hook = nameof(OnChangeState))]
     public int state;
@@ -217,6 +217,11 @@ public class ZoneLimitations : NetworkBehaviour
     void OnChangeState(int oldValue, int newValue)
     {
         state = newValue;
+    }
+
+    void OnChangeState(bool oldValue, bool newValue)
+    {
+        teamBlue = newValue;
     }
 
 }

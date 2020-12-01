@@ -13,12 +13,7 @@ public class SaveName : MonoBehaviour
     {
         DontDestroyOnLoad(transform.gameObject);
     }
-
-    /*public void editName()
-    {
-        PlayerName = text.GetComponent<Text>().text;
-    }*/
-
+    
     public void GameEnter()
     {
         PlayerName = text.GetComponent<Text>().text;

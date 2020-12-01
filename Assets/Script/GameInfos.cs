@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Text.RegularExpressions;
 
 public class GameInfos : NetworkBehaviour
 {
@@ -11,9 +12,7 @@ public class GameInfos : NetworkBehaviour
     public int teamSize;
 
     public int selfColor;
-    public int selfPosition;
     public string selfName;
-    public string realName;
 
     public Canvas canvas;
 
@@ -41,7 +40,6 @@ public class GameInfos : NetworkBehaviour
     {
         nameChecked = false;
         teamSize = 3;
-        selfPosition = -1;
         selfColor = (int)Color.None;
         teamsReady = false;
         BlueTeam = new List<string>();
@@ -49,7 +47,7 @@ public class GameInfos : NetworkBehaviour
         
         callMe = true;
         selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
-        realName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+
 
     }
 
@@ -97,16 +95,6 @@ public class GameInfos : NetworkBehaviour
 
 
 
-    void OnChangeBlueList(List<string> oldValue, List<string> newValue)
-    {
-        BlueTeam = newValue;
-    }
-    void OnChangeRedList(List<string> oldValue, List<string> newValue)
-    {
-        RedTeam = newValue;
-    }
-
-
 
 
     void AddText()
@@ -149,12 +137,12 @@ public class GameInfos : NetworkBehaviour
         if (!isBlue && RedTeam.Count >= 3)
             return;
            */
-        CmdaddMyName(isBlue, selfName, selfColor, selfPosition);
+        CmdaddMyName(isBlue, selfName, selfColor);
     }
 
 
     [Command]
-    public void CmdaddMyName(bool isBlue, string name, int targetColor, int targetPos)
+    public void CmdaddMyName(bool isBlue, string name, int targetColor)
     {
 
 
@@ -171,15 +159,10 @@ public class GameInfos : NetworkBehaviour
                 if (isBlue)
                 {
                     gameInfos.BlueTeam.Add(name);
-                    //gameInfos.selfPosition = gameInfos.BlueTeam.Count;
-                    TargetAttributeListPosition(gameInfos.BlueTeam.Count);
                 }
                 else
                 {
                     gameInfos.RedTeam.Add(name);
-                    //gameInfos.selfPosition = gameInfos.RedTeam.Count;
-                    TargetAttributeListPosition(gameInfos.RedTeam.Count);
-
                 }
 
 
@@ -188,31 +171,15 @@ public class GameInfos : NetworkBehaviour
 
             }
         }
+        ClientColorManager();
     }
 
     [ClientRpc]
-    public void ClientaddMyName(List<string> newBlueTeam, List<string> newRedTeam)
+    public void ClientColorManager()
     {
-
-        BlueTeam = newBlueTeam;
-        RedTeam = newRedTeam;
-        callMe = true;
+        GetComponent<FullControl>().ColorManager();
     }
 
-    [TargetRpc]
-    public void TargetAttributeListPosition(int pos)
-    {
-        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-        foreach (GameObject child in characters)
-        {
-            if (child.GetComponent<FullControl>().isLocal)
-            {
-                var gameinfo = child.GetComponent<GameInfos>();
-                gameinfo.selfPosition = pos;
-
-            }
-        }
-    }
     #endregion
 
 
@@ -278,7 +245,9 @@ public class GameInfos : NetworkBehaviour
                 gameinfo.RedTeam = newRedTeam;
                 gameinfo.callMe = true;
             }
+
         }
+
     }
 
     void removeChangeTeam(List<string> newBlueTeam, List<string> newRedTeam, int color, string name)
@@ -305,19 +274,27 @@ public class GameInfos : NetworkBehaviour
 
         foreach (string child in BlueTeam)
         {
-            if (child == realName)
+            if (Regex.IsMatch(child, @"^" + selfName + " [0-9]+") || Regex.IsMatch(child, @"^" + selfName))
             {
                 similarNbr++;
             }
+
+
+
         }
         foreach (string child in RedTeam)
         {
-            if (child == realName)
+            Debug.Log("child" + child);
+
+            if (Regex.IsMatch(child, @"^" + selfName + " [0-9]+") || Regex.IsMatch(child, @"^" + selfName))
             {
                 similarNbr++;
             }
         }
         if (similarNbr > 0)
             selfName = selfName + " " + similarNbr;
+        
+
     }
+
 }
