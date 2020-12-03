@@ -67,7 +67,10 @@ public class GameInfos : NetworkBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
+        {
             canvas.gameObject.SetActive(!canvas.gameObject.activeSelf);
+            GetComponent<FullControl>().MouseLock(!canvas.gameObject.activeSelf);
+        }
 
         if (callMe && !teamsReady)
         {
@@ -124,7 +127,10 @@ public class GameInfos : NetworkBehaviour
 
         //Premier join team on ferme le canvas
         if (selfColor == (int)Color.None)
+        {
             canvas.gameObject.SetActive(false);
+            GetComponent<FullControl>().MouseLock(true);
+        }
 
         //On dit à l'object la couleur dont il correspond
         if (isBlue)
