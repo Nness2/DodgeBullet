@@ -74,6 +74,7 @@ public class Health : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
+        
         CmdKillNotification(killer, killed, firstKill);
     }
 
@@ -89,8 +90,15 @@ public class Health : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
+            if (child.GetComponent<FullControl>().selfNumber == killed)
+            {
+                child.GetComponent<Stats>().selfDeath++;
+            }
+
             if (child.GetComponent<FullControl>().selfNumber == killer)
             {
+                child.GetComponent<Stats>().selfKill++;
+
                 if (!isServer)
                     return;
                 if (child.GetComponent<ZoneLimitations>().state == 0)

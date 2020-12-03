@@ -77,6 +77,7 @@ public class GameInfos : NetworkBehaviour
             {
                 teamsReady = true;
             }
+            CmdCallColorManager();
         }
 
         if (BlueTeam.Count >= teamSize || selfColor == (int)Color.Blue)
@@ -171,14 +172,9 @@ public class GameInfos : NetworkBehaviour
 
             }
         }
-        ClientColorManager();
     }
 
-    [ClientRpc]
-    public void ClientColorManager()
-    {
-        GetComponent<FullControl>().ColorManager();
-    }
+
 
     #endregion
 
@@ -247,6 +243,7 @@ public class GameInfos : NetworkBehaviour
             }
 
         }
+        //GetComponent<FullControl>().ColorManager();
 
     }
 
@@ -295,6 +292,24 @@ public class GameInfos : NetworkBehaviour
             selfName = selfName + " " + similarNbr;
         
 
+    }
+
+    [Command]
+    void CmdCallColorManager()
+    {
+        ClientCallColorManager();
+    }
+
+    [ClientRpc]
+    void ClientCallColorManager()
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if(child.GetComponent<FullControl>().isLocal)
+                GetComponent<FullControl>().ColorManager();
+        }
     }
 
 }

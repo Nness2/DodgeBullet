@@ -31,6 +31,8 @@ TagManager:
   - name
   - killManager
   - BallPose
+  - selfKill
+  - selfDeath
   layers:
   - Default
   - TransparentFX

@@ -16,7 +16,12 @@ public class SaveName : MonoBehaviour
     
     public void GameEnter()
     {
-        PlayerName = text.GetComponent<Text>().text;
-        SceneManager.LoadScene("BattleMap");
+        string name = text.GetComponent<Text>().text;
+        if (name.Length > 0)
+        {
+            PlayerName = name;
+            SceneManager.LoadScene("BattleMap");
+        }
+
     }
 }

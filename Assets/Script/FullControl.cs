@@ -194,6 +194,7 @@ public class FullControl : NetworkBehaviour
             var ZL = GetComponent<ZoneLimitations>();
             //teamManager(ZL.teamBlue);
             playerNumber = cmptPlayers();
+
             
         }
     }
@@ -412,7 +413,7 @@ public class FullControl : NetworkBehaviour
         controller.enabled = true;
     }
 
-    //Edit sur le server pour syncroniser, besoin pour color manager
+    //Edit sur le server pour synchroniser, besoin pour color manager
     [Command]
     void CmdChangeTeam(bool blueTeam)
     {
@@ -437,7 +438,6 @@ public class FullControl : NetworkBehaviour
 
                     if (child2.CompareTag("Body"))
                     {
-
                         child2.transform.GetComponent<SkinnedMeshRenderer>().material.color = Color.blue;
                     }
                 }
