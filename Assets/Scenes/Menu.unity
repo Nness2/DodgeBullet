@@ -655,18 +655,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 841870187}
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -740,7 +729,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72fbcdbb4e9216d4aa5c2a345080a91c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1009303853}
+  textName: {fileID: 1009303855}
+  InputText: {fileID: 1472823842}
   PlayerName: 
 --- !u!4 &1638770135
 Transform:
@@ -870,7 +860,7 @@ GameObject:
   - component: {fileID: 1914774394}
   - component: {fileID: 1914774393}
   m_Layer: 5
-  m_Name: Button
+  m_Name: JoinGameButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

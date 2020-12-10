@@ -11,6 +11,9 @@ public class AnimationStateControler : NetworkBehaviour
     public int state;
     private int currentState;
 
+    public float fastRun;
+    public float slowRun;
+
     bool isRunning;
     bool currentRunnig;
 
@@ -21,6 +24,8 @@ public class AnimationStateControler : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        fastRun = 15;
+        slowRun = 8;
         isRunning = false;
         currentRunnig = false;
         mySounds = GetComponents<AudioSource>();
@@ -37,8 +42,8 @@ public class AnimationStateControler : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isGround = GetComponent<FullControl>().isGrounded;
-
+        var FCScritp = GetComponent<FullControl>();
+        bool isGround = FCScritp.isGrounded;
 
         //Debug.Log(currentState);
         if (isLocalPlayer)
@@ -51,28 +56,56 @@ public class AnimationStateControler : NetworkBehaviour
                     upDateState = 9;
 
                 else if (Input.GetKey("a") && Input.GetKey("w"))
+                {
                     upDateState = 5;
+                    FCScritp.speed = fastRun;
+                }
 
-                else if (Input.GetKey("d") && Input.GetKey("w"))
+                else if (Input.GetKey("d") && Input.GetKey("w")) 
+                {
                     upDateState = 6;
+                    FCScritp.speed = fastRun;
+
+
+                }
 
                 else if (Input.GetKey("a") && Input.GetKey("s"))
+                {
                     upDateState = 7;
+                    FCScritp.speed = slowRun;
+                }
 
                 else if (Input.GetKey("d") && Input.GetKey("s"))
+                {
                     upDateState = 8;
+                    FCScritp.speed = slowRun;
+                }
 
                 else if (Input.GetKey("w"))
+                {
                     upDateState = 1;
+                    FCScritp.speed = fastRun;
+
+
+                }
 
                 else if (Input.GetKey("s"))
+                {
                     upDateState = 2;
+                    FCScritp.speed = slowRun;
+                }
 
                 else if (Input.GetKey("d"))
+                {
                     upDateState = 3;
+                    FCScritp.speed = slowRun;
+                }
 
                 else if (Input.GetKey("a"))
+                {
                     upDateState = 4;
+                    FCScritp.speed = slowRun;
+                }
 
                 else
                     upDateState = 0;

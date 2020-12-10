@@ -11,10 +11,10 @@ public class ZoneLimitations : NetworkBehaviour
     private GameObject RedPrison;
     private GameObject NeutreField1;
     private GameObject NeutreField2;*/
-    
+
     public CharacterController controller;
-    private List<GameObject> BlueSpawnsZone = new List<GameObject>();
-    private List<GameObject> RedSpawnsZone = new List<GameObject>();
+    private List<GameObject[]> BlueSpawnsZone = new List<GameObject[]>();
+    private List<GameObject[]> RedSpawnsZone = new List<GameObject[]>();
 
     [SyncVar(hook = nameof(OnChangeState))]
     public bool teamBlue;
@@ -35,15 +35,15 @@ public class ZoneLimitations : NetworkBehaviour
         {
             health = transform.GetComponent<Health>();
 
-            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BlueFieldSpawner"));
-            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("BluePrisonFieldSpawner"));
-            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
-            BlueSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectsWithTag("BlueFieldSpawner"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectsWithTag("BluePrisonFieldSpawner"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner1"));
+            BlueSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner2"));
 
-            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedFieldSpawner"));
-            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("RedPrisonFieldSpawner"));
-            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner2"));
-            RedSpawnsZone.Add(GameObject.FindGameObjectWithTag("NeutreFieldSpawner1"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("RedFieldSpawner"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("RedPrisonFieldSpawner"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner2"));
+            RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner1"));
         }
 
         
@@ -58,6 +58,9 @@ public class ZoneLimitations : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (!isLocalPlayer)
+            return;
+
         if (currentState != state)
         {
             UpdateZone();
@@ -157,24 +160,54 @@ public class ZoneLimitations : NetworkBehaviour
     
     public void UpdateZone()
     {
-        if (!isLocalPlayer)
-            return;
+
+        var GIScript = GetComponent<GameInfos>();
+        //foreach (string blueChild in child.GetComponent<GameInfos>().BlueTeam)
+        if (teamBlue)
+        {
+            for (int i = 0; i < GIScript.BlueTeam.Count; i++)
+            {
+                if (GIScript.BlueTeam[i].GetComponent<GameInfos>().selfName == GIScript.selfName)
+                {
+                    controller.enabled = false;
+                    transform.position = BlueSpawnsZone[state][i].transform.position;
+                    transform.rotation = BlueSpawnsZone[state][i].transform.localRotation;
+                    controller.enabled = true;
+                }
+            }
+        }
+                //foreach (string redChild in child.GetComponent<GameInfos>().RedTeam)
+        else //if (!teamBlue)
+        {
+            for (int i = 0; i < GIScript.RedTeam.Count; i++)
+            {
+                if (GIScript.RedTeam[i].GetComponent<GameInfos>().selfName == GIScript.selfName)
+                {
+                    controller.enabled = false;
+                    transform.position = RedSpawnsZone[state][i].transform.position;
+                    transform.rotation = RedSpawnsZone[state][i].transform.localRotation;
+                    controller.enabled = true;
+                }
+            }
+        }
+    }
+        /*
         if (teamBlue)
         {
             controller.enabled = false;
-            transform.position = BlueSpawnsZone[state].transform.position;
-            transform.rotation = BlueSpawnsZone[state].transform.localRotation;
+            transform.position = BlueSpawnsZone[state][0].transform.position;
+            transform.rotation = BlueSpawnsZone[state][0].transform.localRotation;
             controller.enabled = true;
         }
 
         if (!teamBlue)
         {
             controller.enabled = false;
-            transform.position = RedSpawnsZone[state].transform.position;
-            transform.rotation = RedSpawnsZone[state].transform.localRotation;
+            transform.position = RedSpawnsZone[state][0].transform.position;
+            transform.rotation = RedSpawnsZone[state][0].transform.localRotation;
             controller.enabled = true;
-        }
-    }
+        }*/
+    
 
     IEnumerator ZoneDamage(int damages)
     {

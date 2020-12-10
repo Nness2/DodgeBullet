@@ -12,6 +12,7 @@ public class GameInfos : NetworkBehaviour
     public int teamSize;
 
     public int selfColor;
+    [SyncVar(hook = nameof(OnChangeSelfName))]
     public string selfName;
 
     public Canvas canvas;
@@ -21,13 +22,18 @@ public class GameInfos : NetworkBehaviour
 
     public Text blueText;
     public Text redText;
+    public Text blueKda;
+    public Text redKda;
 
     private string display = "";
 
     //[SyncVar(hook = nameof(OnChangeBlueList))]
-    public List<string> BlueTeam;
+    public List<GameObject> BlueTeam;
     //[SyncVar(hook = nameof(OnChangeRedList))]
-    public List<string> RedTeam;
+    public List<GameObject> RedTeam;
+
+    public List<string> BlueTeamKda;
+    public List<string> RedTeamKda;
 
     private bool callMe;
 
@@ -42,8 +48,8 @@ public class GameInfos : NetworkBehaviour
         teamSize = 3;
         selfColor = (int)Color.None;
         teamsReady = false;
-        BlueTeam = new List<string>();
-        RedTeam = new List<string>();
+        BlueTeam = new List<GameObject>();
+        RedTeam = new List<GameObject>();
         
         callMe = true;
         selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
@@ -92,7 +98,7 @@ public class GameInfos : NetworkBehaviour
             redButton.GetComponent<Button>().interactable = false;
         else
             redButton.GetComponent<Button>().interactable = true;
-
+        AddKda();
 
     }
 
@@ -103,19 +109,46 @@ public class GameInfos : NetworkBehaviour
 
     void AddText()
     {
+        
         display = "";
-        foreach (string msg in BlueTeam)
+        foreach (GameObject obj in BlueTeam)
         {
+            var msg = obj.GetComponent<GameInfos>().selfName;
             display = display.ToString() + msg.ToString() + "\n";
         }
         blueText.text = display;
 
         display = "";
-        foreach (string msg in RedTeam)
+        foreach (GameObject obj in RedTeam)
         {
+            var msg = obj.GetComponent<GameInfos>().selfName;
             display = display.ToString() + msg.ToString() + "\n";
         }
         redText.text = display;
+
+    }
+
+    void AddKda()
+    {
+
+        display = "";
+        foreach (GameObject msg in BlueTeam)
+        {
+            int kill = msg.GetComponent<Stats>().selfKill;
+            int death = msg.GetComponent<Stats>().selfDeath;
+            display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
+        }
+        blueKda.text = display;
+
+        display = "";
+        foreach (GameObject msg in RedTeam)
+        {
+            int kill = msg.GetComponent<Stats>().selfKill;
+            int death = msg.GetComponent<Stats>().selfDeath;
+            display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
+
+        }
+        redKda.text = display;
 
     }
 
@@ -144,14 +177,13 @@ public class GameInfos : NetworkBehaviour
         if (!isBlue && RedTeam.Count >= 3)
             return;
            */
-        CmdaddMyName(isBlue, selfName, selfColor);
+        CmdaddMyName(isBlue, gameObject, selfColor);
     }
 
 
     [Command]
-    public void CmdaddMyName(bool isBlue, string name, int targetColor)
+    public void CmdaddMyName(bool isBlue, GameObject selfObj, int targetColor)
     {
-
 
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
@@ -161,15 +193,15 @@ public class GameInfos : NetworkBehaviour
             {
                 var gameInfos = child.GetComponent<GameInfos>();
 
-                removeChangeTeam(gameInfos.BlueTeam, gameInfos.RedTeam, targetColor, name);
+                removeChangeTeam(gameInfos.BlueTeam, gameInfos.RedTeam, targetColor, selfObj);
 
                 if (isBlue)
                 {
-                    gameInfos.BlueTeam.Add(name);
+                    gameInfos.BlueTeam.Add(selfObj);
                 }
                 else
                 {
-                    gameInfos.RedTeam.Add(name);
+                    gameInfos.RedTeam.Add(selfObj);
                 }
 
 
@@ -213,7 +245,7 @@ public class GameInfos : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetGetNames(List<string> newBlueTeam, List<string> newRedTeam)
+    public void TargetGetNames(List<GameObject> newBlueTeam, List<GameObject> newRedTeam)
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
@@ -232,7 +264,7 @@ public class GameInfos : NetworkBehaviour
     #endregion
 
     [ClientRpc]
-    public void ClientNamePropagate(List<string> newBlueTeam, List<string> newRedTeam)
+    public void ClientNamePropagate(List<GameObject> newBlueTeam, List<GameObject> newRedTeam)
     {
         //if (!isServer)
         //    return;
@@ -253,7 +285,7 @@ public class GameInfos : NetworkBehaviour
 
     }
 
-    void removeChangeTeam(List<string> newBlueTeam, List<string> newRedTeam, int color, string name)
+    void removeChangeTeam(List<GameObject> newBlueTeam, List<GameObject> newRedTeam, int color, GameObject name)
     {
         
 
@@ -275,9 +307,11 @@ public class GameInfos : NetworkBehaviour
     {
         int similarNbr = 0;
 
-        foreach (string child in BlueTeam)
+        foreach (GameObject child in BlueTeam)
         {
-            if (Regex.IsMatch(child, @"^" + selfName + " [0-9]+") || Regex.IsMatch(child, @"^" + selfName))
+            var name = child.GetComponent<GameInfos>().selfName;
+
+            if (Regex.IsMatch(name, @"^" + selfName + " [0-9]+") || Regex.IsMatch(name, @"^" + selfName))
             {
                 similarNbr++;
             }
@@ -285,18 +319,22 @@ public class GameInfos : NetworkBehaviour
 
 
         }
-        foreach (string child in RedTeam)
+        foreach (GameObject child in RedTeam)
         {
-            Debug.Log("child" + child);
+            var name = child.GetComponent<GameInfos>().selfName;
 
-            if (Regex.IsMatch(child, @"^" + selfName + " [0-9]+") || Regex.IsMatch(child, @"^" + selfName))
+            if (Regex.IsMatch(name, @"^" + selfName + " [0-9]+") || Regex.IsMatch(name, @"^" + selfName))
             {
                 similarNbr++;
             }
         }
         if (similarNbr > 0)
-            selfName = selfName + " " + similarNbr;
-        
+        {
+            //selfName = selfName + " " + similarNbr;
+            CmdUpDateName(selfName + " " + similarNbr);
+        }
+
+
 
     }
 
@@ -316,6 +354,16 @@ public class GameInfos : NetworkBehaviour
             if(child.GetComponent<FullControl>().isLocal)
                 GetComponent<FullControl>().ColorManager();
         }
+    }
+
+    void OnChangeSelfName(string oldValue, string newValue)
+    {
+        selfName = newValue;
+    }
+    [Command] //Appelé par le client mais lu par le serveur
+    public void CmdUpDateName(string name)
+    {
+        selfName = name;
     }
 
 }
