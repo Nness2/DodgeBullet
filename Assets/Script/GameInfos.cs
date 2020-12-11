@@ -98,6 +98,8 @@ public class GameInfos : NetworkBehaviour
             redButton.GetComponent<Button>().interactable = false;
         else
             redButton.GetComponent<Button>().interactable = true;
+
+        //CHANGETHAT
         AddKda();
 
     }
