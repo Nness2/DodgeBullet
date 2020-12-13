@@ -33,6 +33,9 @@ TagManager:
   - BallPose
   - selfKill
   - selfDeath
+  - startImage
+  - StartWall
+  - TimerText
   layers:
   - Default
   - TransparentFX

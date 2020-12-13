@@ -68,10 +68,21 @@ public class ZoneLimitations : NetworkBehaviour
         }
     }
 
+    void OntriggerExit(Collider collision)
+    {
+        if (!isLocalPlayer)
+            return;
+
+
+        StopAllCoroutines();
+        Debug.Log("exit");
+    }
+
     void OnTriggerEnter(Collider collision)
     {
         if (!isLocalPlayer)
             return;
+
 
         StopAllCoroutines();
 
@@ -79,67 +90,54 @@ public class ZoneLimitations : NetworkBehaviour
         {
             coroutine = ZoneDamage(35);
             StartCoroutine(coroutine);
-            //health.TakeDamage(35);
-            //Debug.Log("35 Damages");
         }
 
-        if (collision.gameObject.tag == "RedField" && teamBlue || collision.gameObject.tag == "RedField" && !teamBlue && state != 0)
+        else if (collision.gameObject.tag == "RedField" && teamBlue || collision.gameObject.tag == "RedField" && !teamBlue && state != 0)
         {
             coroutine = ZoneDamage(35);
             StartCoroutine(coroutine);
-            //health.TakeDamage(35);
-            //Debug.Log("35 Damages");
         }
 
-        if (collision.gameObject.tag == "BluePrison" && !teamBlue || collision.gameObject.tag == "BluePrison" && teamBlue && state != 1)
+        else if (collision.gameObject.tag == "BluePrison" && !teamBlue || collision.gameObject.tag == "BluePrison" && teamBlue && state != 1)
         {
             coroutine = ZoneDamage(50);
             StartCoroutine(coroutine);
-            //health.TakeDamage(50);
-            //Debug.Log("50 Damages");
         }
 
-        if (collision.gameObject.tag == "RedPrison" && teamBlue || collision.gameObject.tag == "RedPrison" && !teamBlue && state != 1)
+        else if (collision.gameObject.tag == "RedPrison" && teamBlue || collision.gameObject.tag == "RedPrison" && !teamBlue && state != 1)
         {
             coroutine = ZoneDamage(50);
             StartCoroutine(coroutine);
-            //health.TakeDamage(50);
-            //Debug.Log("50 Damages");
         }
 
-        if (collision.gameObject.tag == "Neutre1" && state != 2 && teamBlue)
+        else if (collision.gameObject.tag == "Neutre1" && state != 2 && teamBlue)
         {
             coroutine = ZoneDamage(20);
             StartCoroutine(coroutine);
-            //health.TakeDamage(20);
-            //Debug.Log("20 Damage");
         }
 
-        if (collision.gameObject.tag == "Neutre2" && state != 3 && teamBlue)
+        else if (collision.gameObject.tag == "Neutre2" && state != 3 && teamBlue)
         {
             coroutine = ZoneDamage(20);
             StartCoroutine(coroutine);
-            //health.TakeDamage(20);
-            //Debug.Log("20 Damage");
         }
 
 
 
-        if (collision.gameObject.tag == "Neutre1" && state != 3 && !teamBlue)
+        else if (collision.gameObject.tag == "Neutre1" && state != 3 && !teamBlue)
         {
             coroutine = ZoneDamage(20);
             StartCoroutine(coroutine);
-            //health.TakeDamage(20);
-            //Debug.Log("20 Damage");
         }
 
-        if (collision.gameObject.tag == "Neutre2" && state != 2 && !teamBlue)
+        else if (collision.gameObject.tag == "Neutre2" && state != 2 && !teamBlue)
         {
             coroutine = ZoneDamage(20);
             StartCoroutine(coroutine);
-            //health.TakeDamage(20);
-            //Debug.Log("20 Damage");
         }
+
+
+
         /*if ((collision.gameObject.tag == "BlueField" && state == 0 || collision.gameObject.tag == "BluePrison" && state == 1 || collision.gameObject.tag == "Neutre1" && state == 2 || collision.gameObject.tag == "Neutre2" && state == 3) && teamBlue)
         {
             StopAllCoroutines();
@@ -152,12 +150,14 @@ public class ZoneLimitations : NetworkBehaviour
 
     }
 
+
+
     /*void OnTriggerExit(Collider collision)
     {
         StopAllCoroutines();
     }*/
 
-    
+
     public void UpdateZone()
     {
 

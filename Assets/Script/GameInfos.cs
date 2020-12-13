@@ -37,15 +37,19 @@ public class GameInfos : NetworkBehaviour
 
     private bool callMe;
 
-    private bool teamsReady;
-
+    public bool teamsReady;
     private bool nameChecked;
 
+    private GameObject GameMng;
+
+    private GameObject StartImage;
     // Use this for initialization
     void Start()
     {
+        GameMng = GameObject.FindGameObjectWithTag("GameManager");
+        //StartImage = GameObject.FindGameObjectWithTag("startImage");
         nameChecked = false;
-        teamSize = 3;
+        teamSize = 1;
         selfColor = (int)Color.None;
         teamsReady = false;
         BlueTeam = new List<GameObject>();
@@ -53,8 +57,6 @@ public class GameInfos : NetworkBehaviour
         
         callMe = true;
         selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
-
-
     }
 
 
@@ -65,6 +67,7 @@ public class GameInfos : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
+
 
         if (nameChecked)
         {
@@ -85,6 +88,9 @@ public class GameInfos : NetworkBehaviour
             if (BlueTeam.Count >= teamSize && RedTeam.Count >= teamSize)
             {
                 teamsReady = true;
+                if (isServer)
+                    GameMng.GetComponent<StartManager>().InteratableEnable();
+
             }
             CmdCallColorManager();
         }

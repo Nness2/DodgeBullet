@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Mirror;
 
@@ -41,6 +42,8 @@ public class FullControl : NetworkBehaviour
 
     public GameObject gun;
 
+    private GameObject GameMng;
+
     [SyncVar(hook = nameof(OnChangeNumber))]
     public int selfNumber;
 
@@ -53,6 +56,8 @@ public class FullControl : NetworkBehaviour
 
     public int killNbr;
 
+    public bool isBlue;
+
     void Start()
     {
         
@@ -62,6 +67,7 @@ public class FullControl : NetworkBehaviour
         killNbr = 0;
         if (isLocalPlayer)
         {
+            GameMng = GameObject.FindGameObjectWithTag("GameManager");
             GetComponent<GameInfos>().addGetNames();
             GotBall = false;
             isLocal = true;
@@ -141,7 +147,7 @@ public class FullControl : NetworkBehaviour
         Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
         
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady)
         {
             if (GotBall)
             {
@@ -152,7 +158,7 @@ public class FullControl : NetworkBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && GetComponent<GameInfos>().teamsReady)
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
@@ -384,10 +390,15 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-
-    public void teamManager(bool isBlue)
+    public void TeamChoice(bool teamBlue)
     {
-        var ZL = GetComponent<ZoneLimitations>();
+        isBlue = teamBlue;
+    }
+
+    #region Unity TeamManager
+    public void TeamManager()
+    {
+        /*var ZL = GetComponent<ZoneLimitations>();
 
         if (isBlue)
         {
@@ -400,25 +411,72 @@ public class FullControl : NetworkBehaviour
         {
             ZL.teamBlue = false; //Edit en direct ou le joueur prend des degats psq trop long
             CmdChangeTeam(false);
+        }*/
+
+        if (isServer)
+        {
+            CmdTeamManager();
+        }
+
+    }
+
+
+    [Command]
+    public void CmdTeamManager()
+    {
+        if (isServer)
+            ClientTeamManager();
+    }
+
+    [ClientRpc]
+    public void ClientTeamManager()
+    {
+
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+
+            if (child.GetComponent<FullControl>().isLocal)
+            {
+                //var ZL = GetComponent<ZoneLimitations>();
+
+                child.GetComponent<FullControl>().controller.enabled = false;
+
+                if (child.GetComponent<FullControl>().isBlue)
+                    child.transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
+                else
+                    child.transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
+
+                child.GetComponent<FullControl>().controller.enabled = true;
+            }
+
+        }
+            
+    }
+    #endregion
+
+
+
+    //Edit sur le server pour synchroniser, besoin pour color manager
+
+    [Command]
+    public void CmdChangeTeam(bool blueTeam)
+    {
+        if (!isServer)
+            return;
+        var ZL = GetComponent<ZoneLimitations>();
+
+        if (blueTeam)
+        {
+            ZL.teamBlue = true; //Edit en direct ou le joueur prend des degats psq trop long
 
         }
 
-        controller.enabled = false;
-
-        if (isBlue)
-            transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
         else
-            transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
-
-        controller.enabled = true;
-    }
-
-    //Edit sur le server pour synchroniser, besoin pour color manager
-    [Command]
-    void CmdChangeTeam(bool blueTeam)
-    {
-        var ZL = GetComponent<ZoneLimitations>();
-        ZL.teamBlue = blueTeam;
+        {
+            ZL.teamBlue = false; //Edit en direct ou le joueur prend des degats psq trop long
+        }
     }
 
     public void ColorManager()
@@ -524,4 +582,28 @@ public class FullControl : NetworkBehaviour
         }
 
     }
+
+
+    #region StartGame
+    [Command]
+    public void CmdStartTimer()
+    {
+        ClientStartTimer();
+    }
+
+    [ClientRpc]
+    void ClientStartTimer()
+    {
+        GameObject timer;
+        if (timer = GameObject.FindGameObjectWithTag("TimerText"))
+        {
+            timer.GetComponent<StartTimer>().top = true;
+            timer.GetComponent<Text>().enabled = true;
+            timer.GetComponent<StartTimer>().enabled = true;
+        }
+
+
+
+    }
+    #endregion
 }
