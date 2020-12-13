@@ -44,6 +44,8 @@ public class GameInfos : NetworkBehaviour
 
     private GameObject StartImage;
     // Use this for initialization
+
+    public Text NameDisplay;
     void Start()
     {
         GameMng = GameObject.FindGameObjectWithTag("GameManager");
@@ -57,6 +59,8 @@ public class GameInfos : NetworkBehaviour
         
         callMe = true;
         selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        if (!isLocalPlayer)
+            NameDisplay.GetComponent<Text>().text = selfName;
     }
 
 
