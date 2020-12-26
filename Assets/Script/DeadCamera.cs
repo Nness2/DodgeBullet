@@ -19,11 +19,15 @@ public class DeadCamera : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GetComponent<CinemachineFreeLook>().Follow == null && GetComponent<CinemachineFreeLook>().LookAt == null) {
+        /*if (GetComponent<CinemachineFreeLook>().Follow == null && GetComponent<CinemachineFreeLook>().LookAt == null) {
             GameObject[] characters = GameObject.FindGameObjectsWithTag("CameraTop");
-
-            GetComponent<CinemachineFreeLook>().Follow = characters[0].transform;
-            GetComponent<CinemachineFreeLook>().LookAt = characters[0].transform;
-        }
+            if (characters.Length > 0)
+            {
+                GetComponent<CinemachineFreeLook>().Follow = characters[0].transform;
+                GetComponent<CinemachineFreeLook>().LookAt = characters[0].transform;
+            }
+            else
+                Debug.Log("Liste de joueur vide");
+        }*/
     }
 }

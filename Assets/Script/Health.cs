@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using Cinemachine;
 
 public class Health : NetworkBehaviour
 {
@@ -20,20 +21,22 @@ public class Health : NetworkBehaviour
     //take Damage
     public bool TakeDamage(int amount) //return true si il y a kill
     {
-        
         //if (!isLocalPlayer)
-        //    return false;
-        //Debug.Log("test");
+        //return false;
         bool isDead = false;
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
 
         if (currentHealth <= 0)
         {
+
             //ZL.state++;
-            if(ZL.state > 2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
+            if(ZL.state > 1)//2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
             {
-                DestroyPlayer(transform.gameObject);
+                var FC = GetComponent<FullControl>();
+                FC.UpdateDeadCam();
+                FC.CmdDeadPlayer(FC.selfNumber);
+
                 return false;
             }
             currentHealth = 100;
@@ -93,15 +96,15 @@ public class Health : NetworkBehaviour
             if (child.GetComponent<FullControl>().selfNumber == killed)
             {
                 child.GetComponent<Stats>().selfDeath++;
+                child.GetComponent<GameInfos>().callKda = true;
             }
 
             if (child.GetComponent<FullControl>().selfNumber == killer)
             {
                 child.GetComponent<Stats>().selfKill++;
+                child.GetComponent<GameInfos>().callKda = true;
 
                 if (!isServer)
-                    return;
-                if (child.GetComponent<ZoneLimitations>().state == 0)
                     return;
                 child.GetComponent<ZoneLimitations>().DownState();
                 //child.GetComponent<ZoneLimitations>().UpdateZone();

@@ -73,4 +73,12 @@ public class Stats : NetworkBehaviour
         selfDamage = newValue;
     }
 
+
+    public void ResetStats()
+    {
+        selfKill = 0;
+        selfDeath = 0;
+        selfBallTouch = 0;
+        selfDamage = 0;
+    }
 }

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 public class GameInfos : NetworkBehaviour
 {
-    enum Color : int{ None, Blue, Red};
+    enum Color : int { None, Blue, Red };
 
     public int teamSize;
 
@@ -35,7 +35,8 @@ public class GameInfos : NetworkBehaviour
     public List<string> BlueTeamKda;
     public List<string> RedTeamKda;
 
-    private bool callMe;
+    public bool callMe;
+    public bool callKda;
 
     public bool teamsReady;
     private bool nameChecked;
@@ -56,9 +57,13 @@ public class GameInfos : NetworkBehaviour
         teamsReady = false;
         BlueTeam = new List<GameObject>();
         RedTeam = new List<GameObject>();
-        
+
         callMe = true;
+        callKda = true;
+
         selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        if (isLocalPlayer)
+            CmdUpDateName(selfName, GetComponent<FullControl>().selfNumber);
         if (!isLocalPlayer)
             NameDisplay.GetComponent<Text>().text = selfName;
     }
@@ -75,7 +80,7 @@ public class GameInfos : NetworkBehaviour
 
         if (nameChecked)
         {
-            checkSimilarName();
+            //checkSimilarName();
             nameChecked = false;
         }
 
@@ -99,6 +104,10 @@ public class GameInfos : NetworkBehaviour
             CmdCallColorManager();
         }
 
+        if (BlueTeam.Count < teamSize || RedTeam.Count < teamSize)
+            teamsReady = false;
+
+
         if (BlueTeam.Count >= teamSize || selfColor == (int)Color.Blue)
             blueButton.GetComponent<Button>().interactable = false;
         else
@@ -109,8 +118,10 @@ public class GameInfos : NetworkBehaviour
         else
             redButton.GetComponent<Button>().interactable = true;
 
-        //CHANGETHAT
-        AddKda();
+        if (callKda)
+        {
+            AddKda();
+        }
 
     }
 
@@ -121,7 +132,7 @@ public class GameInfos : NetworkBehaviour
 
     void AddText()
     {
-        
+
         display = "";
         foreach (GameObject obj in BlueTeam)
         {
@@ -140,8 +151,10 @@ public class GameInfos : NetworkBehaviour
 
     }
 
-    void AddKda()
+    public void AddKda()
     {
+        if (!isLocalPlayer)
+            return;
 
         display = "";
         foreach (GameObject msg in BlueTeam)
@@ -236,7 +249,7 @@ public class GameInfos : NetworkBehaviour
             return;
         //string name = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
         CmdGetNames();
-        
+
     }
 
 
@@ -252,8 +265,6 @@ public class GameInfos : NetworkBehaviour
                 TargetGetNames(gameinfo.BlueTeam, gameinfo.RedTeam);
             }
         }
-
-
     }
 
     [TargetRpc]
@@ -274,6 +285,12 @@ public class GameInfos : NetworkBehaviour
 
     }
     #endregion
+
+    [Command]
+    public void CmdNamePropagate(List<GameObject> newBlueTeam, List<GameObject> newRedTeam)
+    {
+        ClientNamePropagate(newBlueTeam, newRedTeam);
+    }
 
     [ClientRpc]
     public void ClientNamePropagate(List<GameObject> newBlueTeam, List<GameObject> newRedTeam)
@@ -299,7 +316,6 @@ public class GameInfos : NetworkBehaviour
 
     void removeChangeTeam(List<GameObject> newBlueTeam, List<GameObject> newRedTeam, int color, GameObject name)
     {
-        
 
         if (color == (int)Color.Blue)
         {
@@ -343,7 +359,7 @@ public class GameInfos : NetworkBehaviour
         if (similarNbr > 0)
         {
             //selfName = selfName + " " + similarNbr;
-            CmdUpDateName(selfName + " " + similarNbr);
+            //CmdUpDateName(selfName + " " + similarNbr);
         }
 
 
@@ -363,7 +379,7 @@ public class GameInfos : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            if(child.GetComponent<FullControl>().isLocal)
+            if (child.GetComponent<FullControl>().isLocal)
                 GetComponent<FullControl>().ColorManager();
         }
     }
@@ -373,9 +389,53 @@ public class GameInfos : NetworkBehaviour
         selfName = newValue;
     }
     [Command] //Appelé par le client mais lu par le serveur
-    public void CmdUpDateName(string name)
+    public void CmdUpDateName(string name, int player)
     {
-        selfName = name;
+        ClientUpDateName(name, player);
     }
+
+    [ClientRpc] //Appelé par le client mais lu par le serveur
+    public void ClientUpDateName(string name, int player)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().selfNumber == player)
+            {
+                selfName = name;
+            }
+        }
+    }
+
+
+
+
+    public void Spectate()
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().isLocal)
+            {
+                if (selfColor == (int)Color.Blue)
+                {
+                    child.GetComponent<GameInfos>().BlueTeam.Remove(gameObject);
+                    child.GetComponent<GameInfos>().selfColor = (int)Color.None;
+                    //TargetAttributeListPosition(newRedTeam.Count - 1);
+                }
+
+                else if (selfColor == (int)Color.Red)
+                {
+                    child.GetComponent<GameInfos>().RedTeam.Remove(gameObject);
+                    child.GetComponent<GameInfos>().selfColor = (int)Color.None;
+                    //TargetAttributeListPosition(newBlueTeam.Count - 1);
+                }
+                child.GetComponent<GameInfos>().callMe = true;
+            }
+        }
+        CmdNamePropagate(BlueTeam, RedTeam);
+    }
+
 
 }

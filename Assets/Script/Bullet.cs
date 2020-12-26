@@ -40,6 +40,8 @@ public class Bullet : NetworkBehaviour
                     //GameObject.FindGameObjectWithTag("killManager").GetComponent<Text>().text = GetComponent<FullControl>().killNbr.ToString();
 
                     ZLScript.UpState();
+                    //ZLScript.UpdateZone();
+
                     GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
                     foreach (GameObject child in characters)

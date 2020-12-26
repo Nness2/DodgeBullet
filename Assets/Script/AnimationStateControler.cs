@@ -24,8 +24,8 @@ public class AnimationStateControler : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        fastRun = 15;
-        slowRun = 8;
+        fastRun = 13;
+        slowRun = 7;
         isRunning = false;
         currentRunnig = false;
         mySounds = GetComponents<AudioSource>();

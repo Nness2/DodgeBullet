@@ -12,33 +12,45 @@ public class StartTimer : MonoBehaviour
 
     private Text countDownText;
 
-    public bool top;
+    public GameObject StartWall;
+    private GameObject Wall;
+
     void Start()
     {
-        top = false;
+
+        Quaternion wallRot = Quaternion.Euler(0, 0, 90);
+        Wall = Instantiate(StartWall, new Vector3(0, 0, 0), wallRot);
+
         countDownText = GameObject.FindGameObjectWithTag("TimerText").GetComponent<Text>();
-        var countDownScript = GameObject.FindGameObjectWithTag("TimerText").GetComponent<StartTimer>();
+        //var countDownScript = GameObject.FindGameObjectWithTag("TimerText").GetComponent<StartTimer>();
         currentTime = startingTime;
-        countDownText.enabled = false;
+        //countDownText.enabled = false;
+        
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<StartManager>().InteratableDesable();
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<StartManager>().HideStartButton();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!top)
-            return;
-
         currentTime -= 1 * Time.deltaTime;
         countDownText.GetComponent<Text>().text = currentTime.ToString("0");
 
         if (currentTime <= 0)
         {
-            currentTime = 0;
+            /*currentTime = 0;
             gameObject.GetComponent<Text>().enabled = false;
             gameObject.GetComponent<StartTimer>().enabled = false;
-            gameObject.GetComponent<StartTimer>().enabled = false;
-            countDownText.enabled = false ;
-            GameObject.FindGameObjectWithTag("StartWall").SetActive(false);
+            countDownText.enabled = false ;*/
+
+            Destroy(gameObject);
+            Destroy(Wall);
+
+            //gameObject.transform.parent.gameObject.transform.parent.GetComponent<ZoneLimitations>().UpState();
+
+
         }
     }
 

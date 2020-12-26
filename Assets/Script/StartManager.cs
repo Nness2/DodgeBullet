@@ -13,9 +13,9 @@ public class StartManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-            bool StartButtonInteratable = false;
-            bool PlayerReady = false;
-}
+           // bool StartButtonInteratable = false;
+           // bool PlayerReady = false;
+    }
 
     // Update is called once per frame
     void Update()
@@ -31,7 +31,7 @@ public class StartManager : MonoBehaviour
         ImageStartEvent.enabled = true;
     }
 
-    void HideStartButton()
+    public void HideStartButton()
     {
         ImageStartEvent.enabled = false;
     }
@@ -56,7 +56,8 @@ public class StartManager : MonoBehaviour
 
     public void StartGame()
     {
-        HideStartButton();
+        //InteratableDesable();
+        //HideStartButton();
 
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
@@ -64,9 +65,8 @@ public class StartManager : MonoBehaviour
             var FCScript = child.GetComponent<FullControl>();
             if (FCScript.isLocal)
             {
-                FCScript.TeamManager();
+                //FCScript.TeamManager();
                 child.GetComponent<FullControl>().CmdStartTimer();
-
             }
         }
     }
