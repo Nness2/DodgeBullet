@@ -65,8 +65,6 @@ public class AnimationStateControler : NetworkBehaviour
                 {
                     upDateState = 6;
                     FCScritp.speed = fastRun;
-
-
                 }
 
                 else if (Input.GetKey("a") && Input.GetKey("s"))
@@ -110,7 +108,12 @@ public class AnimationStateControler : NetworkBehaviour
                 else
                     upDateState = 0;
 
-                
+                if (!GetComponent<FullControl>().isGrounded)
+                {
+                    upDateState = 10;
+                    FCScritp.speed = 4;
+                }
+
 
                 if (state != upDateState)
                 {
