@@ -26,17 +26,21 @@ public class Health : NetworkBehaviour
         bool isDead = false;
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
+        healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
 
         if (currentHealth <= 0)
         {
 
             //ZL.state++;
-            if(ZL.state > 1)//2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
+            if(ZL.state > 3)//2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
             {
                 var FC = GetComponent<FullControl>();
-                FC.UpdateDeadCam();
-                FC.CmdDeadPlayer(FC.selfNumber);
-
+                //FC.UpdateDeadCam();
+                //FC.CmdDisplayPlayer(FC.selfNumber, false);
+                GetComponent<ZoneLimitations>().CmdInitState();
+                FC.dead = true;
+                FC.InGame = false;
+                FC.CmdDeadPlayer(FC.PlayerID);
                 return false;
             }
             currentHealth = 100;
@@ -93,13 +97,13 @@ public class Health : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == killed)
+            if (child.GetComponent<FullControl>().PlayerID == killed)
             {
                 child.GetComponent<Stats>().selfDeath++;
                 child.GetComponent<GameInfos>().callKda = true;
             }
 
-            if (child.GetComponent<FullControl>().selfNumber == killer)
+            if (child.GetComponent<FullControl>().PlayerID == killer)
             {
                 child.GetComponent<Stats>().selfKill++;
                 child.GetComponent<GameInfos>().callKda = true;
@@ -123,7 +127,7 @@ public class Health : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == killer)
+            if (child.GetComponent<FullControl>().PlayerID == killer)
             {
                 child.GetComponent<FullControl>().GotBall = true;
             }

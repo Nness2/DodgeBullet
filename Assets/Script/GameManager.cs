@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class GameManager : MonoBehaviour
 {
+
+    //public GameObject NetworkManagerPrefab;
+
     // Start is called before the first frame update
     public bool firstKill;
     public string LocalName;
@@ -21,6 +25,5 @@ public class GameManager : MonoBehaviour
     {
         
     }
-
 
 }

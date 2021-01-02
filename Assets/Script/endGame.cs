@@ -56,12 +56,19 @@ public class endGame : MonoBehaviour
         SceneManager.LoadScene("Menu");
     }
 
+    public void WaitHost()
+    {
+
+    }
+
+
     public void ReplayGame()
     {
         StopAllCoroutines();
 
         //gameObject.transform.parent.GetComponent<ZoneLimitations>().InitState();
         gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
+
 
 
         QuitBtn.GetComponent<Image>().enabled = false;
@@ -76,8 +83,11 @@ public class endGame : MonoBehaviour
 
         player.GetComponent<GameInfos>().enabled = true;
         player.GetComponent<FullControl>().enabled = true;
-        FC.dead = false;
         player.GetComponent<AnimationStateControler>().enabled = true;
+        FC.dead = false;
+        FC.InGame = false;
+        FC.CmdBackToLobby(FC.PlayerID);
+
         GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = true;
 
 
@@ -98,19 +108,22 @@ public class endGame : MonoBehaviour
         var GI = player.GetComponent<GameInfos>();
         GI.callKda = true;
 
-        GI.BlueTeam = new List<GameObject>();
-        GI.RedTeam = new List<GameObject>();
+        //GI.BlueTeam = new List<GameObject>();
+        //GI.RedTeam = new List<GameObject>();
+        //GI.selfColor = 0;
+
         GI.callMe = true;
-        GI.selfColor = 0;
 
         var Hlth = gameObject.transform.parent.GetComponent<Health>();
         Hlth.currentHealth = 100;
         Hlth.healthBar.sizeDelta = new Vector2(Hlth.currentHealth, Hlth.healthBar.sizeDelta.y);
         var gameManager = GameObject.FindGameObjectWithTag("GameManager");
+        gameManager.GetComponent<GameManager>().firstKill = false;
         var SM = gameManager.GetComponent<StartManager>();
         SM.ShowStartButton();
-
-
+        
+        //FC.UpdateDeadCam();
+        //FC.CmdDisplayPlayer(FC.PlayerID, true);
         //var TimerText = GameObject.FindGameObjectWithTag("TimerText");
         //TimerText.GetComponent<StartTimer>().InitTimer();
         //TimerText.GetComponent<StartTimer>().top = false;
@@ -119,4 +132,6 @@ public class endGame : MonoBehaviour
 
     }
 
+
+    
 }

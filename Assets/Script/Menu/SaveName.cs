@@ -41,7 +41,7 @@ public class SaveName : MonoBehaviour
         StreamReader reader = new StreamReader(path);
         string firstLine = reader.ReadLine();
         if (firstLine == null) firstLine = "";
-        Debug.Log(firstLine);
+        //Debug.Log(firstLine);
         InputText.text = firstLine;
         reader.Close();
     }

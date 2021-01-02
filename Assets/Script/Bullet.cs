@@ -46,10 +46,10 @@ public class Bullet : NetworkBehaviour
 
                     foreach (GameObject child in characters)
                     {
-                        if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
+                        if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
                         {
-                            int killer = child.GetComponent<FullControl>().selfNumber;
-                            int killed = hit.GetComponent<FullControl>().selfNumber;
+                            int killer = child.GetComponent<FullControl>().PlayerID;
+                            int killed = hit.GetComponent<FullControl>().PlayerID;
                             health.KillManager(killer, killed, false);
                             //Destroy(gameObject);
                         }
@@ -76,16 +76,17 @@ public class Bullet : NetworkBehaviour
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
         {
-            float distance = Vector3.Distance(child.transform.position, transform.position);
-            if(touchedGround)
+            if (child.GetComponent<FullControl>().isLocal)
             {
-                if (distance <= 2)
+                float distance = Vector3.Distance(child.transform.position, transform.position);
+                if (touchedGround)
                 {
-
-                    
-                    int player = child.GetComponent<FullControl>().selfNumber;
-                    child.GetComponent<FullControl>().CmdPickUp(player);
-                    //Destroy(gameObject);
+                    if (distance <= 2)
+                    {
+                        int player = child.GetComponent<FullControl>().PlayerID;
+                        child.GetComponent<FullControl>().CmdPickUp(player);
+                        //Destroy(gameObject);
+                    }
                 }
             }
         }

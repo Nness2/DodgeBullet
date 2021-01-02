@@ -6,7 +6,7 @@ using Mirror;
 public class AnimationStateControler : NetworkBehaviour
 {
     public GameObject player;
-    Animator animator;
+    public Animator animator;
     [SyncVar(hook = nameof(OnChangeState))]
     public int state;
     private int currentState;

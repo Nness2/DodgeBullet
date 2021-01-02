@@ -50,9 +50,11 @@ public class GameInfos : NetworkBehaviour
     void Start()
     {
         GameMng = GameObject.FindGameObjectWithTag("GameManager");
+        //if(isLocalPlayer)
+        //      CmdSyncNames();
         //StartImage = GameObject.FindGameObjectWithTag("startImage");
         nameChecked = false;
-        teamSize = 1;
+        teamSize = 2;
         selfColor = (int)Color.None;
         teamsReady = false;
         BlueTeam = new List<GameObject>();
@@ -61,11 +63,15 @@ public class GameInfos : NetworkBehaviour
         callMe = true;
         callKda = true;
 
-        selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
         if (isLocalPlayer)
-            CmdUpDateName(selfName, GetComponent<FullControl>().selfNumber);
-        if (!isLocalPlayer)
-            NameDisplay.GetComponent<Text>().text = selfName;
+            NameDisplay.enabled = false;
+        //selfName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        //if (isLocalPlayer)
+        //    CmdUpDateName(selfName, GetComponent<FullControl>().selfNumber);
+        //if (!isLocalPlayer)
+        //{
+        //    NameDisplay.GetComponent<Text>().text = selfName;
+        //}
     }
 
 
@@ -105,7 +111,10 @@ public class GameInfos : NetworkBehaviour
         }
 
         if (BlueTeam.Count < teamSize || RedTeam.Count < teamSize)
+        {
             teamsReady = false;
+            GameMng.GetComponent<StartManager>().InteratableDesable();
+        }
 
 
         if (BlueTeam.Count >= teamSize || selfColor == (int)Color.Blue)
@@ -270,6 +279,7 @@ public class GameInfos : NetworkBehaviour
     [TargetRpc]
     public void TargetGetNames(List<GameObject> newBlueTeam, List<GameObject> newRedTeam)
     {
+
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
         {
@@ -297,6 +307,7 @@ public class GameInfos : NetworkBehaviour
     {
         //if (!isServer)
         //    return;
+
 
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
@@ -387,7 +398,9 @@ public class GameInfos : NetworkBehaviour
     void OnChangeSelfName(string oldValue, string newValue)
     {
         selfName = newValue;
+        NameDisplay.GetComponent<Text>().text = selfName;
     }
+
     [Command] //Appelé par le client mais lu par le serveur
     public void CmdUpDateName(string name, int player)
     {
@@ -397,11 +410,13 @@ public class GameInfos : NetworkBehaviour
     [ClientRpc] //Appelé par le client mais lu par le serveur
     public void ClientUpDateName(string name, int player)
     {
+
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == player)
+            if (child.GetComponent<FullControl>().PlayerID == player)
             {
+                //Debug.Log(child.GetComponent<FullControl>().selfNumber);
                 selfName = name;
             }
         }

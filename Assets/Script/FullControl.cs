@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using Cinemachine;
+using UnityEngine.SceneManagement;
 
 public class FullControl : NetworkBehaviour
 {
@@ -39,6 +40,7 @@ public class FullControl : NetworkBehaviour
     //Fire  
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+    public GameObject BodyPrefab;
     public GameObject StartCanvas;
 
     public GameObject gun;
@@ -62,15 +64,33 @@ public class FullControl : NetworkBehaviour
     [SyncVar(hook = nameof(OnDeadChange))]
     public bool dead;
 
+    public int PlayerID;
+
+    public bool Replay;
+
+
+    public bool InGame;
+    public bool OnLobby;
+
     void Start()
     {
-        
+
+        InitPlayerBody();
+        Replay = false;
+        OnLobby = true;
+
+        PlayerID = (int)netId;
         playerNumber = 0;
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         killNbr = 0;
+
         if (isLocalPlayer)
         {
+            //DontDestroyOnLoad(transform.gameObject);
+            InGame = false;
+
+            Replay = false;
             dead = false;
             GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = true;
 
@@ -85,9 +105,10 @@ public class FullControl : NetworkBehaviour
                 if (child.CompareTag("CameraTop"))
                 {
                     Transform topCam = child;
-                    LocalPlayer = GameObject.FindGameObjectWithTag("LocalPlayer");
+                    LocalPlayer = GameObject.FindGameObjectWithTag("traveling");
                     LocalPlayer.transform.parent = topCam;
                     LocalPlayer.transform.localPosition = new Vector3();
+                    LocalPlayer.tag = "oldTraveling";
                 }
             }
 
@@ -115,6 +136,8 @@ public class FullControl : NetworkBehaviour
         {
             //gameObject.layer = 9;
             selfNumber = cmptPlayers();
+            //InitSelfNb(cmptPlayers());
+
             isLocal = false;
             Transform[] Children = GetComponentsInChildren<Transform>();
             foreach (Transform child in Children)
@@ -125,13 +148,10 @@ public class FullControl : NetworkBehaviour
                 {
                     Destroy(child.gameObject);
                 }
-
             }
         }
-
     }
 
-        
 
     // Update is called once per frame
     void Update()
@@ -145,36 +165,60 @@ public class FullControl : NetworkBehaviour
 
         Jump();
 
+        if (cam == null)
+        {
+            GameObject[] characters = GameObject.FindGameObjectsWithTag("oldTraveling");
+            foreach (GameObject child in characters)
+            {
+                Destroy(child);
+            }
+            cam = GameObject.FindGameObjectWithTag("MainCamera");
+            Transform[] children = GetComponentsInChildren<Transform>();
+            foreach (Transform child in children)
+            {
+                if (child.CompareTag("CameraTop"))
+                {
+                    Transform topCam = child;
+                    LocalPlayer = GameObject.FindGameObjectWithTag("traveling");
+                    LocalPlayer.transform.parent = topCam;
+                    LocalPlayer.transform.localPosition = new Vector3();
+                    LocalPlayer.tag = "oldTraveling";
+                }
+            }
+            GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = true;
 
+        }
         Vector3 posit = cam.transform.position;
         Vector3 forwa = cam.transform.TransformDirection(Vector3.forward);
-        int layerMask = 1 << 8;
-        RaycastHit hit;
-        Physics.Raycast(posit, forwa, out hit, Mathf.Infinity, layerMask);
-        Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-        
+        //int layerMask = 1 << 8;
 
-        if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady && !dead)
+        //RaycastHit hit;
+        //Physics.Raycast(posit, forwa, out hit, Mathf.Infinity, layerMask);
+        //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+
+
+        if (Input.GetMouseButtonDown(1) && InGame && !dead)
         {
+
             if (GotBall)
             {
                 GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                BallFire(selfNumber, position, forward);
+                BallFire(PlayerID, position, forward);
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && GetComponent<GameInfos>().teamsReady && !dead)
+        if (Input.GetMouseButtonDown(0) && InGame && !dead)
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-            CmdFireVFX(selfNumber, position);
+            CmdFireVFX(PlayerID, position);
             CmdFire(position, forward);
 
         }
 
-        if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady && dead)
+        /*if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady && dead)
         {
             UpdateDeadCam();
         }
@@ -183,7 +227,7 @@ public class FullControl : NetworkBehaviour
         {
             UpdateDeadCam();
 
-        }
+        }*/
 
 
         transform.rotation = new Quaternion(cam.transform.localRotation.x, cam.transform.localRotation.y, cam.transform.localRotation.z, cam.transform.localRotation.w);
@@ -193,8 +237,8 @@ public class FullControl : NetworkBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-         
-        if(direction.magnitude >= 0.1f)
+
+        if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
             //float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -210,21 +254,17 @@ public class FullControl : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!isLocalPlayer)
-            return;
-
-        if (cmptPlayers() != playerNumber)
+        if (cmptPlayers() != playerNumber && isLocalPlayer)
         {
             var ZL = GetComponent<ZoneLimitations>();
             //teamManager(ZL.teamBlue);
             playerNumber = cmptPlayers();
 
-            var GI = GetComponent<GameInfos>();
-            GI.CmdUpDateName(GI.selfName, selfNumber);
-
+            //var GI = GetComponent<GameInfos>();
+            //GI.CmdUpDateName(GI.selfName, PlayerID);
         }
     }
-    
+
 
 
     private void Jump()
@@ -238,6 +278,7 @@ public class FullControl : NetworkBehaviour
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
+            var GI = GetComponent<GameInfos>().enabled = false; //toggle this script to re-invoke it
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
         }
 
@@ -247,6 +288,9 @@ public class FullControl : NetworkBehaviour
 
 
     }
+
+
+
 
     #region Unity FireVFXBall
     [Command] //Appelé par le client mais lu par le serveur
@@ -277,10 +321,13 @@ public class FullControl : NetworkBehaviour
 
     void BallFire(int nb, Vector3 position, Vector3 forward)
     {
-        int layerMask = 1 << 11;
+        //int layerMask = 1 << 11;
+        int grnd = 1 << LayerMask.NameToLayer("Ground");
+        int plyr = 1 << LayerMask.NameToLayer("Player");
+        int mask = grnd | plyr;
         RaycastHit hit;
         Vector3 dir;
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, mask))
         {
             //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.point);
@@ -308,7 +355,7 @@ public class FullControl : NetworkBehaviour
         bulletSpawn.position,
         bulletSpawn.rotation);
 
-        bullet.GetComponent<Rigidbody>().AddForce(dir * 12000);
+        bullet.GetComponent<Rigidbody>().AddForce(dir * 13000);
 
         NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
@@ -329,7 +376,7 @@ public class FullControl : NetworkBehaviour
 
 
 
-#endregion
+    #endregion
 
 
 
@@ -337,18 +384,21 @@ public class FullControl : NetworkBehaviour
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
-        int layerMask = 1 << 11;
+        //int layerMask = 1 << 11;
+        int grnd = 1 << LayerMask.NameToLayer("StartWall");
+        int plyr = 1 << LayerMask.NameToLayer("Player");
+        int mask = grnd | plyr;
         RaycastHit hit;
 
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, mask))
         {
             //Vector3 dir = hit.point - bullet.transform.position;
             //dir = dir.normalized;
             //bullet.GetComponent<Rigidbody>().AddForce(dir * 10000);
             if (hit.transform.gameObject.GetComponent<FullControl>() != null)
             {
-                int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().selfNumber;
-                int shooter = selfNumber;
+                int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().PlayerID;
+                int shooter = PlayerID;
 
                 ClientFire(shooter, playerTouched);
             }
@@ -365,7 +415,7 @@ public class FullControl : NetworkBehaviour
             if (child.GetComponent<FullControl>().isLocal)
             {
 
-                if (child.GetComponent<FullControl>().selfNumber == playerTouched)
+                if (child.GetComponent<FullControl>().PlayerID == playerTouched)
                 {
 
                     bool kill = child.GetComponent<Health>().TakeDamage(20);
@@ -373,7 +423,7 @@ public class FullControl : NetworkBehaviour
                     if (kill) //Si y a kill le joueur redescend
                     {
 
-                        
+
                         if (!GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill) //Si permier kill, on donne la balle et on bloque  
                             child.GetComponent<Health>().KillManager(shooter, playerTouched, true);
                         else
@@ -386,10 +436,10 @@ public class FullControl : NetworkBehaviour
                 }
 
             }
-            
+
         }
     }
-#endregion
+    #endregion
 
 
 
@@ -476,7 +526,7 @@ public class FullControl : NetworkBehaviour
             }
 
         }
-            
+
     }
     #endregion
 
@@ -575,7 +625,7 @@ public class FullControl : NetworkBehaviour
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == plyr)
+            if (child.GetComponent<FullControl>().PlayerID == plyr)
             {
                 child.GetComponent<FullControl>().GotBall = true;
             }
@@ -612,6 +662,11 @@ public class FullControl : NetworkBehaviour
     [Command]
     public void CmdStartTimer()
     {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            child.GetComponent<FullControl>().OnLobby = false;
+        }
         ClientStartTimer();
     }
 
@@ -627,16 +682,17 @@ public class FullControl : NetworkBehaviour
             if (FCScript.isLocal)
             {
                 child.GetComponent<ZoneLimitations>().UpState();
+                child.GetComponent<FullControl>().InGame = true;
             }
         }
-            /*GameObject timer;
-            if (timer = GameObject.FindGameObjectWithTag("TimerText"))
-            {
-                timer.GetComponent<StartTimer>().top = true;
-                timer.GetComponent<Text>().enabled = true;
-                timer.GetComponent<StartTimer>().enabled = true;
-            }*/
-        }
+        /*GameObject timer;
+        if (timer = GameObject.FindGameObjectWithTag("TimerText"))
+        {
+            timer.GetComponent<StartTimer>().top = true;
+            timer.GetComponent<Text>().enabled = true;
+            timer.GetComponent<StartTimer>().enabled = true;
+        }*/
+    }
     #endregion
 
     public void UpdateDeadCam()
@@ -669,6 +725,62 @@ public class FullControl : NetworkBehaviour
     }
 
     [Command]
+    public void CmdDisplayPlayer(int player, bool isdead)
+    {
+        ClientDisplayPlayer(player, isdead);
+    }
+
+    [ClientRpc]
+    public void ClientDisplayPlayer(int player, bool display)
+    {
+        bool creatPlayer = true;
+
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        if (!display)
+        {
+            foreach (GameObject child in characters)
+            {
+                if (child.GetComponent<FullControl>().PlayerID == player)
+                {
+                    child.GetComponent<FullControl>().dead = true;
+                    Transform[] children = GetComponentsInChildren<Transform>();
+                    foreach (Transform child2 in children)
+                    {
+                        if (child2.CompareTag("LocalPlayer"))
+                            Destroy(child2.gameObject);
+                    }
+                }
+            }
+        }
+
+        else
+        {
+            foreach (GameObject child in characters)
+            {
+                if (child.GetComponent<FullControl>().PlayerID == player)
+                {
+                    //child.GetComponent<FullControl>().dead = false;
+                    Transform[] children = GetComponentsInChildren<Transform>();
+                    foreach (Transform child2 in children)
+                    {
+                        if (child2.CompareTag("LocalPlayer"))
+                        {
+                            creatPlayer = false;
+                        }
+                    }
+                    if (creatPlayer)
+                    {
+                        child.GetComponent<FullControl>().InitPlayerBody();
+                    }
+                }
+            }
+        }
+
+        //ClientDesablePlayer(player);
+        GameEnd();
+    }
+
+    [Command]
     public void CmdDeadPlayer(int player)
     {
         ClientDeadPlayer(player);
@@ -678,24 +790,12 @@ public class FullControl : NetworkBehaviour
     public void ClientDeadPlayer(int player)
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == player)
-            {
+            if (child.GetComponent<FullControl>().PlayerID == PlayerID)
                 child.GetComponent<FullControl>().dead = true;
-                /*Transform[] children = GetComponentsInChildren<Transform>();
-                foreach (Transform child2 in children)
-                {
-
-                    if (child2.CompareTag("LocalPlayer"))
-                    {
-                        child2.gameObject.SetActive(false);
-                    }
-                }*/
-
-            }
         }
-        //ClientDesablePlayer(player);
         GameEnd();
     }
 
@@ -707,9 +807,8 @@ public class FullControl : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            //Debug.Log(child.GetComponent<FullControl>().selfNumber);
             var FC = child.GetComponent<FullControl>();
-            var ZL = child.GetComponent <ZoneLimitations>();
+            var ZL = child.GetComponent<ZoneLimitations>();
 
             if (ZL.teamBlue && FC.dead)
             {
@@ -756,5 +855,42 @@ public class FullControl : NetworkBehaviour
                 }
             }
         }
+    }
+
+    public void InitPlayerBody()
+    {
+        var body = Instantiate(BodyPrefab, gameObject.transform);
+        body.transform.parent = gameObject.transform;
+        GetComponent<AnimationStateControler>().player = body;
+        GetComponent<AnimationStateControler>().animator = GetComponent<AnimationStateControler>().player.GetComponent<Animator>(); ;
+
+        bulletSpawn = body.GetComponent<BulletSpawn>().BulletPose.transform;
+
+
+    }
+
+
+    [Command]
+    public void CmdBackToLobby(int id)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().PlayerID == id)
+            {
+                child.GetComponent<FullControl>().OnLobby = true;
+            }
+        }
+
+        characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+        foreach (GameObject child in characters)
+        {
+            if (!child.GetComponent<FullControl>().OnLobby)
+            {
+                return;
+            }
+        }
+        GameObject GameMng = GameObject.FindGameObjectWithTag("GameManager");
+        GameMng.GetComponent<StartManager>().InteratableEnable();
     }
 }

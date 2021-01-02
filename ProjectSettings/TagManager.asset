@@ -40,6 +40,9 @@ TagManager:
   - cinemachineCamera
   - endCanvas
   - LobbyFieldSpawner
+  - traveling
+  - NetWorkManager
+  - oldTraveling
   layers:
   - Default
   - TransparentFX
@@ -53,7 +56,7 @@ TagManager:
   - NotLocal
   - Bullet
   - Player
-  - 
+  - StartWall
   - 
   - 
   - 

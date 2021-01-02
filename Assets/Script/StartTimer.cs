@@ -28,7 +28,7 @@ public class StartTimer : MonoBehaviour
         
         GameObject.FindGameObjectWithTag("GameManager").GetComponent<StartManager>().InteratableDesable();
         GameObject.FindGameObjectWithTag("GameManager").GetComponent<StartManager>().HideStartButton();
-
+        
 
     }
 

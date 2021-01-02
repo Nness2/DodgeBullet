@@ -14,7 +14,7 @@ public class FireVFX : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
+            if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
             {
                 Transform[] Children = child.GetComponentsInChildren<Transform>();
                 foreach (Transform child2 in Children)
