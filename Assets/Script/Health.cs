@@ -41,7 +41,7 @@ public class Health : NetworkBehaviour
                 FC.dead = true;
                 FC.InGame = false;
                 FC.CmdDeadPlayer(FC.PlayerID);
-                return false;
+                return true;
             }
             currentHealth = 100;
             //ZL.UpdateZone();

@@ -8,11 +8,13 @@ public class SpellManager : NetworkBehaviour
 
     public GameObject wallPrefab;
     public GameObject backWallPrefab;
+    public GameObject CatchPrefab;
 
 
     private float wallCd;
     private bool wallReady;
     private bool bcWallReady;
+    private bool catchWallReady;
 
 
     private IEnumerator coroutine;
@@ -22,6 +24,7 @@ public class SpellManager : NetworkBehaviour
         wallCd = 5;
         wallReady = true;
         bcWallReady = true;
+        catchWallReady = true;
 
     }
 
@@ -62,9 +65,28 @@ public class SpellManager : NetworkBehaviour
                 float spawnDistance = -0.8f;
                 Vector3 spawnPos = playerPos + playerDirection * spawnDistance;
                 spawnPos = new Vector3(spawnPos.x, 1.3f, spawnPos.z);
-                int player = GetComponent<FullControl>().selfNumber;
+                int player = GetComponent<FullControl>().PlayerID;
 
                 CmdBackWall(spawnPos, Quaternion.Euler(rot), player);
+            }
+        }
+
+        //CATCHWALLSPELL
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (catchWallReady)
+            {
+                catchWallReady = false;
+                Vector3 rot = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + 90, transform.eulerAngles.z);
+                Vector3 playerPos = transform.position;
+                Vector3 playerDirection = transform.forward;
+                Quaternion playerRotation = transform.rotation;
+                float spawnDistance = 0f;
+                Vector3 spawnPos = playerPos + playerDirection * spawnDistance;
+                spawnPos = new Vector3(spawnPos.x, 0.7f, spawnPos.z);
+                int player = GetComponent<FullControl>().PlayerID;
+
+                CmdCatchWall(spawnPos, player);
             }
         }
     }
@@ -121,7 +143,7 @@ public class SpellManager : NetworkBehaviour
 
         foreach (GameObject child in characters)
         {
-            if (child.GetComponent<FullControl>().selfNumber == player)// && ZLScript.state > 0)
+            if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
             {
                 var bkWall = (GameObject)Instantiate(
                     backWallPrefab,
@@ -144,6 +166,55 @@ public class SpellManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(wallCd);
         bcWallReady = true;
+
+    }
+
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdCatchWall(Vector3 pos, int player)
+    {
+        ClientCatchWall(pos, player);
+    }
+
+    [ClientRpc]
+    void ClientCatchWall(Vector3 pos, int player)
+    {
+        //Transform camInfo = CamInfo;
+        /*var bkWall = (GameObject)Instantiate(
+            backWallPrefab,
+            Vector3.zero,
+            new Quaternion(0,0,0,0));*/
+
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
+            {
+                var bkWall = (GameObject)Instantiate(
+                    CatchPrefab,
+                    pos,
+                    Quaternion.identity);
+                //child.transform.position += new Vector3(0, 0, -0.5f);
+                //child.transform.rotation);
+                //bkWall.transform.eulerAngles += new Vector3(0, 90, 0);
+
+                bkWall.transform.parent = child.transform;
+
+                StartCoroutine(BcCatchWallWait());
+
+                if (!GetComponent<FullControl>().isLocal)
+                {
+                    bkWall.AddComponent<SphereCollider>();
+                }
+                Destroy(bkWall, 10.5f);
+            }
+        }
+    }
+
+    IEnumerator BcCatchWallWait()
+    {
+        yield return new WaitForSeconds(wallCd);
+        catchWallReady = true;
 
     }
 }

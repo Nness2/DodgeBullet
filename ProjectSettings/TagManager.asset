@@ -43,6 +43,7 @@ TagManager:
   - traveling
   - NetWorkManager
   - oldTraveling
+  - CatchWall
   layers:
   - Default
   - TransparentFX
@@ -57,7 +58,7 @@ TagManager:
   - Bullet
   - Player
   - StartWall
-  - 
+  - CatchWall
   - 
   - 
   - 

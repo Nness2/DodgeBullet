@@ -43,6 +43,7 @@ public class FullControl : NetworkBehaviour
     public GameObject BodyPrefab;
     public GameObject StartCanvas;
 
+
     public GameObject gun;
 
     private GameObject GameMng;
@@ -429,7 +430,8 @@ public class FullControl : NetworkBehaviour
                         else
                             child.GetComponent<Health>().KillManager(shooter, playerTouched, false);
 
-                        child.GetComponent<ZoneLimitations>().UpState();
+                        if (!child.GetComponent<FullControl>().dead)
+                            child.GetComponent<ZoneLimitations>().UpState();
                         //child.GetComponent<ZoneLimitations>().UpdateZone();
 
                     }
@@ -614,13 +616,13 @@ public class FullControl : NetworkBehaviour
 
     #region PickUp
     [Command]
-    public void CmdPickUp(int plyr)
+    public void CmdPickUp(GameObject ball, int plyr)
     {
-        ClientPickUp(plyr);
+        ClientPickUp(ball, plyr);
     }
 
     [ClientRpc]
-    void ClientPickUp(int plyr)
+    void ClientPickUp(GameObject ball, int plyr)
     {
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
         foreach (GameObject child in characters)
@@ -630,7 +632,7 @@ public class FullControl : NetworkBehaviour
                 child.GetComponent<FullControl>().GotBall = true;
             }
         }
-        GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
+        //GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
         Destroy(ball);
     }
 

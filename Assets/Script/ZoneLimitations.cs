@@ -164,32 +164,31 @@ public class ZoneLimitations : NetworkBehaviour
         //foreach (string blueChild in child.GetComponent<GameInfos>().BlueTeam)
         if (teamBlue)
         {
-            //for (int i = 0; i < GIScript.BlueTeam.Count; i++)
-            //{
-                //if (GIScript.BlueTeam[i].GetComponent<GameInfos>().selfName == GIScript.selfName)
-                //{
+            for (int i = 0; i < GIScript.BlueTeam.Count; i++)
+            {
+                if (GIScript.BlueTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
+                {
                     controller.enabled = false;
-                    transform.position = BlueSpawnsZone[state][0].transform.position;
-                    transform.rotation = BlueSpawnsZone[state][0].transform.localRotation;
+                    transform.position = BlueSpawnsZone[state][i].transform.position;
+                    transform.rotation = BlueSpawnsZone[state][i].transform.localRotation;
                     controller.enabled = true;
-                //}
-            //}
+                }
+            }
         }
                 //foreach (string redChild in child.GetComponent<GameInfos>().RedTeam)
         else //if (!teamBlue)
         {
-            //for (int i = 0; i < GIScript.RedTeam.Count; i++)
-            //{
-               // if (GIScript.RedTeam[i].GetComponent<GameInfos>().selfName == GIScript.selfName)
-                //{
+            for (int i = 0; i < GIScript.RedTeam.Count; i++)
+            {
+                if (GIScript.RedTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
+                {
                     controller.enabled = false;
-                    transform.position = RedSpawnsZone[state][0].transform.position;
-                    transform.rotation = RedSpawnsZone[state][0].transform.localRotation;
+                    transform.position = RedSpawnsZone[state][i].transform.position;
+                    transform.rotation = RedSpawnsZone[state][i].transform.localRotation;
                     controller.enabled = true;
-                //}
-            //}
+                }
+            }
         }
-
     }
     /*
     if (teamBlue)

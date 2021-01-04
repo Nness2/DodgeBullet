@@ -54,7 +54,7 @@ public class GameInfos : NetworkBehaviour
         //      CmdSyncNames();
         //StartImage = GameObject.FindGameObjectWithTag("startImage");
         nameChecked = false;
-        teamSize = 2;
+        teamSize = 1;
         selfColor = (int)Color.None;
         teamsReady = false;
         BlueTeam = new List<GameObject>();

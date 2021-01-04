@@ -1771,6 +1771,8 @@ MonoBehaviour:
     type: 3}
   backWallPrefab: {fileID: 9023715569294178489, guid: 387e0b63c53def5409a1485e849d93b2,
     type: 3}
+  CatchPrefab: {fileID: 3082243029873426612, guid: ecdc62964be924b49a9d1d92cd1c3c09,
+    type: 3}
 --- !u!114 &4641306783159796284
 MonoBehaviour:
   m_ObjectHideFlags: 0

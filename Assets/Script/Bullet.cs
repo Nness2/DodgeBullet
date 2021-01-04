@@ -21,15 +21,44 @@ public class Bullet : NetworkBehaviour
     {
         
         var hit = collision.gameObject;
+
+
+        if (hit.tag == "CatchWall")
+        {
+            var player = hit.transform.parent;
+            //Debug.Log(player.gameObject.GetComponent<FullControl>().PlayerID);
+            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+            foreach (GameObject child in characters)
+            {
+                if (child.GetComponent<FullControl>().isLocal)
+                {
+                    child.GetComponent<FullControl>().CmdPickUp(gameObject, player.gameObject.GetComponent<FullControl>().PlayerID);
+                }
+            }
+            return;
+            //Destroy(gameObject);
+        }
+
+
         var health = hit.GetComponent<Health>();
 
-        if (touchedGround)
-            return;
-       
         if (health != null)
         {
+            if (touchedGround)
+                return;
+
             if (hit.GetComponent<FullControl>().isLocal)
             {
+                Transform[] children = hit.GetComponentsInChildren<Transform>();
+                foreach (Transform child in children)
+                {
+                    if (child.CompareTag("CatchWall"))
+                    {
+                        return;
+                    }
+                }
+            
                 var ZLScript = hit.GetComponent<ZoneLimitations>();
                 bool kill = health.TakeDamage(70);
 
@@ -58,11 +87,15 @@ public class Bullet : NetworkBehaviour
             }
             return;
         }
+
         if (hit.tag == "GroundField")
         {
             touchedGround = true;
             return;
         }
+
+
+
         //Destroy(gameObject);
     }
 
@@ -84,7 +117,7 @@ public class Bullet : NetworkBehaviour
                     if (distance <= 2)
                     {
                         int player = child.GetComponent<FullControl>().PlayerID;
-                        child.GetComponent<FullControl>().CmdPickUp(player);
+                        child.GetComponent<FullControl>().CmdPickUp(gameObject, player);
                         //Destroy(gameObject);
                     }
                 }
