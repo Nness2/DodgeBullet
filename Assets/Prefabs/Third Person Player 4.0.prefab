@@ -1709,6 +1709,8 @@ MonoBehaviour:
     type: 3}
   StartCanvas: {fileID: 7087745480496452049, guid: dd51d14e728969a4a8e6937191892b4a,
     type: 3}
+  TargetAnimPrefab: {fileID: 1189259031488001703, guid: 73b43a5047d5c5c45a1e8b9b25155854,
+    type: 3}
   gun: {fileID: 8895199635919249747, guid: dc09be66888b21048a888840c2b788e5, type: 3}
   selfNumber: 0
   isLocal: 0

@@ -43,6 +43,7 @@ public class MyNetWorkManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         Debug.Log("Disconnected to Server");
+        Debug.Log("ahhaha");
     }
 
     void OnCreateCharacter(NetworkConnection conn, CreateMMOCharacterMessage message)

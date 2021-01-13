@@ -44,6 +44,9 @@ TagManager:
   - NetWorkManager
   - oldTraveling
   - CatchWall
+  - SphereTarget
+  - LeftHandPose
+  - TargetAnimator
   layers:
   - Default
   - TransparentFX

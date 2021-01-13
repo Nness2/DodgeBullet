@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using Cinemachine;
+
 using UnityEngine.SceneManagement;
 
 public class FullControl : NetworkBehaviour
@@ -42,6 +43,8 @@ public class FullControl : NetworkBehaviour
     public Transform bulletSpawn;
     public GameObject BodyPrefab;
     public GameObject StartCanvas;
+    public GameObject TargetAnimPrefab;
+
 
 
     public GameObject gun;
@@ -72,6 +75,7 @@ public class FullControl : NetworkBehaviour
 
     public bool InGame;
     public bool OnLobby;
+
 
     void Start()
     {
@@ -111,14 +115,18 @@ public class FullControl : NetworkBehaviour
                     LocalPlayer.transform.localPosition = new Vector3();
                     LocalPlayer.tag = "oldTraveling";
                 }
+
+                
             }
 
+            CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
             Assert.IsNotNull(groundCheck);
             selfNumber = cmptPlayers();
             InitSelfNb(cmptPlayers());
+
             //teamManager();
 
             //Set Position
@@ -163,6 +171,8 @@ public class FullControl : NetworkBehaviour
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
+        Vector3 SpherePose = GameObject.FindGameObjectWithTag("SphereTarget").transform.position;
+        CmdUpdateTargetAnim(SpherePose, PlayerID);
 
         Jump();
 
@@ -379,7 +389,38 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
+    #region Unity TargetAnim
+    [Command] //Appelé par le client mais lu par le serveur
+    void CmdTargetAnim(int playerId)
+    {
+        var TargetAnim = (GameObject)Instantiate(
+        TargetAnimPrefab,
+        Vector3.zero,
+        Quaternion.identity);
 
+
+        NetworkServer.Spawn(TargetAnim); //Spawn sur le serveur et les clients
+        //TargetAnim.transform.parent = obj;
+        TargetAnim.GetComponent<TargetAnimator>().PlayerId = playerId;
+    }
+
+    [Command]
+    void CmdUpdateTargetAnim(Vector3 spherePos, int playerId)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("TargetAnimator");
+
+        foreach (GameObject child in characters)
+        {
+            var TA = child.GetComponent<TargetAnimator>();
+            if (TA.PlayerId == playerId)
+            {
+                TA.transform.position = spherePos;
+                //TA.LeftHandTarget.transform = ;
+            }
+        }
+    }
+
+    #endregion
 
     #region Unity Shoot
     [Command]
@@ -867,7 +908,7 @@ public class FullControl : NetworkBehaviour
         GetComponent<AnimationStateControler>().animator = GetComponent<AnimationStateControler>().player.GetComponent<Animator>(); ;
 
         bulletSpawn = body.GetComponent<BulletSpawn>().BulletPose.transform;
-
+        //body.GetComponent<GetRigInfo>().PlayerID = playerNumber;
 
     }
 
