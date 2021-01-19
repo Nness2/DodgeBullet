@@ -62,8 +62,8 @@ TagManager:
   - Player
   - StartWall
   - CatchWall
-  - 
-  - 
+  - BluePlayer
+  - RedPlayer
   - 
   - 
   - 

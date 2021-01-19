@@ -32,15 +32,16 @@ public class Health : NetworkBehaviour
         {
 
             //ZL.state++;
-            if(ZL.state > 3)//2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
+            if (ZL.state > 3)//2) //state est up après, il faut anticiper de 1, attention à l'utilisation du stateDown et du state--
             {
                 var FC = GetComponent<FullControl>();
                 //FC.UpdateDeadCam();
                 //FC.CmdDisplayPlayer(FC.selfNumber, false);
                 GetComponent<ZoneLimitations>().CmdInitState();
                 FC.dead = true;
-                FC.InGame = false;
                 FC.CmdDeadPlayer(FC.PlayerID);
+                FC.InGame = false;
+
                 return true;
             }
             currentHealth = 100;

@@ -119,7 +119,7 @@ public class FullControl : NetworkBehaviour
                 
             }
 
-            CmdTargetAnim(PlayerID);
+            //CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
@@ -289,8 +289,8 @@ public class FullControl : NetworkBehaviour
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            var GI = GetComponent<GameInfos>().enabled = false; //toggle this script to re-invoke it
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
+            //var GI = GetComponent<GameInfos>().enabled = false; //toggle this script to re-invoke it // Bug Je ne sais pas ce que cette ligne faisait là
+            //velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
         }
 
         velocity.y += gravity * Time.deltaTime; // falling : ∆y = 1/2g * t^2 
@@ -429,6 +429,8 @@ public class FullControl : NetworkBehaviour
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("StartWall");
         int plyr = 1 << LayerMask.NameToLayer("Player");
+
+
         int mask = grnd | plyr;
         RaycastHit hit;
 
@@ -442,7 +444,8 @@ public class FullControl : NetworkBehaviour
                 int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().PlayerID;
                 int shooter = PlayerID;
 
-                ClientFire(shooter, playerTouched);
+                if (GetComponent<ZoneLimitations>().teamBlue != hit.transform.gameObject.GetComponent<ZoneLimitations>().teamBlue) // S'ils ne sont pas de la même équipe
+                    ClientFire(shooter, playerTouched);
             }
         }
     }
@@ -505,6 +508,10 @@ public class FullControl : NetworkBehaviour
     public void TeamChoice(bool teamBlue)
     {
         isBlue = teamBlue;
+        if (teamBlue)
+            gameObject.layer = LayerMask.NameToLayer("BluePlayer"); ;
+        if (!teamBlue)
+            gameObject.layer = LayerMask.NameToLayer("RedPlayer"); ;
     }
 
     #region Unity TeamManager
@@ -842,10 +849,11 @@ public class FullControl : NetworkBehaviour
         GameEnd();
     }
 
-    void GameEnd()
+    public void GameEnd()
     {
-        int blueDead = 0;
-        int redDead = 0;
+
+        int blueAlive = 0;
+        int redAlive = 0;
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -853,13 +861,13 @@ public class FullControl : NetworkBehaviour
             var FC = child.GetComponent<FullControl>();
             var ZL = child.GetComponent<ZoneLimitations>();
 
-            if (ZL.teamBlue && FC.dead)
+            if (ZL.teamBlue && !FC.dead)
             {
-                blueDead++;
+                blueAlive++;
             }
-            if (!ZL.teamBlue && FC.dead)
+            if (!ZL.teamBlue && !FC.dead)
             {
-                redDead++;
+                redAlive++;
             }
 
 
@@ -878,7 +886,7 @@ public class FullControl : NetworkBehaviour
 
                     if (child2.CompareTag("endCanvas"))
                     {
-                        if (blueDead >= teamSize)
+                        if (blueAlive == 0)
                         {
                             if (child.GetComponent<ZoneLimitations>().teamBlue)
                                 child2.GetComponent<endGame>().displayEndGame(false);
@@ -887,12 +895,12 @@ public class FullControl : NetworkBehaviour
 
                         }
 
-                        if (redDead >= teamSize)
+                        else if (redAlive == 0)
                         {
-                            if (!child.GetComponent<ZoneLimitations>().teamBlue)
-                                child2.GetComponent<endGame>().displayEndGame(false);
-                            else
+                            if (child.GetComponent<ZoneLimitations>().teamBlue)
                                 child2.GetComponent<endGame>().displayEndGame(true);
+                            else
+                                child2.GetComponent<endGame>().displayEndGame(false);
                         }
                     }
                 }

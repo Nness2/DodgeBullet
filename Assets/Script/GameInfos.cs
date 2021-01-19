@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 public class GameInfos : NetworkBehaviour
 {
@@ -80,9 +81,11 @@ public class GameInfos : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (!isLocalPlayer)
             return;
 
+        ClientDeconnexion();
 
         if (nameChecked)
         {
@@ -136,7 +139,29 @@ public class GameInfos : NetworkBehaviour
 
 
 
+    void ClientDeconnexion()
+    {
+        foreach (GameObject child in BlueTeam.ToList())
+        {
+            if (child == null)
+            {
+                BlueTeam.Remove(child);
+                callMe = true;
+                GetComponent<FullControl>().GameEnd();
+            }
+        }
 
+        foreach (GameObject child2 in RedTeam.ToList())
+        {
+            if (child2 == null)
+            {
+                RedTeam.Remove(child2);
+                callMe = true;
+                GetComponent<FullControl>().GameEnd();
+            }
+        }
+
+    }
 
 
     void AddText()
@@ -145,16 +170,23 @@ public class GameInfos : NetworkBehaviour
         display = "";
         foreach (GameObject obj in BlueTeam)
         {
-            var msg = obj.GetComponent<GameInfos>().selfName;
-            display = display.ToString() + msg.ToString() + "\n";
+            if (obj != null)
+            {
+                var msg = obj.GetComponent<GameInfos>().selfName;
+                display = display.ToString() + msg.ToString() + "\n";
+            }
+
         }
         blueText.text = display;
 
         display = "";
         foreach (GameObject obj in RedTeam)
         {
-            var msg = obj.GetComponent<GameInfos>().selfName;
-            display = display.ToString() + msg.ToString() + "\n";
+            if (obj != null)
+            {
+                var msg = obj.GetComponent<GameInfos>().selfName;
+                display = display.ToString() + msg.ToString() + "\n";
+            }
         }
         redText.text = display;
 
@@ -168,19 +200,24 @@ public class GameInfos : NetworkBehaviour
         display = "";
         foreach (GameObject msg in BlueTeam)
         {
-            int kill = msg.GetComponent<Stats>().selfKill;
-            int death = msg.GetComponent<Stats>().selfDeath;
-            display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
+            if (msg != null)
+            {
+                int kill = msg.GetComponent<Stats>().selfKill;
+                int death = msg.GetComponent<Stats>().selfDeath;
+                display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
+            }
         }
         blueKda.text = display;
 
         display = "";
         foreach (GameObject msg in RedTeam)
         {
-            int kill = msg.GetComponent<Stats>().selfKill;
-            int death = msg.GetComponent<Stats>().selfDeath;
-            display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
-
+            if (msg != null)
+            {
+                int kill = msg.GetComponent<Stats>().selfKill;
+                int death = msg.GetComponent<Stats>().selfDeath;
+                display = display.ToString() + kill.ToString() + " / " + death.ToString() + "\n";
+            }
         }
         redKda.text = display;
 
