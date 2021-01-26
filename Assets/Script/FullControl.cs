@@ -463,7 +463,7 @@ public class FullControl : NetworkBehaviour
         {
             if (child.GetComponent<FullControl>().PlayerID == id)
             {
-                child.transform.parent = gameObject.transform;
+                TargetAnim.transform.parent = child.transform;
             }
         }
     }

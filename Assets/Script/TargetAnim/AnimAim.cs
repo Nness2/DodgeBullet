@@ -14,6 +14,7 @@ public class AnimAim : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         PlayerId = gameObject.transform.parent.parent.parent.parent.GetComponent<FullControl>().PlayerID;
         //Target = GameObject.FindGameObjectWithTag(TargetName);
     }
@@ -37,6 +38,8 @@ public class AnimAim : NetworkBehaviour
             transform.position = Target.transform.position; 
         //Vector3 SpherePose = GameObject.FindGameObjectWithTag("SphereTarget").transform.position;
         //gameObject.transform.position = Target.transform.position;
+
+
 
     }
 
