@@ -8,6 +8,7 @@ public class AnimAim : NetworkBehaviour
 {
 
     //public string TargetName;
+    public string TargetTag;
     public GameObject Target;
     public int PlayerId;
     // Start is called before the first frame update
@@ -22,7 +23,7 @@ public class AnimAim : NetworkBehaviour
     {
         if (Target == null)
         {
-            GameObject[] characters = GameObject.FindGameObjectsWithTag("TargetAnimator");
+            GameObject[] characters = GameObject.FindGameObjectsWithTag(TargetTag);
 
             foreach (GameObject child in characters)
             {

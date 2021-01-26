@@ -44,8 +44,11 @@ public class FullControl : NetworkBehaviour
     public GameObject BodyPrefab;
     public GameObject StartCanvas;
     public GameObject TargetAnimPrefab;
+    public GameObject TargetAnimPrefabLeft;
+    public GameObject BulletImpact;
 
-
+    GameObject LeftHandPose;
+    GameObject SpherePose;
 
     public GameObject gun;
 
@@ -116,10 +119,10 @@ public class FullControl : NetworkBehaviour
                     LocalPlayer.tag = "oldTraveling";
                 }
 
-                
+
             }
 
-            //CmdTargetAnim(PlayerID);
+            CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
@@ -139,8 +142,11 @@ public class FullControl : NetworkBehaviour
             controller.enabled = true;
             */
 
+            SpherePose = GameObject.FindGameObjectWithTag("SphereTarget");
 
         }
+
+
         else
         {
             //gameObject.layer = 9;
@@ -159,20 +165,30 @@ public class FullControl : NetworkBehaviour
                 }
             }
         }
+        Transform[] LeftHandchildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child in LeftHandchildren)
+        {
+            if (child.CompareTag("LeftHandPose"))
+            {
+                LeftHandPose = child.gameObject;
+            }
+        }
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        UpdateTargetAnimLeft(LeftHandPose.transform.position, PlayerID);
 
         if (!isLocalPlayer)
             return;
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
-        Vector3 SpherePose = GameObject.FindGameObjectWithTag("SphereTarget").transform.position;
-        CmdUpdateTargetAnim(SpherePose, PlayerID);
+        CmdUpdateTargetAnim(SpherePose.transform.position, PlayerID);
+
+
 
         Jump();
 
@@ -261,6 +277,19 @@ public class FullControl : NetworkBehaviour
 
     }
 
+    public static GameObject FindParentWithTag(GameObject childObject, string tag) // Traverse up the hierarchy to find first parent with specific tag
+    {
+        Transform t = childObject.transform;
+        while (t.parent != null)
+        {
+            if (t.parent.tag == tag)
+            {
+                return t.parent.gameObject;
+            }
+            t = t.parent.transform;
+        }
+        return null; // Could not find a parent with given tag.
+    }
 
 
     private void FixedUpdate()
@@ -290,7 +319,7 @@ public class FullControl : NetworkBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             //var GI = GetComponent<GameInfos>().enabled = false; //toggle this script to re-invoke it // Bug Je ne sais pas ce que cette ligne faisait là
-            //velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
         }
 
         velocity.y += gravity * Time.deltaTime; // falling : ∆y = 1/2g * t^2 
@@ -335,10 +364,21 @@ public class FullControl : NetworkBehaviour
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
         int plyr = 1 << LayerMask.NameToLayer("Player");
+
+        int SecondLayer = 1 << LayerMask.NameToLayer("SecondLayer");
+        int mask3 = SecondLayer;
+        RaycastHit hit3;
+
+        Vector3 SecondPose = Vector3.zero;
+        if (Physics.Raycast(position, forward, out hit3, Mathf.Infinity, mask3))
+            SecondPose = hit3.point;
+        else
+            return;
+
         int mask = grnd | plyr;
         RaycastHit hit;
         Vector3 dir;
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, mask))
+        if (Physics.Raycast(SecondPose, forward, out hit, Mathf.Infinity, mask))
         {
             //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.point);
@@ -398,43 +438,98 @@ public class FullControl : NetworkBehaviour
         Vector3.zero,
         Quaternion.identity);
 
+        var TargetAnimLeft = (GameObject)Instantiate(
+        TargetAnimPrefabLeft,
+        Vector3.zero,
+        Quaternion.identity);
+
 
         NetworkServer.Spawn(TargetAnim); //Spawn sur le serveur et les clients
-        //TargetAnim.transform.parent = obj;
+        NetworkServer.Spawn(TargetAnimLeft); //Spawn sur le serveur et les clients
+
+        //TargetAnim.transform.parent = transform;
         TargetAnim.GetComponent<TargetAnimator>().PlayerId = playerId;
+        TargetAnimLeft.GetComponent<TargetAnimator>().PlayerId = playerId;
+        //ClientTargetAnimToParent(TargetAnimLeft, playerId);
+        //ClientTargetAnimToParent(TargetAnim, playerId);
+    }
+
+    [ClientRpc]
+    void ClientTargetAnimToParent(GameObject TargetAnim, int id)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().PlayerID == id)
+            {
+                child.transform.parent = gameObject.transform;
+            }
+        }
+    }
+
+
+    void UpdateTargetAnimLeft(Vector3 leftHandPose, int playerId)
+    {
+
+        GameObject[] targetLeft = GameObject.FindGameObjectsWithTag("TargetAnimatorLeft");
+
+        foreach (GameObject child in targetLeft)
+        {
+            var TA = child.GetComponent<TargetAnimator>();
+            if (TA.PlayerId == playerId)
+            {
+                TA.transform.position = leftHandPose;
+            }
+        }
     }
 
     [Command]
     void CmdUpdateTargetAnim(Vector3 spherePos, int playerId)
     {
-        GameObject[] characters = GameObject.FindGameObjectsWithTag("TargetAnimator");
+        GameObject[] target = GameObject.FindGameObjectsWithTag("TargetAnimator");
 
-        foreach (GameObject child in characters)
+        foreach (GameObject child in target)
         {
             var TA = child.GetComponent<TargetAnimator>();
             if (TA.PlayerId == playerId)
             {
                 TA.transform.position = spherePos;
-                //TA.LeftHandTarget.transform = ;
             }
         }
     }
 
     #endregion
 
-    #region Unity Shoot
+        #region Unity Shoot
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("StartWall");
         int plyr = 1 << LayerMask.NameToLayer("Player");
-
-
         int mask = grnd | plyr;
-        RaycastHit hit;
 
-        if (Physics.Raycast(position, forward, out hit, Mathf.Infinity, mask))
+        int ground = 1 << LayerMask.NameToLayer("Ground");
+        int mask2 = ground;
+
+        int SecondLayer = 1 << LayerMask.NameToLayer("SecondLayer");
+        int mask3 = SecondLayer;
+
+        RaycastHit hit;
+        RaycastHit hit2;
+        RaycastHit hit3;
+
+        Vector3 SecondPose = Vector3.zero;
+        if (Physics.Raycast(position, forward, out hit3, Mathf.Infinity, mask3))
+        {
+            SecondPose = hit3.point;
+        }
+
+        else
+            return;
+
+        if (Physics.Raycast(SecondPose, forward, out hit, Mathf.Infinity, mask))
         {
             //Vector3 dir = hit.point - bullet.transform.position;
             //dir = dir.normalized;
@@ -448,11 +543,40 @@ public class FullControl : NetworkBehaviour
                     ClientFire(shooter, playerTouched);
             }
         }
+
+        else if (Physics.Raycast(SecondPose, forward, out hit2, Mathf.Infinity, mask2))
+        {
+
+            if (hit2.transform.tag != "SphereTarget")
+            {
+                Vector3 touchPoint = hit2.point;
+                Quaternion lookRotation = Quaternion.LookRotation(-hit2.normal);
+
+                ClientFireImpact(touchPoint, lookRotation);
+            }
+        }
+    }
+
+    [ClientRpc]
+    void ClientFireImpact(Vector3 touchPoint, Quaternion lookRotation)
+    {
+
+            GameObject impact = Instantiate(BulletImpact, touchPoint + new Vector3(0.02f, 0.02f, 0.02f), lookRotation);
+            Destroy(impact, 8f);
+        
     }
 
     [ClientRpc]
     void ClientFire(int shooter, int playerTouched)
     {
+        if (isServer)
+        {
+            Debug.Log("SERVER");
+        }
+        if (isLocalPlayer)
+        {
+            Debug.Log("LOCAL");
+        }
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -508,13 +632,13 @@ public class FullControl : NetworkBehaviour
     public void TeamChoice(bool teamBlue)
     {
         isBlue = teamBlue;
-        if (teamBlue)
-            gameObject.layer = LayerMask.NameToLayer("BluePlayer"); ;
+        /*if (teamBlue)
+            gameObject.layer = LayerMask.NameToLayer("BluePlayer");
         if (!teamBlue)
-            gameObject.layer = LayerMask.NameToLayer("RedPlayer"); ;
+            gameObject.layer = LayerMask.NameToLayer("RedPlayer"); */
     }
 
-    #region Unity TeamManager
+        #region Unity TeamManager
     public void TeamManager()
     {
         /*var ZL = GetComponent<ZoneLimitations>();
@@ -578,7 +702,7 @@ public class FullControl : NetworkBehaviour
         }
 
     }
-    #endregion
+        #endregion
 
 
 
@@ -662,7 +786,7 @@ public class FullControl : NetworkBehaviour
         selfNumber = newValue;
     }
 
-    #region PickUp
+        #region PickUp
     [Command]
     public void CmdPickUp(GameObject ball, int plyr)
     {
@@ -688,7 +812,7 @@ public class FullControl : NetworkBehaviour
     {
         GotBall = newValue;
     }
-    #endregion
+        #endregion
 
     //Canvas team 
     public void MouseLock(bool Lock)
@@ -708,7 +832,7 @@ public class FullControl : NetworkBehaviour
     }
 
 
-    #region StartGame
+        #region StartGame
     [Command]
     public void CmdStartTimer()
     {
@@ -743,7 +867,7 @@ public class FullControl : NetworkBehaviour
             timer.GetComponent<StartTimer>().enabled = true;
         }*/
     }
-    #endregion
+        #endregion
 
     public void UpdateDeadCam()
     {

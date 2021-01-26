@@ -47,6 +47,7 @@ TagManager:
   - SphereTarget
   - LeftHandPose
   - TargetAnimator
+  - TargetAnimatorLeft
   layers:
   - Default
   - TransparentFX
@@ -64,8 +65,8 @@ TagManager:
   - CatchWall
   - BluePlayer
   - RedPlayer
-  - 
-  - 
+  - CrossAim
+  - SecondLayer
   - 
   - 
   - 

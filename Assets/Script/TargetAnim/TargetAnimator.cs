@@ -15,25 +15,18 @@ public class TargetAnimator : NetworkBehaviour
     void Start()
     {
 
-        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-
-        foreach (GameObject child in characters)
-        {
-            if (child.GetComponent<FullControl>().PlayerID == PlayerId)
-            {
-                //transform.parent = child.transform;
-            } 
-        }
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void OnChangePlayer(int oldValue, int newValue)
     {
         PlayerId = newValue;
+
     }
 }

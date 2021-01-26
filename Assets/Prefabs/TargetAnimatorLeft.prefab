@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4104988216720960053}
   - component: {fileID: 1376885893019641507}
   m_Layer: 0
-  m_Name: TargetAnimator
-  m_TagString: TargetAnimator
+  m_Name: TargetAnimatorLeft
+  m_TagString: TargetAnimatorLeft
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

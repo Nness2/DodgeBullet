@@ -1711,6 +1711,10 @@ MonoBehaviour:
     type: 3}
   TargetAnimPrefab: {fileID: 1189259031488001703, guid: 73b43a5047d5c5c45a1e8b9b25155854,
     type: 3}
+  TargetAnimPrefabLeft: {fileID: 1189259031488001703, guid: 788380d8749df81418317420c693c8fd,
+    type: 3}
+  BulletImpact: {fileID: 1385484837303697179, guid: 53d7344ac1a4e5a429fd0c021c41e856,
+    type: 3}
   gun: {fileID: 8895199635919249747, guid: dc09be66888b21048a888840c2b788e5, type: 3}
   selfNumber: 0
   isLocal: 0
