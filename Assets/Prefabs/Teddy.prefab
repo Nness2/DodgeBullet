@@ -106,7 +106,7 @@ MonoBehaviour:
     m_MinLimit: -100
     m_MaxLimit: 100
     m_AimAxis: 4
-    m_MaintainOffset: 1
+    m_MaintainOffset: 0
     m_ConstrainedAxes:
       x: 0
       y: 0
@@ -197,6 +197,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   PlayerId: 0
+  parented: 0
 --- !u!1 &1842392480107275097
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +363,7 @@ MonoBehaviour:
         weight: 1
       m_Item1:
         transform: {fileID: 0}
-        weight: 0
+        weight: 1
       m_Item2:
         transform: {fileID: 0}
         weight: 0
@@ -384,12 +385,12 @@ MonoBehaviour:
     m_Offset: {x: 0, y: 0, z: 0}
     m_MinLimit: -100
     m_MaxLimit: 100
-    m_AimAxis: 0
-    m_MaintainOffset: 1
+    m_AimAxis: 4
+    m_MaintainOffset: 0
     m_ConstrainedAxes:
       x: 1
-      y: 0
-      z: 0
+      y: 1
+      z: 1
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
 --- !u!1 &1842392481255580869
@@ -566,7 +567,7 @@ GameObject:
   - component: {fileID: 5336442296688470210}
   m_Layer: 17
   m_Name: SecondLayer
-  m_TagString: Untagged
+  m_TagString: 3DModel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

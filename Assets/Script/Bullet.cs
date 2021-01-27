@@ -25,7 +25,7 @@ public class Bullet : NetworkBehaviour
 
         if (hit.tag == "CatchWall")
         {
-            var player = hit.transform.parent;
+            var playerObj = hit.transform.parent;
             //Debug.Log(player.gameObject.GetComponent<FullControl>().PlayerID);
             GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
@@ -33,7 +33,11 @@ public class Bullet : NetworkBehaviour
             {
                 if (child.GetComponent<FullControl>().isLocal)
                 {
-                    child.GetComponent<FullControl>().CmdPickUp(gameObject, player.gameObject.GetComponent<FullControl>().PlayerID);
+                    if (hit.GetComponent<Identifier>().Id != player)
+                    {
+                        child.GetComponent<FullControl>().CmdPickUp(gameObject, playerObj.gameObject.GetComponent<FullControl>().PlayerID);
+
+                    }
                 }
             }
             return;
@@ -116,8 +120,8 @@ public class Bullet : NetworkBehaviour
                 {
                     if (distance <= 2)
                     {
-                        int player = child.GetComponent<FullControl>().PlayerID;
-                        child.GetComponent<FullControl>().CmdPickUp(gameObject, player);
+                        int playerId = child.GetComponent<FullControl>().PlayerID;
+                        child.GetComponent<FullControl>().CmdPickUp(gameObject, playerId);
                         //Destroy(gameObject);
                     }
                 }

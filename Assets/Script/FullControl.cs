@@ -538,7 +538,6 @@ public class FullControl : NetworkBehaviour
             {
                 int playerTouched = hit.transform.gameObject.GetComponent<FullControl>().PlayerID;
                 int shooter = PlayerID;
-
                 if (GetComponent<ZoneLimitations>().teamBlue != hit.transform.gameObject.GetComponent<ZoneLimitations>().teamBlue) // S'ils ne sont pas de la même équipe
                     ClientFire(shooter, playerTouched);
             }
@@ -552,31 +551,24 @@ public class FullControl : NetworkBehaviour
                 Vector3 touchPoint = hit2.point;
                 Quaternion lookRotation = Quaternion.LookRotation(-hit2.normal);
 
-                ClientFireImpact(touchPoint, lookRotation);
+                ClientFireImpact(touchPoint, lookRotation, hit2.transform);
             }
         }
     }
 
     [ClientRpc]
-    void ClientFireImpact(Vector3 touchPoint, Quaternion lookRotation)
+    void ClientFireImpact(Vector3 touchPoint, Quaternion lookRotation, Transform objTouched)
     {
 
-            GameObject impact = Instantiate(BulletImpact, touchPoint + new Vector3(0.02f, 0.02f, 0.02f), lookRotation);
-            Destroy(impact, 8f);
+        GameObject impact = Instantiate(BulletImpact, touchPoint + new Vector3(0.02f, 0.02f, 0.02f), lookRotation);
+        //impact.transform.parent = objTouched;
+        Destroy(impact, 8f);
         
     }
 
     [ClientRpc]
     void ClientFire(int shooter, int playerTouched)
     {
-        if (isServer)
-        {
-            Debug.Log("SERVER");
-        }
-        if (isLocalPlayer)
-        {
-            Debug.Log("LOCAL");
-        }
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)

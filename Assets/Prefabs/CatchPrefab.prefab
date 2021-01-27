@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3082243029873426615}
   - component: {fileID: 3082243029873426608}
   - component: {fileID: 3082243029873426609}
+  - component: {fileID: 6592910260487873092}
   m_Layer: 13
   m_Name: CatchPrefab
   m_TagString: CatchWall
@@ -79,3 +80,15 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &6592910260487873092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3082243029873426612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee706122842e85549b06a4232d3e6c2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

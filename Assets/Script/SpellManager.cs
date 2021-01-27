@@ -194,6 +194,7 @@ public class SpellManager : NetworkBehaviour
                     CatchPrefab,
                     pos,
                     Quaternion.identity);
+                bkWall.GetComponent<Identifier>().Id = player;
                 //child.transform.position += new Vector3(0, 0, -0.5f);
                 //child.transform.rotation);
                 //bkWall.transform.eulerAngles += new Vector3(0, 90, 0);
