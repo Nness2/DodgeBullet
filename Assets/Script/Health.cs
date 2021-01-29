@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
+using DodgeBullet;
+
 
 public class Health : NetworkBehaviour
 {
@@ -12,6 +14,8 @@ public class Health : NetworkBehaviour
     public int currentHealth = maxHealth;
 
     public RectTransform healthBar;
+
+    [SerializeField] private IntVariable _ball;
 
     void Start()
     {
@@ -82,7 +86,8 @@ public class Health : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
-        
+                
+            
         CmdKillNotification(killer, killed, firstKill);
     }
 
@@ -131,6 +136,8 @@ public class Health : NetworkBehaviour
             if (child.GetComponent<FullControl>().PlayerID == killer)
             {
                 child.GetComponent<FullControl>().GotBall = true;
+                if (child.GetComponent<FullControl>().isLocal)
+                    child.GetComponent<Health>()._ball.Value = 1;
             }
         }
     }

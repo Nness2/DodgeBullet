@@ -35,7 +35,10 @@ public class AnimAim : NetworkBehaviour
             }
         }
         else
-            transform.position = Target.transform.position; 
+        {
+            transform.position = Target.transform.position;
+            transform.rotation = Target.transform.rotation;
+        }
         //Vector3 SpherePose = GameObject.FindGameObjectWithTag("SphereTarget").transform.position;
         //gameObject.transform.position = Target.transform.position;
 

@@ -48,6 +48,9 @@ TagManager:
   - LeftHandPose
   - TargetAnimator
   - TargetAnimatorLeft
+  - LeftForeArmPose
+  - PocketPose
+  - StaticLeftHandPose
   layers:
   - Default
   - TransparentFX

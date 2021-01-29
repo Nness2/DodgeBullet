@@ -1715,6 +1715,11 @@ MonoBehaviour:
     type: 3}
   BulletImpact: {fileID: 1385484837303697179, guid: 53d7344ac1a4e5a429fd0c021c41e856,
     type: 3}
+  LeftHandPose: {fileID: 0}
+  StaticLeftHandPose: {fileID: 0}
+  LeftForeArmPose: {fileID: 0}
+  SpherePose: {fileID: 0}
+  PocketPose: {fileID: 0}
   gun: {fileID: 8895199635919249747, guid: dc09be66888b21048a888840c2b788e5, type: 3}
   selfNumber: 0
   isLocal: 0
@@ -1726,6 +1731,8 @@ MonoBehaviour:
   Replay: 0
   InGame: 0
   OnLobby: 0
+  _munition: {fileID: 11400000, guid: 92b836e9a8470024a934d6e0b83c7fa0, type: 2}
+  _ball: {fileID: 11400000, guid: fc566df07efd85349927eed997c304f0, type: 2}
 --- !u!114 &4641306783159796283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1742,6 +1749,7 @@ MonoBehaviour:
   syncInterval: 0.1
   currentHealth: 100
   healthBar: {fileID: 4641306783159796279}
+  _ball: {fileID: 11400000, guid: fc566df07efd85349927eed997c304f0, type: 2}
 --- !u!114 &4641306783159796259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1773,12 +1781,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  _munition: {fileID: 11400000, guid: 92b836e9a8470024a934d6e0b83c7fa0, type: 2}
   wallPrefab: {fileID: 9023715569294178489, guid: d18eb2274ddc3634c8fc7a995f71dbc3,
     type: 3}
   backWallPrefab: {fileID: 9023715569294178489, guid: 387e0b63c53def5409a1485e849d93b2,
     type: 3}
   CatchPrefab: {fileID: 3082243029873426612, guid: ecdc62964be924b49a9d1d92cd1c3c09,
     type: 3}
+  reloadReady: 0
 --- !u!114 &4641306783159796284
 MonoBehaviour:
   m_ObjectHideFlags: 0

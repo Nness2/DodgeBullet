@@ -9,8 +9,10 @@ public class Bullet : NetworkBehaviour
     // Start is called before the first frame update
     [SyncVar(hook = nameof(OnChangePlayer))]
     public int player;
+    [SyncVar(hook = nameof(OnChangeTeam))]
+    public bool teamBlue;
     public bool touchedGround;
-
+    
 
     private void Start()
     {
@@ -64,30 +66,46 @@ public class Bullet : NetworkBehaviour
                 }
             
                 var ZLScript = hit.GetComponent<ZoneLimitations>();
-                bool kill = health.TakeDamage(70);
 
-                if (kill) //Si y a kill le joueur redescend
+
+                GameObject[] characters1 = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+                foreach (GameObject child1 in characters1)
                 {
-                    //UpCounter
-                    //var FC = GetComponent<FullControl>().killNbr++;
-                    //GameObject.FindGameObjectWithTag("killManager").GetComponent<Text>().text = GetComponent<FullControl>().killNbr.ToString();
 
-                    ZLScript.UpState();
-                    //ZLScript.UpdateZone();
-
-                    GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-
-                    foreach (GameObject child in characters)
+                    if (child1.GetComponent<FullControl>().isLocal)
                     {
-                        if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
+                        Debug.Log(teamBlue);
+                        if (child1.GetComponent<ZoneLimitations>().teamBlue != teamBlue)
                         {
-                            int killer = child.GetComponent<FullControl>().PlayerID;
-                            int killed = hit.GetComponent<FullControl>().PlayerID;
-                            health.KillManager(killer, killed, false);
-                            //Destroy(gameObject);
+                            bool kill = health.TakeDamage(70);
+                            if (kill) //Si y a kill le joueur redescend
+                            {
+                                //UpCounter
+                                //var FC = GetComponent<FullControl>().killNbr++;
+                                //GameObject.FindGameObjectWithTag("killManager").GetComponent<Text>().text = GetComponent<FullControl>().killNbr.ToString();
+
+                                ZLScript.UpState();
+                                //ZLScript.UpdateZone();
+
+                                GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+                                foreach (GameObject child in characters)
+                                {
+                                    if (child.GetComponent<FullControl>().PlayerID == player)// && ZLScript.state > 0)
+                                    {
+                                        int killer = child.GetComponent<FullControl>().PlayerID;
+                                        int killed = hit.GetComponent<FullControl>().PlayerID;
+                                        health.KillManager(killer, killed, false);
+                                        //Destroy(gameObject);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+
+
             }
             return;
         }
@@ -138,6 +156,10 @@ public class Bullet : NetworkBehaviour
         player = newValue;
     }
 
+    void OnChangeTeam(bool oldValue, bool newValue)
+    {
+        teamBlue = newValue;
+    }
 }
 
 

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Assertions;
 using Mirror;
 using Cinemachine;
+using DodgeBullet;
+
 
 using UnityEngine.SceneManagement;
 
@@ -47,8 +49,12 @@ public class FullControl : NetworkBehaviour
     public GameObject TargetAnimPrefabLeft;
     public GameObject BulletImpact;
 
-    GameObject LeftHandPose;
-    GameObject SpherePose;
+    public GameObject LeftHandPose;
+    public GameObject StaticLeftHandPose;
+    public GameObject LeftForeArmPose;
+    public GameObject SpherePose;
+    public GameObject PocketPose;
+
 
     public GameObject gun;
 
@@ -78,6 +84,9 @@ public class FullControl : NetworkBehaviour
 
     public bool InGame;
     public bool OnLobby;
+
+    [SerializeField] private IntVariable _munition;
+    [SerializeField] private IntVariable _ball;
 
 
     void Start()
@@ -165,28 +174,41 @@ public class FullControl : NetworkBehaviour
                 }
             }
         }
-        Transform[] LeftHandchildren = GetComponentsInChildren<Transform>();
-        foreach (Transform child in LeftHandchildren)
+        Transform[] PoseChildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child in PoseChildren)
         {
             if (child.CompareTag("LeftHandPose"))
             {
                 LeftHandPose = child.gameObject;
             }
+            if (child.CompareTag("StaticLeftHandPose"))
+            {
+                StaticLeftHandPose = child.gameObject;
+            }
+            if (child.CompareTag("LeftForeArmPose"))
+            {
+                LeftForeArmPose = child.gameObject;
+            }
+            if (child.CompareTag("PocketPose"))
+            {
+                PocketPose = child.gameObject;
+            }
         }
+
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        UpdateTargetAnimLeft(LeftHandPose.transform.position, PlayerID);
+        UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
 
         if (!isLocalPlayer)
             return;
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
-        CmdUpdateTargetAnim(SpherePose.transform.position, PlayerID);
+        CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
 
 
 
@@ -229,6 +251,7 @@ public class FullControl : NetworkBehaviour
 
             if (GotBall)
             {
+                _ball.Value = 0;
                 GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
@@ -236,13 +259,14 @@ public class FullControl : NetworkBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && InGame && !dead)
+        bool reloadReady = GetComponent<SpellManager>().reloadReady;
+        if (Input.GetMouseButtonDown(0) && _munition.Value > 0 && !dead && reloadReady && InGame)
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
             CmdFireVFX(PlayerID, position);
             CmdFire(position, forward);
-
+            _munition.Value--;
         }
 
         /*if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady && dead)
@@ -411,6 +435,8 @@ public class FullControl : NetworkBehaviour
         NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         bullet.GetComponent<Bullet>().player = nb;
+        bullet.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+
     }
 
     //[ClientRpc]
@@ -469,7 +495,7 @@ public class FullControl : NetworkBehaviour
     }
 
 
-    void UpdateTargetAnimLeft(Vector3 leftHandPose, int playerId)
+    void UpdateTargetAnimLeft(Vector3 leftHandPose, Quaternion leftHandRot, int playerId)
     {
 
         GameObject[] targetLeft = GameObject.FindGameObjectsWithTag("TargetAnimatorLeft");
@@ -480,12 +506,14 @@ public class FullControl : NetworkBehaviour
             if (TA.PlayerId == playerId)
             {
                 TA.transform.position = leftHandPose;
+                TA.transform.rotation = leftHandRot;
+
             }
         }
     }
 
     [Command]
-    void CmdUpdateTargetAnim(Vector3 spherePos, int playerId)
+    void CmdUpdateTargetAnim(Vector3 spherePos, Quaternion sphereRot, int playerId)
     {
         GameObject[] target = GameObject.FindGameObjectsWithTag("TargetAnimator");
 
@@ -495,13 +523,14 @@ public class FullControl : NetworkBehaviour
             if (TA.PlayerId == playerId)
             {
                 TA.transform.position = spherePos;
+                //TA.transform.rotation = sphereRot;
             }
         }
     }
 
     #endregion
 
-        #region Unity Shoot
+    #region Unity Shoot
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
@@ -551,13 +580,13 @@ public class FullControl : NetworkBehaviour
                 Vector3 touchPoint = hit2.point;
                 Quaternion lookRotation = Quaternion.LookRotation(-hit2.normal);
 
-                ClientFireImpact(touchPoint, lookRotation, hit2.transform);
+                ClientFireImpact(touchPoint, lookRotation);//, hit2.transform);
             }
         }
     }
 
     [ClientRpc]
-    void ClientFireImpact(Vector3 touchPoint, Quaternion lookRotation, Transform objTouched)
+    void ClientFireImpact(Vector3 touchPoint, Quaternion lookRotation)//, Transform objTouched)
     {
 
         GameObject impact = Instantiate(BulletImpact, touchPoint + new Vector3(0.02f, 0.02f, 0.02f), lookRotation);
@@ -782,29 +811,35 @@ public class FullControl : NetworkBehaviour
     [Command]
     public void CmdPickUp(GameObject ball, int plyr)
     {
-        ClientPickUp(ball, plyr);
+        ClientPickUp(plyr);
+        NetworkServer.Destroy(ball);
     }
 
     [ClientRpc]
-    void ClientPickUp(GameObject ball, int plyr)
+    void ClientPickUp(int plyr)
     {
-        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-        foreach (GameObject child in characters)
+        if (isLocalPlayer)
         {
-            if (child.GetComponent<FullControl>().PlayerID == plyr)
+            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+            foreach (GameObject child in characters)
             {
-                child.GetComponent<FullControl>().GotBall = true;
+                if (child.GetComponent<FullControl>().PlayerID == plyr)
+                {
+                    child.GetComponent<FullControl>().GotBall = true;
+                    child.GetComponent<FullControl>()._ball.Value = 1;
+
+                }
             }
+            //GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
         }
-        //GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
-        Destroy(ball);
+
     }
 
     void OnChangeGotBall(bool oldValue, bool newValue)
     {
         GotBall = newValue;
     }
-        #endregion
+    #endregion
 
     //Canvas team 
     public void MouseLock(bool Lock)
