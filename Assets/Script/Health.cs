@@ -14,11 +14,15 @@ public class Health : NetworkBehaviour
     public int currentHealth = maxHealth;
 
     public RectTransform healthBar;
-
+    float RecInitX;
     [SerializeField] private IntVariable _ball;
+    [SerializeField] private StringVariable _health;
+
 
     void Start()
     {
+        RecInitX = healthBar.position.x;
+        _health.Value = "100 / 100";
 
     }
 
@@ -30,7 +34,9 @@ public class Health : NetworkBehaviour
         bool isDead = false;
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
+        _health.Value = currentHealth.ToString() + " / 100";
         healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
+        healthBar.position = new Vector3(RecInitX - (maxHealth - currentHealth)*1.5f, healthBar.position.y, healthBar.position.z);
 
         if (currentHealth <= 0)
         {
@@ -49,6 +55,10 @@ public class Health : NetworkBehaviour
                 return true;
             }
             currentHealth = 100;
+            _health.Value = currentHealth.ToString() + " / 100";
+
+            healthBar.position = new Vector3(RecInitX, healthBar.position.y, healthBar.position.z);
+
             //ZL.UpdateZone();
             //Debug.Log("Dead");
 
@@ -56,6 +66,8 @@ public class Health : NetworkBehaviour
         }
 
         healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
+        healthBar.position = new Vector3(RecInitX - (maxHealth - currentHealth) * 1.5f, healthBar.position.y, healthBar.position.z);
+
         if (isDead)
             return true;
 

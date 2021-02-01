@@ -51,6 +51,7 @@ TagManager:
   - LeftForeArmPose
   - PocketPose
   - StaticLeftHandPose
+  - PreBullet
   layers:
   - Default
   - TransparentFX
@@ -71,7 +72,7 @@ TagManager:
   - CrossAim
   - SecondLayer
   - ZoneFence
-  - 
+  - PreBullet
   - 
   - 
   - 

@@ -89,10 +89,13 @@ public class FullControl : NetworkBehaviour
     [SerializeField] private IntVariable _munition;
     [SerializeField] private IntVariable _ball;
 
+    public GameObject PreBulletPrefab;
+    [SerializeField] private IntVariable _ballPower;
+    public LineRenderer lineVisual;
+    public int ligneSegment = 10;
 
     void Start()
     {
-
         InitPlayerBody();
         Replay = false;
         OnLobby = true;
@@ -102,6 +105,7 @@ public class FullControl : NetworkBehaviour
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         killNbr = 0;
+        lineVisual.positionCount = ligneSegment;
 
         if (isLocalPlayer)
         {
@@ -114,7 +118,7 @@ public class FullControl : NetworkBehaviour
 
             GameMng = GameObject.FindGameObjectWithTag("GameManager");
             GetComponent<GameInfos>().addGetNames();
-            GotBall = false;
+            GotBall = true;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -246,14 +250,34 @@ public class FullControl : NetworkBehaviour
         //Physics.Raycast(posit, forwa, out hit, Mathf.Infinity, layerMask);
         //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
 
-
-        if (Input.GetMouseButtonDown(1) && InGame && !dead)
+        if (Input.GetMouseButton(1))// && InGame && !dead)
         {
-
             if (GotBall)
             {
+                lineVisual.enabled = true;
+
+                Vector3 position = cam.transform.position;
+                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+                BallPreFire(position, forward);
+            }
+        }
+        else
+        {
+            lineVisual.enabled = false;
+        }
+
+        if (Input.GetMouseButtonUp(1))// && InGame && !dead)
+        {
+            if (GotBall)
+            {
+                GameObject[] PreBullets = GameObject.FindGameObjectsWithTag("PreBullet");
+                foreach(GameObject child in PreBullets)
+                {
+                    Destroy(child);
+                }
+
                 _ball.Value = 0;
-                GotBall = false;
+                //GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
                 BallFire(PlayerID, position, forward);
@@ -384,7 +408,48 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    void BallFire(int nb, Vector3 position, Vector3 forward)
+    void BallPreFire(Vector3 position, Vector3 forward)
+    {
+        //int layerMask = 1 << 11;
+        int grnd = 1 << LayerMask.NameToLayer("Ground");
+        int plyr = 1 << LayerMask.NameToLayer("Player");
+
+        int SecondLayer = 1 << LayerMask.NameToLayer("SecondLayer");
+        int mask3 = SecondLayer;
+        RaycastHit hit3;
+
+        Vector3 SecondPose = Vector3.zero;
+        if (Physics.Raycast(position, forward, out hit3, Mathf.Infinity, mask3))
+            SecondPose = hit3.point;
+        else
+            return;
+
+        int mask = grnd | plyr;
+        RaycastHit hit;
+        Vector3 dir;
+        if (Physics.Raycast(SecondPose, forward, out hit, Mathf.Infinity, mask))
+        {
+            //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            //Debug.Log(hit.point);
+            dir = hit.point - bulletSpawn.position;
+            dir = dir.normalized;
+            //bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
+        }
+        else
+        {
+            Debug.Log("WRONNG");
+            dir = Vector3.zero;
+            //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+        }
+
+        float v = ((1000 + (_ballPower.Value) * 200) / 5) * Time.fixedDeltaTime;
+        VisualizeSegment(dir * v  );
+        
+
+    }
+
+
+        void BallFire(int nb, Vector3 position, Vector3 forward)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
@@ -431,7 +496,7 @@ public class FullControl : NetworkBehaviour
         bulletSpawn.position,
         bulletSpawn.rotation);
 
-        bullet.GetComponent<Rigidbody>().AddForce(dir * 13000);
+        bullet.GetComponent<Rigidbody>().AddForce(dir * (1000 + (_ballPower.Value) * 200));
 
         NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
@@ -1112,6 +1177,29 @@ public class FullControl : NetworkBehaviour
             }
         }
 
+    }
+
+
+    Vector3 CalculatePositionInTime(Vector3 vo, float time)
+    {
+        Vector3 Vxz = vo;
+        Vxz.y = 0f;
+        Vector3 shootPoint = bulletSpawn.transform.position;
+        Vector3 result = shootPoint + vo * time;
+        float sY = (-0.5f * Mathf.Abs(Physics.gravity.y) * (time * time)) + (vo.y * time) + shootPoint.y;
+
+        result.y = sY;
+
+        return result;
+    }
+
+    void VisualizeSegment(Vector3 vo)   
+    {
+        for (int i = 0; i < ligneSegment; i++)
+        {
+            Vector3 pos = CalculatePositionInTime(vo, i / (float)ligneSegment);
+            lineVisual.SetPosition(i, pos);
+        }
     }
 
 }
