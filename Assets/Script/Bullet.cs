@@ -75,7 +75,6 @@ public class Bullet : NetworkBehaviour
 
                     if (child1.GetComponent<FullControl>().isLocal)
                     {
-                        Debug.Log(teamBlue);
                         if (child1.GetComponent<ZoneLimitations>().teamBlue != teamBlue)
                         {
                             bool kill = health.TakeDamage(70);

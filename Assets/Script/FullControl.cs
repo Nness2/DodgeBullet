@@ -107,6 +107,9 @@ public class FullControl : NetworkBehaviour
         killNbr = 0;
         lineVisual.positionCount = ligneSegment;
 
+
+        lineVisual.enabled = false;
+
         if (isLocalPlayer)
         {
             //DontDestroyOnLoad(transform.gameObject);
@@ -118,7 +121,7 @@ public class FullControl : NetworkBehaviour
 
             GameMng = GameObject.FindGameObjectWithTag("GameManager");
             GetComponent<GameInfos>().addGetNames();
-            GotBall = true;
+            GotBall = false;
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -277,7 +280,7 @@ public class FullControl : NetworkBehaviour
                 }
 
                 _ball.Value = 0;
-                //GotBall = false;
+                GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
                 BallFire(PlayerID, position, forward);

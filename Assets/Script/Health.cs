@@ -108,7 +108,7 @@ public class Health : NetworkBehaviour
     void CmdKillNotification(int killer, int killed, bool firstKill) 
     {
         //propagateInfos(killer, killed);
-        Debug.Log("Killer = " + killer + " - Killed = " + killed);
+        //Debug.Log("Killer = " + killer + " - Killed = " + killed);
         if (firstKill)
             ClientFirstKill(killer);
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
