@@ -7,7 +7,7 @@ public class MyNetWorkManager : NetworkManager
 {
     public struct CreateMMOCharacterMessage : NetworkMessage
     {
-        public string name;
+        public string _name;
     }
 
     public override void OnStartServer()
@@ -28,10 +28,18 @@ public class MyNetWorkManager : NetworkManager
         // you can send the message here, or wherever else you want
         base.OnClientConnect(conn);
 
+        string name;
+        if (GameObject.FindGameObjectWithTag("name") != null)
+            name = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        else
+        {
+            name = "TestMode";
+        }
+
         // you can send the message here, or wherever else you want
         CreateMMOCharacterMessage characterMessage = new CreateMMOCharacterMessage
         {
-            name = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName,
+            _name = name,
         };
 
         conn.Send(characterMessage);
@@ -54,7 +62,7 @@ public class MyNetWorkManager : NetworkManager
         // Apply data from the message however appropriate for your game
         // Typically Player would be a component you write with syncvars or properties
         var player = gameobject.GetComponent<GameInfos>();
-        player.selfName = message.name;
+        player.selfName = message._name;
 
         // call this to use this gameobject as the primary controller
         NetworkServer.AddPlayerForConnection(conn, gameobject);

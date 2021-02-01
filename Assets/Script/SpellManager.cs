@@ -8,12 +8,24 @@ public class SpellManager : NetworkBehaviour
 {
     [SerializeField] private IntVariable _munition;
 
+    [SerializeField] private StringVariable _wallCd;
+    [SerializeField] private StringVariable _backWallCd;
+    [SerializeField] private StringVariable _CatchCd;
+
+
     public GameObject wallPrefab;
     public GameObject backWallPrefab;
     public GameObject CatchPrefab;
 
 
-    private float wallCd;
+    private float WallCdTime;
+    private float BackwallCdTime;
+    private float CatchCdTime;
+
+    private float WallCdTimeLeft;
+    private float BackwallCdTimeLeft;
+    private float CatchCdTimeLeft;
+
     private bool wallReady;
     private bool bcWallReady;
     private bool catchWallReady;
@@ -26,7 +38,9 @@ public class SpellManager : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        wallCd = 5;
+        WallCdTime = 10;
+        BackwallCdTime = 10;
+        CatchCdTime = 5;
         wallReady = true;
         bcWallReady = true;
         catchWallReady = true;
@@ -236,7 +250,14 @@ public class SpellManager : NetworkBehaviour
 
     IEnumerator WallWait()
     {
-        yield return new WaitForSeconds(wallCd);
+
+        for (WallCdTimeLeft = WallCdTime; WallCdTimeLeft > 0; WallCdTimeLeft -= Time.deltaTime)
+        {
+            int value = (int)WallCdTimeLeft + 1;
+            _wallCd.Value = value.ToString();
+            yield return null;
+        }
+        _wallCd.Value = "";
         wallReady = true;
 
     }
@@ -282,7 +303,13 @@ public class SpellManager : NetworkBehaviour
 
     IEnumerator BcWallWait()
     {
-        yield return new WaitForSeconds(wallCd);
+        for (BackwallCdTimeLeft = BackwallCdTime; BackwallCdTimeLeft > 0; BackwallCdTimeLeft -= Time.deltaTime)
+        {
+            int value = (int)BackwallCdTimeLeft + 1;
+            _backWallCd.Value = value.ToString();
+            yield return null;
+        }
+        _backWallCd.Value = "";
         bcWallReady = true;
 
     }
@@ -318,7 +345,6 @@ public class SpellManager : NetworkBehaviour
                 //bkWall.transform.eulerAngles += new Vector3(0, 90, 0);
 
                 bkWall.transform.parent = child.transform;
-
                 StartCoroutine(BcCatchWallWait());
 
                 if (!GetComponent<FullControl>().isLocal)
@@ -332,8 +358,16 @@ public class SpellManager : NetworkBehaviour
 
     IEnumerator BcCatchWallWait()
     {
-        yield return new WaitForSeconds(wallCd);
+
+        for (CatchCdTimeLeft = CatchCdTime; CatchCdTimeLeft > 0; CatchCdTimeLeft -= Time.deltaTime)
+        {
+            int value = (int)CatchCdTimeLeft+1;
+            _CatchCd.Value = value.ToString();
+            yield return null;
+        }
+        _CatchCd.Value = "";
         catchWallReady = true;
 
     }
+
 }

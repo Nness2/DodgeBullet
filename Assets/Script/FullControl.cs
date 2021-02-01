@@ -55,6 +55,7 @@ public class FullControl : NetworkBehaviour
     public GameObject SpherePose;
     public GameObject PocketPose;
 
+    public GameObject SelfBody;
 
     public GameObject gun;
 
@@ -707,17 +708,17 @@ public class FullControl : NetworkBehaviour
 
                 var ZL = child.GetComponent<ZoneLimitations>();
 
-                child.GetComponent<FullControl>().controller.enabled = false;
-
-                if (child.GetComponent<FullControl>().isBlue)
-                    ZL.UpdateZone();
+                //child.GetComponent<FullControl>().controller.enabled = false;
+                //ZL.InitState();
+                //if (child.GetComponent<FullControl>().isBlue)
+                //
                 //child.transform.position = GameObject.FindGameObjectWithTag("BlueFieldSpawner").transform.position;
-                else
-                    ZL.UpdateZone();
+                //else
+                //    ZL.UpdateZone();
 
                 //child.transform.position = GameObject.FindGameObjectWithTag("RedFieldSpawner").transform.position;
 
-                child.GetComponent<FullControl>().controller.enabled = true;
+                //child.GetComponent<FullControl>().controller.enabled = true;
             }
 
         }
@@ -884,6 +885,10 @@ public class FullControl : NetworkBehaviour
             {
                 child.GetComponent<ZoneLimitations>().UpState();
                 child.GetComponent<FullControl>().InGame = true;
+                child.GetComponent<GameInfos>().blueButton.interactable = false;
+                child.GetComponent<GameInfos>().redButton.interactable = false;
+                child.GetComponent<GameInfos>().spectatButton.interactable = false;
+
             }
         }
         /*GameObject timer;
@@ -1061,12 +1066,12 @@ public class FullControl : NetworkBehaviour
 
     public void InitPlayerBody()
     {
-        var body = Instantiate(BodyPrefab, gameObject.transform);
-        body.transform.parent = gameObject.transform;
-        GetComponent<AnimationStateControler>().player = body;
+        SelfBody = Instantiate(BodyPrefab, gameObject.transform);
+        SelfBody.transform.parent = gameObject.transform;
+        GetComponent<AnimationStateControler>().player = SelfBody;
         GetComponent<AnimationStateControler>().animator = GetComponent<AnimationStateControler>().player.GetComponent<Animator>(); ;
 
-        bulletSpawn = body.GetComponent<BulletSpawn>().BulletPose.transform;
+        bulletSpawn = SelfBody.GetComponent<BulletSpawn>().BulletPose.transform;
         //body.GetComponent<GetRigInfo>().PlayerID = playerNumber;
 
     }
@@ -1095,4 +1100,18 @@ public class FullControl : NetworkBehaviour
         GameObject GameMng = GameObject.FindGameObjectWithTag("GameManager");
         GameMng.GetComponent<StartManager>().InteratableEnable();
     }
+
+    public void DeleteBalls()
+    {
+        if (isServer)
+        {
+            GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
+            foreach (GameObject child in bullets)
+            {
+                NetworkServer.Destroy(child);
+            }
+        }
+
+    }
+
 }

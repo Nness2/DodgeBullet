@@ -104,7 +104,7 @@ MonoBehaviour:
         weight: 0
     m_Offset: {x: 0, y: 0, z: 43}
     m_MinLimit: -100
-    m_MaxLimit: 100
+    m_MaxLimit: 86.25
     m_AimAxis: 4
     m_MaintainOffset: 0
     m_ConstrainedAxes:
@@ -1837,6 +1837,7 @@ GameObject:
   - component: {fileID: 37265833}
   - component: {fileID: -3082257848450227892}
   - component: {fileID: 37265832}
+  - component: {fileID: 5767007126640643669}
   m_Layer: 0
   m_Name: Teddy
   m_TagString: LocalPlayer
@@ -1944,6 +1945,19 @@ MonoBehaviour:
   - rig: {fileID: 1842392481255580870}
     active: 1
   m_Effectors: []
+--- !u!114 &5767007126640643669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879452166236261758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71bbcd7bf2151294dae78c2f8a4e9ae6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 862549027883069479}
 --- !u!1 &3879452166236261759
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,10 @@ public class GameManager : MonoBehaviour
     public string LocalName;
     void Start()
     {
-        LocalName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        if (GameObject.FindGameObjectWithTag("name") != null)
+            LocalName = GameObject.FindGameObjectWithTag("name").GetComponent<SaveName>().PlayerName;
+        else
+            LocalName = "TestMode";
         //Debug.Log(LocalName);
         firstKill = false;
 

@@ -14,6 +14,8 @@ public class AnimationStateControler : NetworkBehaviour
     public float fastRun;
     public float slowRun;
 
+    float newOffset;
+
     bool isRunning;
     bool currentRunnig;
 
@@ -24,6 +26,8 @@ public class AnimationStateControler : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        newOffset = 43;
+
         fastRun = 13;
         slowRun = 7;
         isRunning = false;
@@ -44,7 +48,6 @@ public class AnimationStateControler : NetworkBehaviour
     {
         var FCScritp = GetComponent<FullControl>();
         bool isGround = FCScritp.isGrounded;
-
         //Debug.Log(currentState);
         if (isLocalPlayer)
         {
@@ -83,8 +86,6 @@ public class AnimationStateControler : NetworkBehaviour
                 {
                     upDateState = 1;
                     FCScritp.speed = fastRun;
-
-
                 }
 
                 else if (Input.GetKey("s"))
@@ -106,7 +107,9 @@ public class AnimationStateControler : NetworkBehaviour
                 }
 
                 else
+                {
                     upDateState = 0;
+                }
 
                 if (!GetComponent<FullControl>().isGrounded)
                 {
@@ -143,6 +146,7 @@ public class AnimationStateControler : NetworkBehaviour
         if(currentState != state)
         {
             animator.SetInteger("AnimState", state);
+            GetComponent<FullControl>().SelfBody.GetComponent<UpdateTargetOffset>().UpdateAnimationOffset(state);
             currentState = state;
         }
             

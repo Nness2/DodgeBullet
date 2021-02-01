@@ -20,11 +20,14 @@ public class GameInfos : NetworkBehaviour
 
     public Button blueButton;
     public Button redButton;
+    public Button spectatButton;
 
     public Text blueText;
     public Text redText;
     public Text blueKda;
     public Text redKda;
+
+    public bool LockTab;
 
     private string display = "";
 
@@ -50,6 +53,7 @@ public class GameInfos : NetworkBehaviour
     public Text NameDisplay;
     void Start()
     {
+        LockTab = false;
         GameMng = GameObject.FindGameObjectWithTag("GameManager");
         //if(isLocalPlayer)
         //      CmdSyncNames();
@@ -87,13 +91,14 @@ public class GameInfos : NetworkBehaviour
 
         ClientDeconnexion();
 
+
         if (nameChecked)
         {
             //checkSimilarName();
             nameChecked = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && !LockTab)
         {
             canvas.gameObject.SetActive(!canvas.gameObject.activeSelf);
             GetComponent<FullControl>().MouseLock(!canvas.gameObject.activeSelf);
@@ -113,22 +118,28 @@ public class GameInfos : NetworkBehaviour
             CmdCallColorManager();
         }
 
-        if (BlueTeam.Count < teamSize || RedTeam.Count < teamSize)
+
+
+            if (BlueTeam.Count < teamSize || RedTeam.Count < teamSize)
+            {
+                teamsReady = false;
+                GameMng.GetComponent<StartManager>().InteratableDesable();
+            }
+
+
+        if (!GetComponent<FullControl>().InGame)
         {
-            teamsReady = false;
-            GameMng.GetComponent<StartManager>().InteratableDesable();
+            if (BlueTeam.Count >= teamSize || selfColor == (int)Color.Blue)
+                blueButton.GetComponent<Button>().interactable = false;
+            else
+                blueButton.GetComponent<Button>().interactable = true;
+
+            if (RedTeam.Count >= teamSize || selfColor == (int)Color.Red)
+                redButton.GetComponent<Button>().interactable = false;
+            else
+                redButton.GetComponent<Button>().interactable = true;
         }
 
-
-        if (BlueTeam.Count >= teamSize || selfColor == (int)Color.Blue)
-            blueButton.GetComponent<Button>().interactable = false;
-        else
-            blueButton.GetComponent<Button>().interactable = true;
-
-        if (RedTeam.Count >= teamSize || selfColor == (int)Color.Red)
-            redButton.GetComponent<Button>().interactable = false;
-        else
-            redButton.GetComponent<Button>().interactable = true;
 
         if (callKda)
         {
@@ -268,11 +279,13 @@ public class GameInfos : NetworkBehaviour
 
                 if (isBlue)
                 {
-                    gameInfos.BlueTeam.Add(selfObj);
+                    if (!GetComponent<FullControl>().InGame)
+                        gameInfos.BlueTeam.Add(selfObj);
                 }
                 else
                 {
-                    gameInfos.RedTeam.Add(selfObj);
+                    if (!GetComponent<FullControl>().InGame)
+                        gameInfos.RedTeam.Add(selfObj);
                 }
 
 

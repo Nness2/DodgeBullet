@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 using UnityEngine.SceneManagement;
+using DodgeBullet;
+
+
 
 public class endGame : MonoBehaviour
 {
@@ -14,6 +17,8 @@ public class endGame : MonoBehaviour
     public Image WinImg;
     public Image Losemg;
 
+    [SerializeField] private IntVariable _munition;
+    [SerializeField] private IntVariable _ball;
 
     // Start is called before the first frame update
     void Start()
@@ -43,7 +48,7 @@ public class endGame : MonoBehaviour
         Cursor.visible = true;
         GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = false;
         gameObject.transform.parent.gameObject.GetComponent<GameInfos>().canvas.gameObject.SetActive(true);
-        gameObject.transform.parent.gameObject.GetComponent<GameInfos>().enabled = false;
+        gameObject.transform.parent.gameObject.GetComponent<GameInfos>().LockTab = true;
         gameObject.transform.parent.gameObject.GetComponent<FullControl>().enabled = false;
         gameObject.transform.parent.gameObject.GetComponent<AnimationStateControler>().enabled = false;
 
@@ -69,8 +74,8 @@ public class endGame : MonoBehaviour
         //gameObject.transform.parent.GetComponent<ZoneLimitations>().InitState();
         gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
 
-
-
+        _munition.Value = 30;
+        _ball.Value = 0;
         QuitBtn.GetComponent<Image>().enabled = false;
         AgainBtn.GetComponent<Image>().enabled = false;
         QuitText.GetComponent<Text>().enabled = false;
@@ -81,12 +86,17 @@ public class endGame : MonoBehaviour
         var player = gameObject.transform.parent;
         var FC = player.gameObject.GetComponent<FullControl>();
 
-        player.GetComponent<GameInfos>().enabled = true;
+        player.GetComponent<GameInfos>().LockTab = false;
+        player.GetComponent<GameInfos>().blueButton.interactable = true;
+        player.GetComponent<GameInfos>().redButton.interactable = true;
+        player.GetComponent<GameInfos>().spectatButton.interactable = true;
+
         player.GetComponent<FullControl>().enabled = true;
         player.GetComponent<AnimationStateControler>().enabled = true;
         FC.dead = false;
         FC.InGame = false;
         FC.CmdBackToLobby(FC.PlayerID);
+        FC.DeleteBalls();
 
         GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = true;
 
@@ -121,12 +131,13 @@ public class endGame : MonoBehaviour
         gameManager.GetComponent<GameManager>().firstKill = false;
         var SM = gameManager.GetComponent<StartManager>();
         SM.ShowStartButton();
-        
+
         //FC.UpdateDeadCam();
         //FC.CmdDisplayPlayer(FC.PlayerID, true);
         //var TimerText = GameObject.FindGameObjectWithTag("TimerText");
         //TimerText.GetComponent<StartTimer>().InitTimer();
         //TimerText.GetComponent<StartTimer>().top = false;
+        gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
 
         StopAllCoroutines();
 
