@@ -125,8 +125,8 @@ public class endGame : MonoBehaviour
         GI.callMe = true;
 
         var Hlth = gameObject.transform.parent.GetComponent<Health>();
-        Hlth.currentHealth = 100;
-        Hlth.healthBar.sizeDelta = new Vector2(Hlth.currentHealth, Hlth.healthBar.sizeDelta.y);
+        Hlth.InitHealth();
+
         var gameManager = GameObject.FindGameObjectWithTag("GameManager");
         gameManager.GetComponent<GameManager>().firstKill = false;
         var SM = gameManager.GetComponent<StartManager>();

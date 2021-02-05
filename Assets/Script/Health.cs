@@ -18,25 +18,38 @@ public class Health : NetworkBehaviour
     [SerializeField] private IntVariable _ball;
     [SerializeField] private StringVariable _health;
 
+    public RectTransform DamageDealed;
+    public Text DamagePrefab;
+    private IEnumerator coroutine;
+
+    public GameObject SelfCanvas;
+    private Text DamageDealedDisplay;
 
     void Start()
     {
-        RecInitX = healthBar.position.x;
+        RecInitX = healthBar.rect.position.x;
         _health.Value = "100 / 100";
 
-    }
 
-    //take Damage
-    public bool TakeDamage(int amount) //return true si il y a kill
+}
+
+//take Damage
+public bool TakeDamage(int amount) //return true si il y a kill
     {
         //if (!isLocalPlayer)
         //return false;
+
+
         bool isDead = false;
         var ZL = GetComponent<ZoneLimitations>();
         currentHealth -= amount;
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
         _health.Value = currentHealth.ToString() + " / 100";
         healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
-        healthBar.position = new Vector3(RecInitX - (maxHealth - currentHealth)*1.5f, healthBar.position.y, healthBar.position.z);
+        //healthBar.position = new Vector2(RecInitX - (maxHealth - currentHealth), healthBar.position.y);
 
         if (currentHealth <= 0)
         {
@@ -54,10 +67,7 @@ public class Health : NetworkBehaviour
 
                 return true;
             }
-            currentHealth = 100;
-            _health.Value = currentHealth.ToString() + " / 100";
-
-            healthBar.position = new Vector3(RecInitX, healthBar.position.y, healthBar.position.z);
+            InitHealth();
 
             //ZL.UpdateZone();
             //Debug.Log("Dead");
@@ -66,12 +76,19 @@ public class Health : NetworkBehaviour
         }
 
         healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
-        healthBar.position = new Vector3(RecInitX - (maxHealth - currentHealth) * 1.5f, healthBar.position.y, healthBar.position.z);
-
+        //healthBar.position = new Vector2(RecInitX - (maxHealth - currentHealth) , healthBar.position.y);
         if (isDead)
             return true;
 
         return false;
+    }
+
+    public void InitHealth()
+    {
+        currentHealth = maxHealth;
+        _health.Value = currentHealth.ToString() + " / 100";
+        healthBar.sizeDelta = new Vector2(maxHealth, healthBar.sizeDelta.y);
+        //healthBar.position = new Vector2(RecInitX, healthBar.position.y);
     }
 
     [Command]
@@ -92,20 +109,19 @@ public class Health : NetworkBehaviour
         ZL.state--;
         ZL.UpdateZone();
     }*/
-    
+
 
     public void KillManager(int killer, int killed, bool firstKill)  // à appeler quand il y a une mecanique de kills
     {
         if (!isLocalPlayer)
             return;
-                
-            
+
         CmdKillNotification(killer, killed, firstKill);
     }
 
     //On peut modifier la valeur d'un local en modiffient son player depuis le serveur.
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdKillNotification(int killer, int killed, bool firstKill) 
+    void CmdKillNotification(int killer, int killed, bool firstKill)
     {
         //propagateInfos(killer, killed);
         //Debug.Log("Killer = " + killer + " - Killed = " + killed);
@@ -136,8 +152,8 @@ public class Health : NetworkBehaviour
         }
     }
 
-    [ClientRpc] 
-    void ClientFirstKill(int killer)  
+    [ClientRpc]
+    void ClientFirstKill(int killer)
     {
         GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill = true;
 
@@ -154,4 +170,57 @@ public class Health : NetworkBehaviour
         }
     }
 
+    public void DisplayDamageDealed(int amount, int playerTouched)
+    {
+        if (playerTouched != -1)
+        {
+            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+            foreach (GameObject child in characters)
+            {
+                if (child.GetComponent<FullControl>().PlayerID == playerTouched)
+                {
+                    //Debug.Log(amount + " " + playerTouched);
+
+                    DamageDealedDisplay = Instantiate(
+                            DamagePrefab,
+                            new Vector3(-200, 0, 0),
+                            Quaternion.identity) as Text;
+                    DamageDealedDisplay.GetComponent<CanvasDistance>().LocalPlayer = gameObject;
+                    DamageDealedDisplay.transform.SetParent(child.GetComponent<Health>().SelfCanvas.transform, false);
+                    //DamageDealedDisplay.fontSize = 10;
+                    //DamageDealedDisplay.fontSize = 10;
+
+                    DamageDealedDisplay.text = amount.ToString();
+                    DamageDealedDisplay.color = Color.yellow;
+
+
+                    StartCoroutine(DownFade(DamageDealedDisplay));
+
+                    //coroutine = ResetDamageDisplayed(child);
+                    //StartCoroutine(coroutine);
+                }
+            }
+        }
+    }
+
+    private IEnumerator DownFade(Text obj)
+    {
+        float elapsedTime = 0;
+        obj.text = 20.ToString();
+        SelfCanvas.transform.position = new Vector3(0, 1, 0);
+        Vector3 InitPose = obj.GetComponent<RectTransform>().position;
+        Vector3 EndPose = new Vector3(0, 1, 0);
+        float time = 0.2f;
+        obj.GetComponent<RectTransform>().position += new Vector3(0, 0, 0);
+        while (elapsedTime < time)
+        {
+             obj.GetComponent<RectTransform>().position = Vector3.Lerp(InitPose + new Vector3(0, 0, 0), InitPose + new Vector3(0, -2f, 0), (elapsedTime / time)*Time.deltaTime) - (InitPose - obj.GetComponent<RectTransform>().position);
+            
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+
+        }
+        //Destroy(obj.gameObject);
+    }
 }

@@ -96,13 +96,13 @@ public class ZoneLimitations : NetworkBehaviour
 
         else if (collision.gameObject.tag == "BluePrison" && !teamBlue || collision.gameObject.tag == "BluePrison" && teamBlue && state != 2)
         {
-            coroutine = ZoneDamage(50);
+            coroutine = ZoneDamage(35);
             StartCoroutine(coroutine);
         }
 
         else if (collision.gameObject.tag == "RedPrison" && teamBlue || collision.gameObject.tag == "RedPrison" && !teamBlue && state != 2)
         {
-            coroutine = ZoneDamage(50);
+            coroutine = ZoneDamage(35);
             StartCoroutine(coroutine);
         }
 
@@ -132,7 +132,11 @@ public class ZoneLimitations : NetworkBehaviour
             StartCoroutine(coroutine);
         }
 
-
+        else if (collision.gameObject.tag == "CornerField")
+        {
+            coroutine = ZoneDamage(35);
+            StartCoroutine(coroutine);
+        }
 
         /*if ((collision.gameObject.tag == "BlueField" && state == 0 || collision.gameObject.tag == "BluePrison" && state == 1 || collision.gameObject.tag == "Neutre1" && state == 2 || collision.gameObject.tag == "Neutre2" && state == 3) && teamBlue)
         {
@@ -216,6 +220,7 @@ public class ZoneLimitations : NetworkBehaviour
             bool kill = health.TakeDamage(damages);
             if (kill)
             {
+                GetComponent<Health>().KillManager(-1, GetComponent<FullControl>().PlayerID, false);
                 UpState();
                 //UpdateZone();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation, peut etre ajouter un rst

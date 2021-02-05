@@ -94,8 +94,11 @@ public class FullControl : NetworkBehaviour
     public LineRenderer lineVisual;
     public int ligneSegment = 10;
 
+    private bool lob;
+
     void Start()
     {
+        lob = false;
         InitPlayerBody();
         Replay = false;
         OnLobby = true;
@@ -257,11 +260,15 @@ public class FullControl : NetworkBehaviour
         {
             if (GotBall)
             {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    lob = !lob;
+                }
                 lineVisual.enabled = true;
 
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                BallPreFire(position, forward);
+                BallPreFire(position, forward, lob);
             }
         }
         else
@@ -283,12 +290,12 @@ public class FullControl : NetworkBehaviour
                 GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                BallFire(PlayerID, position, forward);
+                BallFire(PlayerID, position, forward, lob);
             }
         }
 
         bool reloadReady = GetComponent<SpellManager>().reloadReady;
-        if (Input.GetMouseButtonDown(0) && _munition.Value > 0 && !dead && reloadReady && InGame)
+        if (Input.GetMouseButtonDown(0) && _munition.Value > 0 && !dead && reloadReady && InGame && !Input.GetMouseButton(1))
         {
             Vector3 position = cam.transform.position;
             Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
@@ -411,7 +418,7 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    void BallPreFire(Vector3 position, Vector3 forward)
+    void BallPreFire(Vector3 position, Vector3 forward, bool lob)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
@@ -445,14 +452,23 @@ public class FullControl : NetworkBehaviour
             //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
 
-        float v = ((1000 + (_ballPower.Value) * 200) / 5) * Time.fixedDeltaTime;
-        VisualizeSegment(dir * v  );
-        
+        if (!lob)
+        {
+            float v = (13000 * Time.fixedDeltaTime / 5);
+            VisualizeSegment(dir * v);
+        }
+        else
+        {
+            float v = (2000 * Time.fixedDeltaTime / 5);
+            VisualizeSegment((dir + new Vector3(0, 1.1f, 0).normalized) * v);
+        }
+
+
 
     }
 
 
-        void BallFire(int nb, Vector3 position, Vector3 forward)
+    void BallFire(int nb, Vector3 position, Vector3 forward, bool lobb)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
@@ -486,20 +502,24 @@ public class FullControl : NetworkBehaviour
             //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
 
-        CmdBallFire(nb, dir);
+        CmdBallFire(nb, dir, lobb);
     }
 
 
     #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdBallFire(int nb, Vector3 dir)
+    void CmdBallFire(int nb, Vector3 dir, bool lobb)
     {
         var bullet = (GameObject)Instantiate(
         bulletPrefab,
         bulletSpawn.position,
         bulletSpawn.rotation);
 
-        bullet.GetComponent<Rigidbody>().AddForce(dir * (1000 + (_ballPower.Value) * 200));
+        if (!lobb)
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
+        else
+            bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0,1.1f,0).normalized) * (2000));//p + (_ballPower.Value) * 200));
+        
 
         NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
@@ -660,7 +680,7 @@ public class FullControl : NetworkBehaviour
 
         GameObject impact = Instantiate(BulletImpact, touchPoint + new Vector3(0.02f, 0.02f, 0.02f), lookRotation);
         //impact.transform.parent = objTouched;
-        Destroy(impact, 8f);
+        Destroy(impact, 0.1f);
         
     }
 
@@ -673,11 +693,14 @@ public class FullControl : NetworkBehaviour
         {
             if (child.GetComponent<FullControl>().isLocal)
             {
-
+                if (child.GetComponent<FullControl>().PlayerID == shooter)
+                {
+                    GetComponent<Health>().DisplayDamageDealed(20, playerTouched);
+                }
                 if (child.GetComponent<FullControl>().PlayerID == playerTouched)
                 {
-
-                    bool kill = child.GetComponent<Health>().TakeDamage(20);
+                    int damage = 20;
+                    bool kill = child.GetComponent<Health>().TakeDamage(damage);
 
                     if (kill) //Si y a kill le joueur redescend
                     {
@@ -1200,7 +1223,7 @@ public class FullControl : NetworkBehaviour
     {
         for (int i = 0; i < ligneSegment; i++)
         {
-            Vector3 pos = CalculatePositionInTime(vo, i / (float)ligneSegment);
+            Vector3 pos = CalculatePositionInTime(vo, i / (float)ligneSegment * 3);
             lineVisual.SetPosition(i, pos);
         }
     }

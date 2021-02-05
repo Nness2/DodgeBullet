@@ -38,7 +38,6 @@ public class Bullet : NetworkBehaviour
                     if (hit.GetComponent<Identifier>().Id != player)
                     {
                         child.GetComponent<FullControl>().CmdPickUp(gameObject, playerObj.gameObject.GetComponent<FullControl>().PlayerID);
-
                     }
                 }
             }
@@ -77,7 +76,9 @@ public class Bullet : NetworkBehaviour
                     {
                         if (child1.GetComponent<ZoneLimitations>().teamBlue != teamBlue)
                         {
-                            bool kill = health.TakeDamage(70);
+                            int bulletDamage = 100;
+                            //health.DisplayDamageDealed(bulletDamage, hit.GetComponent<FullControl>().PlayerID);
+                            bool kill = health.TakeDamage(bulletDamage);
                             if (kill) //Si y a kill le joueur redescend
                             {
                                 //UpCounter
