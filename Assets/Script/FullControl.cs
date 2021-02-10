@@ -12,12 +12,16 @@ using UnityEngine.SceneManagement;
 
 public class FullControl : NetworkBehaviour
 {
+    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall};
+    public enum BallEffects : int { Kill, Heal, Stun, Slow, TwoKill };
+
+
     private int playerNumber;
 
     private GameObject LocalPlayer;
 
     public CharacterController controller;
-    private GameObject cam;
+    public GameObject cam;
 
     public float speed = 6f;
     public float turnSmoothTime = 0.0f;
@@ -42,7 +46,13 @@ public class FullControl : NetworkBehaviour
 
     //Fire  
     public GameObject bulletPrefab;
+    public GameObject velletPrefab;
+    public GameObject twolletPrefab;
+    public GameObject RainBalltPrefab;
+    public GameObject ShotBalltPrefab;
+
     public Transform bulletSpawn;
+
     public GameObject BodyPrefab;
     public GameObject StartCanvas;
     public GameObject TargetAnimPrefab;
@@ -68,9 +78,6 @@ public class FullControl : NetworkBehaviour
 
     public bool isLocal;
 
-    [SyncVar(hook = nameof(OnChangeGotBall))]
-    public bool GotBall;
-
     public int killNbr;
 
     public bool isBlue;
@@ -91,14 +98,11 @@ public class FullControl : NetworkBehaviour
 
     public GameObject PreBulletPrefab;
     [SerializeField] private IntVariable _ballPower;
-    public LineRenderer lineVisual;
-    public int ligneSegment = 10;
 
-    private bool lob;
+
 
     void Start()
     {
-        lob = false;
         InitPlayerBody();
         Replay = false;
         OnLobby = true;
@@ -108,10 +112,7 @@ public class FullControl : NetworkBehaviour
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         killNbr = 0;
-        lineVisual.positionCount = ligneSegment;
 
-
-        lineVisual.enabled = false;
 
         if (isLocalPlayer)
         {
@@ -124,7 +125,8 @@ public class FullControl : NetworkBehaviour
 
             GameMng = GameObject.FindGameObjectWithTag("GameManager");
             GetComponent<GameInfos>().addGetNames();
-            GotBall = false;
+
+
             isLocal = true;
             Transform[] children = GetComponentsInChildren<Transform>();
             foreach (Transform child in children)
@@ -142,7 +144,7 @@ public class FullControl : NetworkBehaviour
 
             }
 
-            CmdTargetAnim(PlayerID);
+            //CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
@@ -205,21 +207,20 @@ public class FullControl : NetworkBehaviour
                 PocketPose = child.gameObject;
             }
         }
-
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
+        //UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
 
         if (!isLocalPlayer)
             return;
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
-        CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
+        //CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
 
 
 
@@ -256,26 +257,8 @@ public class FullControl : NetworkBehaviour
         //Physics.Raycast(posit, forwa, out hit, Mathf.Infinity, layerMask);
         //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
 
-        if (Input.GetMouseButton(1))// && InGame && !dead)
-        {
-            if (GotBall)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    lob = !lob;
-                }
-                lineVisual.enabled = true;
 
-                Vector3 position = cam.transform.position;
-                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                BallPreFire(position, forward, lob);
-            }
-        }
-        else
-        {
-            lineVisual.enabled = false;
-        }
-
+        /*
         if (Input.GetMouseButtonUp(1))// && InGame && !dead)
         {
             if (GotBall)
@@ -290,11 +273,59 @@ public class FullControl : NetworkBehaviour
                 GotBall = false;
                 Vector3 position = cam.transform.position;
                 Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
-                BallFire(PlayerID, position, forward, lob);
+                BallFire(PlayerID, position, forward, lob, (int)BallTypes.Bullet);
             }
         }
 
-        bool reloadReady = GetComponent<SpellManager>().reloadReady;
+        if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))// && InGame && !dead)
+        {
+            if (GotVellet)
+            {
+                GameObject[] PreBullets = GameObject.FindGameObjectsWithTag("PreBullet");
+                foreach (GameObject child in PreBullets)
+                {
+                    Destroy(child);
+                }
+
+                _ball.Value = 0;
+                //GotBall = false;
+                GotVellet = false;
+                Vector3 position = cam.transform.position;
+                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+                BallFire(PlayerID, position, forward, lob, (int)BallTypes.Vellet);
+            }
+        }*/
+
+
+        /*if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (GotTwollet)
+            {
+                //GotBall = false;
+                GotVellet = true;
+                Vector3 position = cam.transform.position;
+                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+                BallFire(PlayerID, position, forward, lob, (int)BallTypes.Twollet);
+            }
+        }*/
+
+
+        /*if (Input.GetKeyDown(KeyCode.G))
+        {
+            if (GotRainBall)
+            {
+                //GotBall = false;
+                GotRainBall = false;
+                Vector3 position = cam.transform.position;
+                Vector3 forward = cam.transform.TransformDirection(Vector3.forward);
+                BallFire(PlayerID, position, forward, lob, (int)BallTypes.RainBall);
+            }
+
+
+        }*/
+
+
+        /*bool reloadReady = GetComponent<SpellManager>().reloadReady;
         if (Input.GetMouseButtonDown(0) && _munition.Value > 0 && !dead && reloadReady && InGame && !Input.GetMouseButton(1))
         {
             Vector3 position = cam.transform.position;
@@ -302,7 +333,7 @@ public class FullControl : NetworkBehaviour
             CmdFireVFX(PlayerID, position);
             CmdFire(position, forward);
             _munition.Value--;
-        }
+        }*/
 
         /*if (Input.GetMouseButtonDown(1) && GetComponent<GameInfos>().teamsReady && dead)
         {
@@ -418,7 +449,7 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    void BallPreFire(Vector3 position, Vector3 forward, bool lob)
+    /*void BallPreFire(Vector3 position, Vector3 forward, bool lob)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
@@ -463,12 +494,10 @@ public class FullControl : NetworkBehaviour
             VisualizeSegment((dir + new Vector3(0, 1.1f, 0).normalized) * v);
         }
 
+    }*/
 
 
-    }
-
-
-    void BallFire(int nb, Vector3 position, Vector3 forward, bool lobb)
+    public void BallFire(int nb, Vector3 position, Vector3 forward, bool lobb, int BallType)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
@@ -502,29 +531,124 @@ public class FullControl : NetworkBehaviour
             //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
 
-        CmdBallFire(nb, dir, lobb);
+        CmdBallFire(nb, dir, lobb, BallType);
     }
 
 
     #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdBallFire(int nb, Vector3 dir, bool lobb)
+    void CmdBallFire(int nb, Vector3 dir, bool lobb, int ballType)
     {
-        var bullet = (GameObject)Instantiate(
-        bulletPrefab,
-        bulletSpawn.position,
-        bulletSpawn.rotation);
+        GameObject bullet = null;
 
-        if (!lobb)
-            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
-        else
-            bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0,1.1f,0).normalized) * (2000));//p + (_ballPower.Value) * 200));
-        
+        if (ballType == (int)BallTypes.Bullet)
+        {
+            bullet = (GameObject)Instantiate(
+            bulletPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
 
-        NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+            if (bullet == null)
+            {
+                return;
+            }
 
-        bullet.GetComponent<Bullet>().player = nb;
-        bullet.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            if (!lobb)
+                bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
+            else
+                bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0, 1.1f, 0).normalized) * (2000));//p + (_ballPower.Value) * 200));
+
+            bullet.GetComponent<Bullet>().player = nb;
+            bullet.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Heal;
+
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
+
+        else if (ballType == (int)BallTypes.Vellet)
+        {
+            bullet = (GameObject)Instantiate(
+            velletPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+            bullet.GetComponent<Vellet>().player = nb;
+            bullet.GetComponent<Vellet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Stun;
+
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
+
+
+        else if (ballType == (int)BallTypes.RainBall)
+        {
+            bullet = (GameObject)Instantiate(
+            RainBalltPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+            bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0, 1.1f, 0).normalized) * (2000));//p + (_ballPower.Value) * 200));
+            //bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+            bullet.GetComponent<RainBall>().player = nb;
+            bullet.GetComponent<RainBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
+
+        else if (ballType == (int)BallTypes.ShotBall)
+        {
+            bullet = (GameObject)Instantiate(
+            ShotBalltPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+            if (bullet == null)
+            {
+                return;
+            }
+
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+
+            bullet.GetComponent<ShotBall>().player = nb;
+            bullet.GetComponent<ShotBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
+
+        else if (ballType == (int)BallTypes.Twollet)
+        {
+            bullet = (GameObject)Instantiate(
+            twolletPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+            if (bullet == null)
+            {
+                return;
+            }
+
+            if (!lobb)
+                bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
+            else
+                bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0, 1.1f, 0).normalized) * (2000));//p + (_ballPower.Value) * 200));
+
+            bullet.GetComponent<Twollet>().player = nb;
+            bullet.GetComponent<Twollet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
 
     }
 
@@ -544,7 +668,7 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    #region Unity TargetAnim
+    /*#region Unity TargetAnim
     [Command] //Appelé par le client mais lu par le serveur
     void CmdTargetAnim(int playerId)
     {
@@ -707,9 +831,9 @@ public class FullControl : NetworkBehaviour
 
 
                         if (!GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().firstKill) //Si permier kill, on donne la balle et on bloque  
-                            child.GetComponent<Health>().KillManager(shooter, playerTouched, true);
+                            child.GetComponent<Health>().KillManager(shooter, playerTouched, true, false);
                         else
-                            child.GetComponent<Health>().KillManager(shooter, playerTouched, false);
+                            child.GetComponent<Health>().KillManager(shooter, playerTouched, false, false);
 
                         if (!child.GetComponent<FullControl>().dead)
                             child.GetComponent<ZoneLimitations>().UpState();
@@ -723,7 +847,7 @@ public class FullControl : NetworkBehaviour
         }
     }
     #endregion
-
+    */
 
 
     #region Unity FirstKill
@@ -899,39 +1023,8 @@ public class FullControl : NetworkBehaviour
         selfNumber = newValue;
     }
 
-        #region PickUp
-    [Command]
-    public void CmdPickUp(GameObject ball, int plyr)
-    {
-        ClientPickUp(plyr);
-        NetworkServer.Destroy(ball);
-    }
 
-    [ClientRpc]
-    void ClientPickUp(int plyr)
-    {
-        if (isLocalPlayer)
-        {
-            GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
-            foreach (GameObject child in characters)
-            {
-                if (child.GetComponent<FullControl>().PlayerID == plyr)
-                {
-                    child.GetComponent<FullControl>().GotBall = true;
-                    child.GetComponent<FullControl>()._ball.Value = 1;
 
-                }
-            }
-            //GameObject ball = GameObject.FindGameObjectWithTag("Bullet"); // destroy ball here to late time gotball process
-        }
-
-    }
-
-    void OnChangeGotBall(bool oldValue, bool newValue)
-    {
-        GotBall = newValue;
-    }
-    #endregion
 
     //Canvas team 
     public void MouseLock(bool Lock)
@@ -1021,7 +1114,7 @@ public class FullControl : NetworkBehaviour
         dead = newValue;
     }
 
-    [Command]
+    /*[Command]
     public void CmdDisplayPlayer(int player, bool isdead)
     {
         ClientDisplayPlayer(player, isdead);
@@ -1075,7 +1168,7 @@ public class FullControl : NetworkBehaviour
 
         //ClientDesablePlayer(player);
         GameEnd();
-    }
+    }*/
 
     [Command]
     public void CmdDeadPlayer(int player)
@@ -1206,26 +1299,6 @@ public class FullControl : NetworkBehaviour
     }
 
 
-    Vector3 CalculatePositionInTime(Vector3 vo, float time)
-    {
-        Vector3 Vxz = vo;
-        Vxz.y = 0f;
-        Vector3 shootPoint = bulletSpawn.transform.position;
-        Vector3 result = shootPoint + vo * time;
-        float sY = (-0.5f * Mathf.Abs(Physics.gravity.y) * (time * time)) + (vo.y * time) + shootPoint.y;
 
-        result.y = sY;
-
-        return result;
-    }
-
-    void VisualizeSegment(Vector3 vo)   
-    {
-        for (int i = 0; i < ligneSegment; i++)
-        {
-            Vector3 pos = CalculatePositionInTime(vo, i / (float)ligneSegment * 3);
-            lineVisual.SetPosition(i, pos);
-        }
-    }
 
 }

@@ -53,6 +53,8 @@ TagManager:
   - StaticLeftHandPose
   - PreBullet
   - CornerField
+  - Vellet
+  - SplittedBall
   layers:
   - Default
   - TransparentFX

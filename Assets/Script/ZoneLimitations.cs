@@ -220,7 +220,7 @@ public class ZoneLimitations : NetworkBehaviour
             bool kill = health.TakeDamage(damages);
             if (kill)
             {
-                GetComponent<Health>().KillManager(-1, GetComponent<FullControl>().PlayerID, false);
+                GetComponent<Health>().KillManager(-1, GetComponent<FullControl>().PlayerID, false, false);
                 UpState();
                 //UpdateZone();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation, peut etre ajouter un rst

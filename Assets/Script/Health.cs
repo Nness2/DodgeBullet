@@ -111,17 +111,17 @@ public bool TakeDamage(int amount) //return true si il y a kill
     }*/
 
 
-    public void KillManager(int killer, int killed, bool firstKill)  // à appeler quand il y a une mecanique de kills
+    public void KillManager(int killer, int killed, bool firstKill, bool Twollet)  // à appeler quand il y a une mecanique de kills
     {
         if (!isLocalPlayer)
             return;
 
-        CmdKillNotification(killer, killed, firstKill);
+        CmdKillNotification(killer, killed, firstKill, Twollet);
     }
 
     //On peut modifier la valeur d'un local en modiffient son player depuis le serveur.
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdKillNotification(int killer, int killed, bool firstKill)
+    void CmdKillNotification(int killer, int killed, bool firstKill, bool Twollet)
     {
         //propagateInfos(killer, killed);
         //Debug.Log("Killer = " + killer + " - Killed = " + killed);
@@ -145,6 +145,10 @@ public bool TakeDamage(int amount) //return true si il y a kill
                 if (!isServer)
                     return;
                 child.GetComponent<ZoneLimitations>().DownState();
+                if (Twollet)
+                {
+                    child.GetComponent<ZoneLimitations>().DownState();
+                }
                 //child.GetComponent<ZoneLimitations>().UpdateZone();
 
             }
@@ -163,7 +167,7 @@ public bool TakeDamage(int amount) //return true si il y a kill
         {
             if (child.GetComponent<FullControl>().PlayerID == killer)
             {
-                child.GetComponent<FullControl>().GotBall = true;
+                //child.GetComponent<FullControl>().GotBall = true;
                 if (child.GetComponent<FullControl>().isLocal)
                     child.GetComponent<Health>()._ball.Value = 1;
             }

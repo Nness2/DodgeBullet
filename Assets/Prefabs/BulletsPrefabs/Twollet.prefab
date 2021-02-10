@@ -11,14 +11,14 @@ GameObject:
   - component: {fileID: 5747480661832024954}
   - component: {fileID: 770944772427933203}
   - component: {fileID: 4660804953552354581}
-  - component: {fileID: 2134794594}
   - component: {fileID: 6512447277398985578}
   - component: {fileID: 8053259325881193096}
   - component: {fileID: 2721057201132239576}
   - component: {fileID: 1920165912651744873}
   - component: {fileID: 7219216547937397260}
+  - component: {fileID: -5458446192678672678}
   m_Layer: 10
-  m_Name: Bullet
+  m_Name: Twollet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c1d461d08056772499f1c695f7b7e2b2, type: 2}
+  - {fileID: 2100000, guid: 5e09a1b3ab02dbf49b9e40b40b6f05b6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,22 +85,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2134794594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8895199635919249747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f465bba048bd48147bbe7ba4145b7fb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  player: 0
-  touchedGround: 0
 --- !u!135 &6512447277398985578
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -159,7 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0
   clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
@@ -260,3 +244,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-5458446192678672678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8895199635919249747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 579d0abf615d1b54484832d676604631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  player: 0
+  teamBlue: 0
+  touchedGround: 0
+  BulletType: 0
+  LocalPlayer: {fileID: 0}
+  BallEffect: 0

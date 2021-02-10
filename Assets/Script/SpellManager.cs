@@ -104,13 +104,13 @@ public class SpellManager : NetworkBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && reloadReady && _munition.Value < 30)
+        /*if (Input.GetKeyDown(KeyCode.R) && reloadReady && _munition.Value < 30)
         {
             //_munition.Value = 0;
             reloadReady = false;
             CmdReload(gameObject);
 
-        }
+        }*/
     }
 
     [Command] //Appelé par le client mais lu par le serveur

@@ -23,7 +23,7 @@ public class BallPowerManager : MonoBehaviour
     void Update()
     {
         var FCS = GetComponent<FullControl>();
-        if (Input.GetMouseButton(1) && FCS.GotBall)// && InGame && !dead)
+        if (Input.GetMouseButton(1))// && FCS.GotBall)// && InGame && !dead)
         {
             floatPower -= 100 * Time.deltaTime;
             _ballPower.Value = Mathf.RoundToInt(floatPower);

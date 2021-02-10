@@ -11,13 +11,15 @@ public class AnimationStateControler : NetworkBehaviour
     public int state;
     private int currentState;
 
-    public float fastRun;
-    public float slowRun;
+    public float _fastRun;
+    public float _slowRun;
 
     float newOffset;
 
     bool isRunning;
     bool currentRunnig;
+
+    public float penalty;
 
     //sound
     private AudioSource[] mySounds;
@@ -26,10 +28,11 @@ public class AnimationStateControler : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        penalty = 1;
         newOffset = 43;
 
-        fastRun = 13;
-        slowRun = 7;
+        _fastRun = 13;
+        _slowRun = 7;
         isRunning = false;
         currentRunnig = false;
         mySounds = GetComponents<AudioSource>();
@@ -48,7 +51,8 @@ public class AnimationStateControler : NetworkBehaviour
     {
         var FCScritp = GetComponent<FullControl>();
         bool isGround = FCScritp.isGrounded;
-        //Debug.Log(currentState);
+        float fastRun = _fastRun * penalty;
+        float slowRun = _slowRun * penalty;
         if (isLocalPlayer)
         {
             if (isGround)
