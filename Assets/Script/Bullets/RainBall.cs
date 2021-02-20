@@ -16,6 +16,8 @@ public class RainBall : Bullet
 
         _splited = false;
         BulletType = 3;
+        GetComponent<Identifier>().Id = player;
+
     }
 
     // Update is called once per frame
@@ -45,4 +47,5 @@ public class RainBall : Bullet
         }
 
     }
+
 }

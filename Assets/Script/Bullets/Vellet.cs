@@ -15,9 +15,11 @@ public class Vellet : Bullet
 
         _splited = false;
         BulletType = 1;
+        GetComponent<Identifier>().Id = player;
+
     }
 
-        // Update is called once per frame
+    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R) && !_splited){
@@ -43,4 +45,5 @@ public class Vellet : Bullet
         }
 
     }
+
 }

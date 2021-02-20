@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using DodgeBullet;
 
 public class Stats : NetworkBehaviour
 {
@@ -17,6 +18,8 @@ public class Stats : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeDamage))]
     public int selfDamage;
 
+    [SerializeField] private IntVariable _upZone;
+    [SerializeField] private IntVariable _downZone;
 
     void Start()
     {
@@ -55,6 +58,20 @@ public class Stats : NetworkBehaviour
     {
         selfKill = newValue;
         displayStats();
+        if (isLocalPlayer)
+        {
+            if (selfKill % 2 == 0)
+            {
+                _upZone.Value++;
+            }
+        }
+        if (isLocalPlayer)
+        {
+            if (selfKill % 5 == 0)
+            {
+                _downZone.Value++;
+            }
+        }
     }
 
     void OnChangeDeath(int oldValue, int newValue)

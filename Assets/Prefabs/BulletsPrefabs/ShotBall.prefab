@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1920165912651744873}
   - component: {fileID: 7219216547937397260}
   - component: {fileID: -8007346979783681228}
+  - component: {fileID: -7225816899244570848}
   m_Layer: 10
   m_Name: ShotBall
   m_TagString: Bullet
@@ -64,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 77a01bc18a77a8442973b4620e3362ca, type: 2}
+  - {fileID: 2100000, guid: 7df86efa74bc75940b58dd972972ae60, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113,7 +114,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &2721057201132239576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,3 +265,18 @@ MonoBehaviour:
   BulletType: 0
   LocalPlayer: {fileID: 0}
   BallEffect: 0
+  pullRadius: 2
+  pullForce: 1
+--- !u!114 &-7225816899244570848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8895199635919249747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee706122842e85549b06a4232d3e6c2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 0

@@ -20,11 +20,17 @@ public class Bullet : NetworkBehaviour
     public GameObject LocalPlayer;
     public int BallEffect;
 
+    public float pullRadius = 20;
+    public float pullForce = 10;
+
     private void Start()
     {
         //BallEffect = (int)BallEffects.Heal;
         BulletType = 0;
+        GetComponent<Identifier>().Id = player;
+
     }
+
     void OnCollisionEnter(Collision collision)
     {
 
@@ -65,8 +71,9 @@ public class Bullet : NetworkBehaviour
             {
                 if (child.GetComponent<FullControl>().isLocal && hit.GetComponent<FullControl>().PlayerID == child.GetComponent<FullControl>().PlayerID)
                 {
-                    Debug.Log("TOuché");
+                    //Debug.Log("******************KILL*********************");
                     child.GetComponent<BulletManager>().CmdBallEffect(hit.GetComponent<FullControl>().PlayerID, BallEffect, hit.GetComponent<ZoneLimitations>().teamBlue, teamBlue);
+                    child.GetComponent<Health>().KillManager(player, hit.GetComponent<FullControl>().PlayerID);
                 }
             }
 
@@ -87,7 +94,9 @@ public class Bullet : NetworkBehaviour
     private void FixedUpdate()
     {
         if (gameObject.tag == "SplittedBall")
+        {
             return;
+        }
 
         PickUp();
     }
@@ -130,9 +139,6 @@ public class Bullet : NetworkBehaviour
     {
         teamBlue = newValue;
     }
-
-
-
 
 
 }

@@ -17,6 +17,7 @@ public class Health : NetworkBehaviour
     float RecInitX;
     [SerializeField] private IntVariable _ball;
     [SerializeField] private StringVariable _health;
+    [SerializeField] private IntVariable _upZone;
 
     public RectTransform DamageDealed;
     public Text DamagePrefab;
@@ -111,22 +112,22 @@ public bool TakeDamage(int amount) //return true si il y a kill
     }*/
 
 
-    public void KillManager(int killer, int killed, bool firstKill, bool Twollet)  // à appeler quand il y a une mecanique de kills
+    public void KillManager(int killer, int killed)  // à appeler quand il y a une mecanique de kills
     {
         if (!isLocalPlayer)
             return;
 
-        CmdKillNotification(killer, killed, firstKill, Twollet);
+        CmdKillNotification(killer, killed);
     }
 
     //On peut modifier la valeur d'un local en modiffient son player depuis le serveur.
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdKillNotification(int killer, int killed, bool firstKill, bool Twollet)
+    void CmdKillNotification(int killer, int killed)//, bool firstKill, bool Twollet)
     {
         //propagateInfos(killer, killed);
         //Debug.Log("Killer = " + killer + " - Killed = " + killed);
-        if (firstKill)
-            ClientFirstKill(killer);
+        //if (firstKill)
+        //    ClientFirstKill(killer);
         GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -140,15 +141,16 @@ public bool TakeDamage(int amount) //return true si il y a kill
             if (child.GetComponent<FullControl>().PlayerID == killer)
             {
                 child.GetComponent<Stats>().selfKill++;
+
                 child.GetComponent<GameInfos>().callKda = true;
 
-                if (!isServer)
-                    return;
-                child.GetComponent<ZoneLimitations>().DownState();
-                if (Twollet)
-                {
-                    child.GetComponent<ZoneLimitations>().DownState();
-                }
+                //if (!isServer)
+                //    return;
+                //child.GetComponent<ZoneLimitations>().DownState();
+                //if (Twollet)
+                //{
+                //    child.GetComponent<ZoneLimitations>().DownState();
+                //}
                 //child.GetComponent<ZoneLimitations>().UpdateZone();
 
             }
@@ -202,7 +204,7 @@ public bool TakeDamage(int amount) //return true si il y a kill
                     StartCoroutine(DownFade(DamageDealedDisplay));
 
                     //coroutine = ResetDamageDisplayed(child);
-                    //StartCoroutine(coroutine);
+                    //StartCoroutine( );
                 }
             }
         }

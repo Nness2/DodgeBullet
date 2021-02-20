@@ -367,6 +367,7 @@ public class FullControl : NetworkBehaviour
 
     }
 
+
     public static GameObject FindParentWithTag(GameObject childObject, string tag) // Traverse up the hierarchy to find first parent with specific tag
     {
         Transform t = childObject.transform;
@@ -392,6 +393,29 @@ public class FullControl : NetworkBehaviour
 
             //var GI = GetComponent<GameInfos>();
             //GI.CmdUpDateName(GI.selfName, PlayerID);
+        }
+
+        if (isServer)
+        {
+
+
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 1000);
+
+            for (int i = 0; i < hitColliders.Length; i++)
+            {
+                // do whathever you need here to determine if an object is a coin
+                // Here I assume that all the coins will be tagged as coin
+                if (hitColliders[i].tag == "Bullet")
+                {
+                    Transform coin = hitColliders[i].transform;
+                    float distance = Vector3.Distance(hitColliders[i].transform.position, transform.position);
+                    if (distance > 2 && hitColliders[i].GetComponent<Identifier>().Id == PlayerID)
+                    {
+                        coin.position = Vector3.MoveTowards(coin.position, transform.position, 2 * Time.deltaTime);
+
+                    }
+                }
+            }
         }
     }
 
@@ -620,7 +644,6 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<ShotBall>().player = nb;
             bullet.GetComponent<ShotBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
-
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 

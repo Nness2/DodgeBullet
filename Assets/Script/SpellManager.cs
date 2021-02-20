@@ -7,10 +7,15 @@ using DodgeBullet;
 public class SpellManager : NetworkBehaviour
 {
     [SerializeField] private IntVariable _munition;
+    [SerializeField] private IntVariable _upZone;
+    [SerializeField] private IntVariable _downZone;
+
 
     [SerializeField] private StringVariable _wallCd;
     [SerializeField] private StringVariable _backWallCd;
     [SerializeField] private StringVariable _CatchCd;
+    [SerializeField] private StringVariable _UpZoneCd;
+    [SerializeField] private StringVariable _DownZoneCd;
 
 
     public GameObject wallPrefab;
@@ -21,15 +26,21 @@ public class SpellManager : NetworkBehaviour
     private float WallCdTime;
     private float BackwallCdTime;
     private float CatchCdTime;
+    private float UpZoneTime;
+    private float DownZoneTime;
 
     private float WallCdTimeLeft;
     private float BackwallCdTimeLeft;
     private float CatchCdTimeLeft;
+    private float UpZoneTimeLeft;
+    private float DownZoneTimeLeft;
 
     private bool wallReady;
     private bool bcWallReady;
     private bool catchWallReady;
     public bool reloadReady;
+    public bool UpZoneReady;
+    public bool DownZoneReady;
     int elapsedFrames = 0;
 
 
@@ -41,10 +52,14 @@ public class SpellManager : NetworkBehaviour
         WallCdTime = 10;
         BackwallCdTime = 10;
         CatchCdTime = 5;
+        UpZoneTime = 5;
+        DownZoneTime = 2;
         wallReady = true;
         bcWallReady = true;
         catchWallReady = true;
         reloadReady = true;
+        UpZoneReady = true;
+        DownZoneReady = true;
 
     }
 
@@ -59,7 +74,7 @@ public class SpellManager : NetworkBehaviour
             return;
 
         //WALLSPELL
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             if (wallReady)
             {
@@ -78,7 +93,7 @@ public class SpellManager : NetworkBehaviour
         }
 
         //BACKWALLSPELL
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             if (bcWallReady)
             {
@@ -92,7 +107,7 @@ public class SpellManager : NetworkBehaviour
         }
 
         //CATCHWALLSPELL
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             if (catchWallReady)
             {
@@ -104,6 +119,32 @@ public class SpellManager : NetworkBehaviour
             }
         }
 
+
+        //UpZoneSPELL
+        if (Input.GetKeyDown(KeyCode.Q) && _upZone.Value > 0 && GetComponent<ZoneLimitations>().state > 1 && GetComponent<FullControl>().InGame)
+        {
+            if (UpZoneReady)
+            {
+                UpZoneReady = false;
+
+                GetComponent<ZoneLimitations>().CmdDownState();
+                StartCoroutine(UpZoneWait());
+                _upZone.Value--;
+            }
+        }
+
+        //DownZoneSPELL
+        if (Input.GetKeyDown(KeyCode.E) && _downZone.Value > 0 && GetComponent<FullControl>().InGame)
+        {
+            if (DownZoneReady)
+            {
+                DownZoneReady = false;
+
+                GetComponent<ZoneLimitations>().UpState();
+                StartCoroutine(DownZoneWait());
+                _downZone.Value--;
+            }
+        }
         /*if (Input.GetKeyDown(KeyCode.R) && reloadReady && _munition.Value < 30)
         {
             //_munition.Value = 0;
@@ -372,6 +413,34 @@ public class SpellManager : NetworkBehaviour
         }
         _CatchCd.Value = "";
         catchWallReady = true;
+
+    }
+
+    IEnumerator UpZoneWait()
+    {
+
+        for (UpZoneTimeLeft = UpZoneTime; UpZoneTimeLeft > 0; UpZoneTimeLeft -= Time.deltaTime)
+        {
+            int value = (int)UpZoneTimeLeft + 1;
+            _UpZoneCd.Value = value.ToString();
+            yield return null;
+        }
+        _UpZoneCd.Value = "";
+        UpZoneReady = true;
+
+    }
+
+    IEnumerator DownZoneWait()
+    {
+
+        for (DownZoneTimeLeft = DownZoneTime; DownZoneTimeLeft > 0; DownZoneTimeLeft -= Time.deltaTime)
+        {
+            int value = (int)DownZoneTimeLeft + 1;
+            _DownZoneCd.Value = value.ToString();
+            yield return null;
+        }
+        _DownZoneCd.Value = "";
+        DownZoneReady = true;
 
     }
 

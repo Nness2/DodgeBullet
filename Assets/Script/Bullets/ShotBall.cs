@@ -12,6 +12,18 @@ public class ShotBall : Bullet
 
         BulletType = 4;
         ShotBallSplit();
+        GetComponent<Identifier>().Id = player;
+
+        /*GameObject[] characters1 = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child1 in characters1)
+        {
+
+            if (child1.GetComponent<FullControl>().PlayerID != 9 && child1.GetComponent<FullControl>().isLocal)
+            {
+                Destroy(gameObject.GetComponent<Rigidbody>());
+            }
+        }*/
     }
 
     // Update is called once per frame
@@ -35,4 +47,5 @@ public class ShotBall : Bullet
         }
 
     }
+
 }

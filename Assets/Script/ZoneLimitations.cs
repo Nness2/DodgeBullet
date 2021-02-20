@@ -64,79 +64,83 @@ public class ZoneLimitations : NetworkBehaviour
 
     }
 
-    void OntriggerExit(Collider collision)
+    /*void OntriggerExit(Collider collision)
     {
         if (!isLocalPlayer)
             return;
 
 
-        StopAllCoroutines();
+        StopCoroutine(coroutine);
         Debug.Log("exit");
-    }
+    }*/
 
     void OnTriggerEnter(Collider collision)
     {
         if (!isLocalPlayer)
             return;
 
+        if (coroutine != null)
+            StopCoroutine(coroutine);
 
-        StopAllCoroutines();
-
-        if (collision.gameObject.tag == "BlueField" && !teamBlue || collision.gameObject.tag == "BlueField" && teamBlue && state != 1)
+                    
+        if (controller.enabled == true)
         {
-            coroutine = ZoneDamage(35);
-            StartCoroutine(coroutine);
+            if (collision.gameObject.tag == "BlueField" && !teamBlue || collision.gameObject.tag == "BlueField" && teamBlue && state != 1)
+            {
+                coroutine = ZoneDamage(35);
+                StartCoroutine(coroutine);
+            }
+            else if (collision.gameObject.tag == "RedField" && teamBlue || collision.gameObject.tag == "RedField" && !teamBlue && state != 1)
+            {
+                coroutine = ZoneDamage(35);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "BluePrison" && !teamBlue || collision.gameObject.tag == "BluePrison" && teamBlue && state != 2)
+            {
+                coroutine = ZoneDamage(35);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "RedPrison" && teamBlue || collision.gameObject.tag == "RedPrison" && !teamBlue && state != 2)
+            {
+                coroutine = ZoneDamage(35);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "Neutre1" && state != 3 && teamBlue)
+            {
+                coroutine = ZoneDamage(20);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "Neutre2" && state != 4 && teamBlue)
+            {
+                coroutine = ZoneDamage(20);
+                StartCoroutine(coroutine);
+            }
+
+
+
+            else if (collision.gameObject.tag == "Neutre1" && state != 4 && !teamBlue)
+            {
+                coroutine = ZoneDamage(20);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "Neutre2" && state != 3 && !teamBlue)
+            {
+                coroutine = ZoneDamage(20);
+                StartCoroutine(coroutine);
+            }
+
+            else if (collision.gameObject.tag == "CornerField")
+            {
+                coroutine = ZoneDamage(35);
+                StartCoroutine(coroutine);
+            }
         }
-
-        else if (collision.gameObject.tag == "RedField" && teamBlue || collision.gameObject.tag == "RedField" && !teamBlue && state != 1)
-        {
-            coroutine = ZoneDamage(35);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "BluePrison" && !teamBlue || collision.gameObject.tag == "BluePrison" && teamBlue && state != 2)
-        {
-            coroutine = ZoneDamage(35);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "RedPrison" && teamBlue || collision.gameObject.tag == "RedPrison" && !teamBlue && state != 2)
-        {
-            coroutine = ZoneDamage(35);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "Neutre1" && state != 3 && teamBlue)
-        {
-            coroutine = ZoneDamage(20);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "Neutre2" && state != 4 && teamBlue)
-        {
-            coroutine = ZoneDamage(20);
-            StartCoroutine(coroutine);
-        }
-
-
-
-        else if (collision.gameObject.tag == "Neutre1" && state != 4 && !teamBlue)
-        {
-            coroutine = ZoneDamage(20);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "Neutre2" && state != 3 && !teamBlue)
-        {
-            coroutine = ZoneDamage(20);
-            StartCoroutine(coroutine);
-        }
-
-        else if (collision.gameObject.tag == "CornerField")
-        {
-            coroutine = ZoneDamage(35);
-            StartCoroutine(coroutine);
-        }
+       
 
         /*if ((collision.gameObject.tag == "BlueField" && state == 0 || collision.gameObject.tag == "BluePrison" && state == 1 || collision.gameObject.tag == "Neutre1" && state == 2 || collision.gameObject.tag == "Neutre2" && state == 3) && teamBlue)
         {
@@ -147,7 +151,6 @@ public class ZoneLimitations : NetworkBehaviour
         {
             StopAllCoroutines();
         }*/
-
     }
 
 
@@ -173,9 +176,12 @@ public class ZoneLimitations : NetworkBehaviour
                 if (GIScript.BlueTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
                 {
                     controller.enabled = false;
-                    transform.position = BlueSpawnsZone[state][i].transform.position;
+
+                    //transform.position = BlueSpawnsZone[state][i].transform.position;
                     transform.rotation = BlueSpawnsZone[state][i].transform.localRotation;
-                    controller.enabled = true;
+                    StartCoroutine(UpDownAnim(transform.position, BlueSpawnsZone[state][i].transform.position, 0.3f));
+
+                    //Debug.Log("Tab" + BlueSpawnsZone[state][i].transform.position);
                 }
             }
         }
@@ -187,9 +193,11 @@ public class ZoneLimitations : NetworkBehaviour
                 if (GIScript.RedTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
                 {
                     controller.enabled = false;
-                    transform.position = RedSpawnsZone[state][i].transform.position;
+                    //transform.position = RedSpawnsZone[state][i].transform.position;
                     transform.rotation = RedSpawnsZone[state][i].transform.localRotation;
-                    controller.enabled = true;
+                    StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 0.3f));
+
+                    //StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 1f));
                 }
             }
         }
@@ -210,7 +218,20 @@ public class ZoneLimitations : NetworkBehaviour
         transform.rotation = RedSpawnsZone[state][0].transform.localRotation;
         controller.enabled = true;
     }*/
+    IEnumerator UpDownAnim(Vector3 startPos, Vector3 Gotoposition, float waitTime)
+    {
+        float elapsedTime = 0;
 
+        while (elapsedTime < waitTime)
+        {
+            transform.position = Vector3.Lerp(startPos, Gotoposition, (elapsedTime / waitTime));
+            elapsedTime += Time.deltaTime;
+
+            // Yield here
+            yield return new WaitForEndOfFrame();
+        }
+        controller.enabled = true;
+    }
 
     IEnumerator ZoneDamage(int damages)
     {
@@ -220,7 +241,7 @@ public class ZoneLimitations : NetworkBehaviour
             bool kill = health.TakeDamage(damages);
             if (kill)
             {
-                GetComponent<Health>().KillManager(-1, GetComponent<FullControl>().PlayerID, false, false);
+                GetComponent<Health>().KillManager(-1, GetComponent<FullControl>().PlayerID);//, false, false);
                 UpState();
                 //UpdateZone();
                 ///upState permet une synchronisation mais probleme de zone chez les rouges, voir si on peut se contenter d'un simple incrémentation, peut etre ajouter un rst

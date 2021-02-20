@@ -9,6 +9,7 @@ public class BulletEffects : MonoBehaviour
     public void BallEffectKill(bool ally) {
         if (!ally)
         {
+
             GetComponent<ZoneLimitations>().UpState();
         }
     }
