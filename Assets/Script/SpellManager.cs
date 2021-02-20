@@ -145,13 +145,21 @@ public class SpellManager : NetworkBehaviour
                 _downZone.Value--;
             }
         }
-        /*if (Input.GetKeyDown(KeyCode.R) && reloadReady && _munition.Value < 30)
+        if (Input.GetMouseButtonDown(0))
         {
             //_munition.Value = 0;
             reloadReady = false;
             CmdReload(gameObject);
 
-        }*/
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            //_munition.Value = 0;
+            reloadReady = false;
+            //CmdReload(gameObject);
+
+        }
     }
 
     [Command] //Appelé par le client mais lu par le serveur
@@ -202,7 +210,7 @@ public class SpellManager : NetworkBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        while (elapsedTime > time2 && elapsedTime < time3)
+        /*while (elapsedTime > time2 && elapsedTime < time3)
         {
             FCScript.LeftHandPose.transform.position = Vector3.Lerp(Pose2, Pose1, (elapsedTime / time3)) - (Pose3 - FCScript.StaticLeftHandPose.transform.position);
             //FCScript.LeftHandPose.transform.rotation = Quaternion.Lerp(Quat2, Quat1, (elapsedTime / time3)) * Quaternion.Inverse((Quat3 * Quaternion.Inverse(FCScript.StaticLeftHandPose.transform.rotation)));
@@ -223,7 +231,7 @@ public class SpellManager : NetworkBehaviour
         {
             reloadReady = true;
             _munition.Value = 30;
-        }
+        }*/
 
     }
 

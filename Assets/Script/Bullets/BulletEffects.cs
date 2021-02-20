@@ -9,8 +9,17 @@ public class BulletEffects : MonoBehaviour
     public void BallEffectKill(bool ally) {
         if (!ally)
         {
-
+            var ZLScript = GetComponent<ZoneLimitations>();
             GetComponent<ZoneLimitations>().UpState();
+            if (ZLScript.state >= ZLScript.DeadStateNumber)
+            {
+                var FC = GetComponent<FullControl>();
+
+                GetComponent<ZoneLimitations>().CmdInitState();
+                FC.dead = true;
+                FC.CmdDeadPlayer(FC.PlayerID);
+                FC.InGame = false;
+            }
         }
     }
 

@@ -16,6 +16,8 @@ public class ZoneLimitations : NetworkBehaviour
     private List<GameObject[]> BlueSpawnsZone = new List<GameObject[]>();
     private List<GameObject[]> RedSpawnsZone = new List<GameObject[]>();
 
+    public int DeadStateNumber;
+
     [SyncVar(hook = nameof(OnChangeTeam))]
     public bool teamBlue;
     [SyncVar(hook = nameof(OnChangeState))]
@@ -45,6 +47,8 @@ public class ZoneLimitations : NetworkBehaviour
             RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("RedPrisonFieldSpawner"));
             RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner2"));
             RedSpawnsZone.Add(GameObject.FindGameObjectsWithTag("NeutreFieldSpawner1"));
+
+            DeadStateNumber = BlueSpawnsZone.Count;
         }
 
         
@@ -175,13 +179,15 @@ public class ZoneLimitations : NetworkBehaviour
             {
                 if (GIScript.BlueTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
                 {
-                    controller.enabled = false;
+                    if (BlueSpawnsZone.Count > state)
+                    {
+                        controller.enabled = false;
+                        //transform.position = BlueSpawnsZone[state][i].transform.position;
+                        transform.rotation = BlueSpawnsZone[state][i].transform.localRotation;
+                        StartCoroutine(UpDownAnim(transform.position, BlueSpawnsZone[state][i].transform.position, 0.3f));
+                        //Debug.Log("Tab" + BlueSpawnsZone[state][i].transform.position);
+                    }
 
-                    //transform.position = BlueSpawnsZone[state][i].transform.position;
-                    transform.rotation = BlueSpawnsZone[state][i].transform.localRotation;
-                    StartCoroutine(UpDownAnim(transform.position, BlueSpawnsZone[state][i].transform.position, 0.3f));
-
-                    //Debug.Log("Tab" + BlueSpawnsZone[state][i].transform.position);
                 }
             }
         }
@@ -192,12 +198,14 @@ public class ZoneLimitations : NetworkBehaviour
             {
                 if (GIScript.RedTeam[i].GetComponent<FullControl>().PlayerID == GetComponent<FullControl>().PlayerID)
                 {
-                    controller.enabled = false;
-                    //transform.position = RedSpawnsZone[state][i].transform.position;
-                    transform.rotation = RedSpawnsZone[state][i].transform.localRotation;
-                    StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 0.3f));
-
-                    //StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 1f));
+                    if (RedSpawnsZone.Count > state)
+                    {
+                        controller.enabled = false;
+                        //transform.position = RedSpawnsZone[state][i].transform.position;
+                        transform.rotation = RedSpawnsZone[state][i].transform.localRotation;
+                        StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 0.3f));
+                        //StartCoroutine(UpDownAnim(transform.position, RedSpawnsZone[state][i].transform.position, 1f));
+                    }
                 }
             }
         }

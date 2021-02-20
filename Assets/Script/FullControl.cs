@@ -144,7 +144,7 @@ public class FullControl : NetworkBehaviour
 
             }
 
-            //CmdTargetAnim(PlayerID);
+            CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
@@ -213,14 +213,14 @@ public class FullControl : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        //UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
+        UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
 
         if (!isLocalPlayer)
             return;
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
-        //CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
+        CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
 
 
 
@@ -691,7 +691,7 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    /*#region Unity TargetAnim
+    #region Unity TargetAnim
     [Command] //Appelé par le client mais lu par le serveur
     void CmdTargetAnim(int playerId)
     {
@@ -712,8 +712,8 @@ public class FullControl : NetworkBehaviour
         //TargetAnim.transform.parent = transform;
         TargetAnim.GetComponent<TargetAnimator>().PlayerId = playerId;
         TargetAnimLeft.GetComponent<TargetAnimator>().PlayerId = playerId;
-        //ClientTargetAnimToParent(TargetAnimLeft, playerId);
-        //ClientTargetAnimToParent(TargetAnim, playerId);
+        ClientTargetAnimToParent(TargetAnimLeft, playerId);
+        ClientTargetAnimToParent(TargetAnim, playerId);
     }
 
     [ClientRpc]
@@ -759,14 +759,14 @@ public class FullControl : NetworkBehaviour
             if (TA.PlayerId == playerId)
             {
                 TA.transform.position = spherePos;
-                //TA.transform.rotation = sphereRot;
+                TA.transform.rotation = sphereRot;
             }
         }
     }
 
     #endregion
 
-    #region Unity Shoot
+    /*#region Unity Shoot
     [Command]
     void CmdFire(Vector3 position, Vector3 forward)
     {
