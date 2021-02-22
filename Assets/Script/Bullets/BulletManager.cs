@@ -34,7 +34,7 @@ public class BulletManager : NetworkBehaviour
     void Start()
     {
         _Handball.Value = 4;
-        _Pocketball.Value = 4;
+        _Pocketball.Value = 1;
 
         lineVisual.positionCount = ligneSegment;
         lineVisual.enabled = false;
@@ -84,7 +84,7 @@ public class BulletManager : NetworkBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && GetComponent<FullControl>().InGame)// && InGame && !dead)
+        if (Input.GetMouseButtonUp(0)) // && GetComponent<FullControl>().InGame)// && InGame && !dead)
         {
             GameObject[] PreBullets = GameObject.FindGameObjectsWithTag("PreBullet");
             foreach (GameObject child in PreBullets)
@@ -125,14 +125,14 @@ public class BulletManager : NetworkBehaviour
         bulletRight.GetComponent<Rigidbody>().AddForce(dirLeft * 7000);// * (1000));
         bulletRight.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletRight.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Stun;
+        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletRight.tag = "SplittedBall";
         bulletRight.layer = 21;
 
         bulletLeft.GetComponent<Rigidbody>().AddForce(dirRight * 7000);// * (2000));
         bulletLeft.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletLeft.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Stun;
+        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletLeft.tag = "SplittedBall";
         bulletLeft.layer = 21;
 
@@ -228,7 +228,7 @@ public class BulletManager : NetworkBehaviour
 
 
     [Command]
-    public void ShotBallSplit(Vector3 pose, Transform vel)
+    public void ShotBallSplit(Vector3 pose, Transform vel, Vector3 InitDir)
     {
         var bulletRight = Instantiate(bulletPrefab, pose, transform.rotation);
         var bulletLeft = Instantiate(bulletPrefab, pose, transform.rotation);
@@ -237,10 +237,13 @@ public class BulletManager : NetworkBehaviour
 
         Vector3 dirLeft = vel.TransformDirection(new Vector3(0.05f, 0.01f, 0.25f));
         Vector3 dirRight = vel.TransformDirection(new Vector3(-0.05f, 0.01f, 0.25f));
+        Vector3 dirFront = vel.TransformDirection(Vector3.forward);
+
 
         bulletRight.tag = "SplittedBall";
         bulletRight.layer = 21;
-        bulletRight.GetComponent<Rigidbody>().AddForce(dirLeft * 45000);// * (1000));
+        bulletRight.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(0.05f, 0f, 0f)) * 13000);// * (1000));
+        //bulletRight.GetComponent<Rigidbody>().AddForce(InitDir * 13000);
         bulletRight.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletRight.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
         bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
@@ -248,7 +251,8 @@ public class BulletManager : NetworkBehaviour
 
         bulletLeft.tag = "SplittedBall";
         bulletLeft.layer = 21;
-        bulletLeft.GetComponent<Rigidbody>().AddForce(dirRight * 45000);// * (2000));
+        bulletLeft.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(-0.05f, 0f, 0f)) * 13000);// * (2000));
+        //bulletLeft.GetComponent<Rigidbody>().AddForce(InitDir * 13000);
         bulletLeft.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletLeft.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
         bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;

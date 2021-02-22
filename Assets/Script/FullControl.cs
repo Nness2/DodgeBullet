@@ -584,7 +584,7 @@ public class FullControl : NetworkBehaviour
 
             bullet.GetComponent<Bullet>().player = nb;
             bullet.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Heal;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
@@ -601,7 +601,7 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
             bullet.GetComponent<Vellet>().player = nb;
             bullet.GetComponent<Vellet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Stun;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
@@ -620,7 +620,7 @@ public class FullControl : NetworkBehaviour
             //bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
             bullet.GetComponent<RainBall>().player = nb;
             bullet.GetComponent<RainBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
@@ -644,6 +644,7 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<ShotBall>().player = nb;
             bullet.GetComponent<ShotBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+            bullet.GetComponent<ShotBall>().InitialDir = dir;
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 

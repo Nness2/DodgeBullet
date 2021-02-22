@@ -23,12 +23,24 @@ public class Bullet : NetworkBehaviour
     public float pullRadius = 20;
     public float pullForce = 10;
 
+    public Vector3 InitialDir;
+
     private void Start()
     {
         //BallEffect = (int)BallEffects.Heal;
         BulletType = 0;
         GetComponent<Identifier>().Id = player;
 
+        /*GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().isLocal && child.GetComponent<FullControl>().PlayerID != player)
+            {
+                Destroy(GetComponent<Rigidbody>());
+                Destroy(GetComponent<SphereCollider>());
+            }
+        }*/
     }
 
     void OnCollisionEnter(Collision collision)

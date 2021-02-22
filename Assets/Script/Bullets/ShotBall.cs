@@ -42,7 +42,7 @@ public class ShotBall : Bullet
 
             if (child1.GetComponent<FullControl>().isLocal && child1.GetComponent<FullControl>().PlayerID == player)
             {
-                child1.GetComponent<BulletManager>().ShotBallSplit(gameObject.transform.position, gameObject.transform);
+                child1.GetComponent<BulletManager>().ShotBallSplit(gameObject.transform.position, gameObject.transform, InitialDir);
             }
         }
 

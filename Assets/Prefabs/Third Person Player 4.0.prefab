@@ -1919,7 +1919,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413754069307702658
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3053,7 +3053,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0.05, y: 0.82, z: 0}
+  m_Center: {x: 0.02, y: 0.82, z: 0.12}
 --- !u!114 &4641306783159796287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3145,7 +3145,7 @@ MonoBehaviour:
   _ball: {fileID: 11400000, guid: fc566df07efd85349927eed997c304f0, type: 2}
   _health: {fileID: 11400000, guid: 87cc06c34e0cda44ba29374b82c5061b, type: 2}
   _upZone: {fileID: 11400000, guid: 252f0faa7505a7e4882941993034451b, type: 2}
-  DamageDealed: {fileID: 7290582682852695755}
+  DamageDealed: {fileID: 7290582682852695768}
   DamagePrefab: {fileID: 5542084467600100352, guid: e10fd8a70efbd9f4ca19f31726131a46,
     type: 3}
   SelfCanvas: {fileID: 8330948660829514685}
@@ -3164,6 +3164,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   controller: {fileID: 4641306783159796685}
+  DeadStateNumber: 0
   teamBlue: 0
   state: 0
 --- !u!114 &4641306783159796260
@@ -5556,7 +5557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8165374084919260479
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5726,7 +5727,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0050000004, y: 0.005, z: 0.0050000004}
   m_Children:
-  - {fileID: 7290582682852695755}
+  - {fileID: 7290582682852695768}
   m_Father: {fileID: 4641306783159796720}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -8390,7 +8391,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e10fd8a70efbd9f4ca19f31726131a46, type: 3}
---- !u!224 &7290582682852695755 stripped
+--- !u!224 &7290582682852695768 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5073934418227015851, guid: e10fd8a70efbd9f4ca19f31726131a46,
     type: 3}
