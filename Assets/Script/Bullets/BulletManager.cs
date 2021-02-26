@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class BulletManager : NetworkBehaviour
 {
-    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall};
+    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall, ExplosiveBall};
     enum BallEffects : int { Kill, Heal, Stun, Slow, TwoKill};
 
 
@@ -29,17 +29,37 @@ public class BulletManager : NetworkBehaviour
     public Sprite GreenBallSprite;
     public Sprite RedBallSprite;
     public Sprite VelletBallSprite;
+    public Sprite ExplosiveBallSprite;
+
+    public Material BlueMat;
+    public Material RedMat;
+    public Material GreeneMat;
+    public Material VelletMat;
+    public Material GoldMat;
+    public Material NoMat;
+
+    public GameObject HandBallObj;
 
     // Start is called before the first frame update
     void Start()
     {
         _Handball.Value = 4;
-        _Pocketball.Value = 1;
+        _Pocketball.Value = 5;
 
         lineVisual.positionCount = ligneSegment;
         lineVisual.enabled = false;
 
         _lob = false;
+
+        Transform[] MatChildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child in MatChildren)
+        {
+            if (child.CompareTag("HandBall"))
+            {
+                HandBallObj = child.gameObject;
+            }
+        }
+        ChangeHandMat();
     }
 
     // Update is called once per frame
@@ -54,6 +74,9 @@ public class BulletManager : NetworkBehaviour
             _Handball.Value = _Pocketball.Value;
             _Pocketball.Value = -1;
         }
+
+
+
 
         if (Input.GetMouseButton(0))// && InGame && !dead)
         {
@@ -84,7 +107,7 @@ public class BulletManager : NetworkBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0)) // && GetComponent<FullControl>().InGame)// && InGame && !dead)
+        if (Input.GetMouseButtonUp(0) && GetComponent<FullControl>().InGame)// && InGame && !dead)
         {
             GameObject[] PreBullets = GameObject.FindGameObjectsWithTag("PreBullet");
             foreach (GameObject child in PreBullets)
@@ -144,39 +167,109 @@ public class BulletManager : NetworkBehaviour
 
     }
 
-    public void ChangeHandMat()
+
+    public void ChangeHandSprite()
     {
         if (_Handball.Value == -1)
             HandImage.GetComponent<Image>().sprite = NoBallSprite;
+
         if (_Handball.Value == (int)BallTypes.Bullet)
             HandImage.GetComponent<Image>().sprite = GreenBallSprite;
+
         if (_Handball.Value == (int)BallTypes.Vellet)
             HandImage.GetComponent<Image>().sprite = VelletBallSprite;
+
         if (_Handball.Value == (int)BallTypes.RainBall)
             HandImage.GetComponent<Image>().sprite = BlueBallSprite;
+
         if (_Handball.Value == (int)BallTypes.ShotBall)
             HandImage.GetComponent<Image>().sprite = RedBallSprite;
+
+        if (_Handball.Value == (int)BallTypes.ExplosiveBall)
+            HandImage.GetComponent<Image>().sprite = ExplosiveBallSprite;
     }
 
-    public void ChangePocketMat()
+
+ 
+
+    public void ChangePocketSprite()
     {
-        if (_Pocketball.Value == -1)
-            PocketImage.GetComponent<Image>().sprite = NoBallSprite;
-        if (_Pocketball.Value == (int)BallTypes.Vellet)
-            PocketImage.GetComponent<Image>().sprite = VelletBallSprite;
-        if (_Pocketball.Value == (int)BallTypes.RainBall)
-            PocketImage.GetComponent<Image>().sprite = BlueBallSprite;
-        if (_Pocketball.Value == (int)BallTypes.ShotBall)
-            PocketImage.GetComponent<Image>().sprite = RedBallSprite;
-        if (_Pocketball.Value == (int)BallTypes.Bullet)
-            PocketImage.GetComponent<Image>().sprite = GreenBallSprite;
+        if (isLocalPlayer)
+        {
+            if (_Pocketball.Value == -1)
+                PocketImage.GetComponent<Image>().sprite = NoBallSprite;
+            if (_Pocketball.Value == (int)BallTypes.Vellet)
+                PocketImage.GetComponent<Image>().sprite = VelletBallSprite;
+            if (_Pocketball.Value == (int)BallTypes.RainBall)
+                PocketImage.GetComponent<Image>().sprite = BlueBallSprite;
+            if (_Pocketball.Value == (int)BallTypes.ShotBall)
+                PocketImage.GetComponent<Image>().sprite = RedBallSprite;
+            if (_Pocketball.Value == (int)BallTypes.Bullet)
+                PocketImage.GetComponent<Image>().sprite = GreenBallSprite;
+            if (_Pocketball.Value == (int)BallTypes.ExplosiveBall)
+                PocketImage.GetComponent<Image>().sprite = ExplosiveBallSprite;
+        }
+    }
+
+    public void ChangeHandMat()
+    {
+        CmdChangeHandMat(GetComponent<FullControl>().PlayerID, _Handball.Value);
     }
 
     [Command]
-    public void SplitRain(Vector3 pose, Transform vel)
+    public void CmdChangeHandMat(int player, int ballType)
+    {
+        ClientChangeHandMat(player, ballType);
+    }
+
+    [ClientRpc]
+    public void ClientChangeHandMat(int player, int ballType)
     {
 
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().PlayerID == player)
+            {
+                if (ballType == -1)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = NoMat;
+                }
+                if (ballType == (int)BallTypes.Bullet)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = GreeneMat;
+                }
+                if (ballType == (int)BallTypes.Vellet)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = VelletMat;
+                }
+                if (ballType == (int)BallTypes.RainBall)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = BlueMat;
+                }
+                if (ballType == (int)BallTypes.ShotBall)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = RedMat;
+
+                }
+                if (ballType == (int)BallTypes.ExplosiveBall)
+                {
+                    if (child.GetComponent<BulletManager>().HandBallObj != null)
+                        child.GetComponent<BulletManager>().HandBallObj.GetComponent<MeshRenderer>().material = GoldMat;
+                }
+            }
+        }
+    }
+
+    [Command]
+    public void SplitRain(Vector3 pose, Transform vel, GameObject RB)
+    {
         var bulletRight = Instantiate(bulletPrefab, pose , transform.rotation);
         var bulletLeft = Instantiate(bulletPrefab, pose , transform.rotation);
         var bulletTop = Instantiate(bulletPrefab, pose , transform.rotation);
@@ -187,31 +280,35 @@ public class BulletManager : NetworkBehaviour
         Vector3 dirTop = vel.TransformDirection(new Vector3(0.05f, 0, 0.25f));
         Vector3 dirBot = vel.TransformDirection(new Vector3(0, -0.05f, -0.25f));
 
-        bulletRight.GetComponent<Rigidbody>().AddForce(dirLeft * 5000);
+        bulletRight.GetComponent<Rigidbody>().velocity = RB.GetComponent<Rigidbody>().velocity;
+        bulletRight.GetComponent<Rigidbody>().AddForce(dirRight * 5000);
         bulletRight.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletRight.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletRight.tag = "SplittedBall";
         bulletRight.layer = 21;
 
-        bulletLeft.GetComponent<Rigidbody>().AddForce(dirRight * 5000);
+        bulletLeft.GetComponent<Rigidbody>().velocity = RB.GetComponent<Rigidbody>().velocity;
+        bulletLeft.GetComponent<Rigidbody>().AddForce(dirLeft * 5000);
         bulletLeft.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletLeft.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletLeft.tag = "SplittedBall";
         bulletLeft.layer = 21;
 
+        bulletTop.GetComponent<Rigidbody>().velocity = RB.GetComponent<Rigidbody>().velocity;
         bulletTop.GetComponent<Rigidbody>().AddForce(dirTop * 5000);
         bulletTop.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletTop.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletTop.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+        bulletTop.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletTop.tag = "SplittedBall";
         bulletTop.layer = 21;
 
+        bulletBot.GetComponent<Rigidbody>().velocity = RB.GetComponent<Rigidbody>().velocity;
         bulletBot.GetComponent<Rigidbody>().AddForce(dirBot * 5000);
         bulletBot.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletBot.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletBot.GetComponent<Bullet>().BallEffect = (int)BallEffects.Slow;
+        bulletBot.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
         bulletBot.tag = "SplittedBall";
         bulletBot.layer = 21;
 
@@ -228,22 +325,54 @@ public class BulletManager : NetworkBehaviour
 
 
     [Command]
-    public void ShotBallSplit(Vector3 pose, Transform vel, Vector3 InitDir)
+    public void CmdShotBallSplit(Vector3 pose, Transform vel, Vector3 InitDir)
     {
         var bulletRight = Instantiate(bulletPrefab, pose, transform.rotation);
         var bulletLeft = Instantiate(bulletPrefab, pose, transform.rotation);
 
+        //Vector3 dirLeft = vel.TransformDirection(Vector3.left);
+        //Vector3 dirRight = vel.TransformDirection(Vector3.right);
+
+        bulletRight.tag = "SplittedBall";
+        bulletRight.layer = 21;
+        bulletRight.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(0.07f, 0f, 0f)) * 13000);// * (1000));
+        bulletRight.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
+        bulletRight.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+
+        bulletLeft.tag = "SplittedBall";
+        bulletLeft.layer = 21;
+        bulletLeft.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(-0.07f, 0f, 0f)) * 13000);// * (2000));
+        bulletLeft.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
+        bulletLeft.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+
+        NetworkServer.Spawn(bulletRight);
+        NetworkServer.Spawn(bulletLeft);
+
+        Destroy(bulletRight, 1);
+        Destroy(bulletLeft, 1);
+    }
 
 
-        Vector3 dirLeft = vel.TransformDirection(new Vector3(0.05f, 0.01f, 0.25f));
-        Vector3 dirRight = vel.TransformDirection(new Vector3(-0.05f, 0.01f, 0.25f));
-        Vector3 dirFront = vel.TransformDirection(Vector3.forward);
+    [Command]
+    public void CmdBallExplosion(Transform TBull)
+    {
+        var bulletRight = Instantiate(bulletPrefab, TBull.position, transform.rotation);
+        var bulletLeft = Instantiate(bulletPrefab, TBull.position, transform.rotation);
+        var bulletTop = Instantiate(bulletPrefab, TBull.position, transform.rotation);
+        var bulletBot = Instantiate(bulletPrefab, TBull.position, transform.rotation);
+
+
+        Vector3 dirLeft = TBull.TransformDirection(Vector3.left);
+        Vector3 dirRight = TBull.TransformDirection(Vector3.right);
+        Vector3 dirTop = TBull.TransformDirection(Vector3.forward);
+        Vector3 dirBot = TBull.TransformDirection(Vector3.back);
 
 
         bulletRight.tag = "SplittedBall";
         bulletRight.layer = 21;
-        bulletRight.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(0.05f, 0f, 0f)) * 13000);// * (1000));
-        //bulletRight.GetComponent<Rigidbody>().AddForce(InitDir * 13000);
+        bulletRight.GetComponent<Rigidbody>().AddForce((dirLeft + new Vector3(0f, 0.5f, 0f)) * 3000);
         bulletRight.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletRight.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
         bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
@@ -251,20 +380,36 @@ public class BulletManager : NetworkBehaviour
 
         bulletLeft.tag = "SplittedBall";
         bulletLeft.layer = 21;
-        bulletLeft.GetComponent<Rigidbody>().AddForce((InitDir + new Vector3(-0.05f, 0f, 0f)) * 13000);// * (2000));
-        //bulletLeft.GetComponent<Rigidbody>().AddForce(InitDir * 13000);
+        bulletLeft.GetComponent<Rigidbody>().AddForce((dirRight + new Vector3(0f, 0.5f, 0f)) * 3000);
         bulletLeft.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
         bulletLeft.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-        bulletRight.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+        bulletLeft.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+
+        bulletTop.tag = "SplittedBall";
+        bulletTop.layer = 21;
+        bulletTop.GetComponent<Rigidbody>().AddForce((dirTop + new Vector3(0f, 0.5f, 0f)) * 3000);
+        bulletTop.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
+        bulletTop.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+        bulletTop.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+
+        bulletBot.tag = "SplittedBall";
+        bulletBot.layer = 21;
+        bulletBot.GetComponent<Rigidbody>().AddForce(dirBot + (new Vector3(0f, 0.5f, 0f)) * 3000);
+        bulletBot.GetComponent<Bullet>().player = GetComponent<FullControl>().PlayerID;
+        bulletBot.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+        bulletBot.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
         NetworkServer.Spawn(bulletRight);
         NetworkServer.Spawn(bulletLeft);
+        NetworkServer.Spawn(bulletTop);
+        NetworkServer.Spawn(bulletBot);
 
         Destroy(bulletRight, 1);
         Destroy(bulletLeft, 1);
+        Destroy(bulletTop, 1);
+        Destroy(bulletBot, 1);
 
     }
-
 
     #region PickUp
     [Command]

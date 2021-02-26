@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 
 public class FullControl : NetworkBehaviour
 {
-    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall};
+    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall, ExplosiveBall};
     public enum BallEffects : int { Kill, Heal, Stun, Slow, TwoKill };
 
 
@@ -50,6 +50,7 @@ public class FullControl : NetworkBehaviour
     public GameObject twolletPrefab;
     public GameObject RainBalltPrefab;
     public GameObject ShotBalltPrefab;
+    public GameObject ExplosiveBalltPrefab;
 
     public Transform bulletSpawn;
 
@@ -144,7 +145,7 @@ public class FullControl : NetworkBehaviour
 
             }
 
-            CmdTargetAnim(PlayerID);
+            //CmdTargetAnim(PlayerID);
 
             //MainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             controller = gameObject.GetComponent<CharacterController>();
@@ -213,14 +214,14 @@ public class FullControl : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
+        //UpdateTargetAnimLeft(LeftHandPose.transform.position, LeftHandPose.transform.rotation ,PlayerID);
 
         if (!isLocalPlayer)
             return;
         if (GetComponent<GameInfos>().selfColor == 0)
             return;
 
-        CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
+        //CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
 
 
 
@@ -620,7 +621,7 @@ public class FullControl : NetworkBehaviour
             //bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
             bullet.GetComponent<RainBall>().player = nb;
             bullet.GetComponent<RainBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+            bullet.GetComponent<RainBall>().BallEffect = (int)BallEffects.Kill;
 
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
@@ -634,17 +635,31 @@ public class FullControl : NetworkBehaviour
             bulletSpawn.position,
             bulletSpawn.rotation);
 
-            if (bullet == null)
-            {
-                return;
-            }
 
             bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
 
             bullet.GetComponent<ShotBall>().player = nb;
             bullet.GetComponent<ShotBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
-            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+            bullet.GetComponent<ShotBall>().BallEffect = (int)BallEffects.Kill;
             bullet.GetComponent<ShotBall>().InitialDir = dir;
+
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+
+        }
+
+        else if (ballType == (int)BallTypes.ExplosiveBall)
+        {
+            bullet = (GameObject)Instantiate(
+            ExplosiveBalltPrefab,
+            bulletSpawn.position,
+            bulletSpawn.rotation);
+
+
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+
+            bullet.GetComponent<ExplosiveBall>().player = nb;
+            bullet.GetComponent<ExplosiveBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
+            bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 

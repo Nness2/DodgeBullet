@@ -145,7 +145,7 @@ public class SpellManager : NetworkBehaviour
                 _downZone.Value--;
             }
         }
-        if (Input.GetMouseButtonDown(0))
+        /*if (Input.GetMouseButtonDown(0))
         {
             //_munition.Value = 0;
             reloadReady = false;
@@ -156,10 +156,10 @@ public class SpellManager : NetworkBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             //_munition.Value = 0;
-            reloadReady = false;
-            //CmdReload(gameObject);
+            //reloadReady = false;
+            CmdReload(gameObject);
 
-        }
+        }*/
     }
 
     [Command] //Appelé par le client mais lu par le serveur

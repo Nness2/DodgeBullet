@@ -41,7 +41,7 @@ public class RainBall : Bullet
 
             if (child1.GetComponent<FullControl>().isLocal && child1.GetComponent<FullControl>().PlayerID == player)
             {
-                child1.GetComponent<BulletManager>().SplitRain(gameObject.transform.position, gameObject.transform);
+                child1.GetComponent<BulletManager>().SplitRain(gameObject.transform.position, gameObject.transform, gameObject);
 
             }
         }

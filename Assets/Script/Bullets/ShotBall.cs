@@ -35,14 +35,14 @@ public class ShotBall : Bullet
 
     private void ShotBallSplit()
     {
-        GameObject[] characters1 = GameObject.FindGameObjectsWithTag("MainCharacter");
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
-        foreach (GameObject child1 in characters1)
+        foreach (GameObject child in characters)
         {
 
-            if (child1.GetComponent<FullControl>().isLocal && child1.GetComponent<FullControl>().PlayerID == player)
+            if (child.GetComponent<FullControl>().isLocal && child.GetComponent<FullControl>().PlayerID == player)
             {
-                child1.GetComponent<BulletManager>().ShotBallSplit(gameObject.transform.position, gameObject.transform, InitialDir);
+                child.GetComponent<BulletManager>().CmdShotBallSplit(gameObject.transform.position, gameObject.transform, InitialDir);
             }
         }
 

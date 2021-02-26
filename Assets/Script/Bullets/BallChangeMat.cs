@@ -5,7 +5,7 @@ using DodgeBullet;
 
 public class BallChangeMat : MonoBehaviour
 {
-    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall };
+    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall, ExplosiveBall };
     // Start is called before the first frame update
     [SerializeField] private IntVariable _Handball;
     [SerializeField] private IntVariable _Pocketball;
@@ -15,6 +15,7 @@ public class BallChangeMat : MonoBehaviour
     public Material RedMat;
     public Material GreeneMat;
     public Material VelletMat;
+    public Material GoldMat;
     public Material NoMat;
 
     void Start()
@@ -33,6 +34,8 @@ public class BallChangeMat : MonoBehaviour
             gameObject.GetComponent<MeshRenderer>().material = BlueMat;
         if (_Handball.Value == (int)BallTypes.ShotBall)
             gameObject.GetComponent<MeshRenderer>().material = RedMat;
+        if (_Handball.Value == (int)BallTypes.ExplosiveBall)
+            gameObject.GetComponent<MeshRenderer>().material = GoldMat;
         if (_Handball.Value == -1)
             gameObject.GetComponent<MeshRenderer>().material = NoMat;
     }

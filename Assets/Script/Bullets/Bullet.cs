@@ -23,6 +23,7 @@ public class Bullet : NetworkBehaviour
     public float pullRadius = 20;
     public float pullForce = 10;
 
+    [SyncVar(hook = nameof(OnChangeInitialDir))]
     public Vector3 InitialDir;
 
     private void Start()
@@ -152,7 +153,10 @@ public class Bullet : NetworkBehaviour
         teamBlue = newValue;
     }
 
-
+    void OnChangeInitialDir(Vector3 oldValue, Vector3 newValue)
+    {
+        InitialDir = newValue;
+    }
 }
 
 

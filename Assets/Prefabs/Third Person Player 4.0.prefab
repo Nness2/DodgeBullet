@@ -1892,6 +1892,28 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1857468425718696506}
+        m_MethodName: ChangeHandSprite
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1857468425718696506}
+        m_MethodName: ChangePocketSprite
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1857468425718696506}
         m_MethodName: ChangeHandMat
         m_Mode: 1
         m_Arguments:
@@ -3093,6 +3115,8 @@ MonoBehaviour:
     type: 3}
   ShotBalltPrefab: {fileID: 8895199635919249747, guid: 78d5b8497630579488bb020342eb3fdf,
     type: 3}
+  ExplosiveBalltPrefab: {fileID: 8895199635919249747, guid: ccf50722ff679e046b59ce8b908a6b2f,
+    type: 3}
   bulletSpawn: {fileID: 5747480661832024954, guid: def4c13c5e5b6cb4bab1fee5c1898305,
     type: 3}
   BodyPrefab: {fileID: 3879452166236261758, guid: 1c0afacf2cb41184ebb6e848e7f6c858,
@@ -3145,7 +3169,7 @@ MonoBehaviour:
   _ball: {fileID: 11400000, guid: fc566df07efd85349927eed997c304f0, type: 2}
   _health: {fileID: 11400000, guid: 87cc06c34e0cda44ba29374b82c5061b, type: 2}
   _upZone: {fileID: 11400000, guid: 252f0faa7505a7e4882941993034451b, type: 2}
-  DamageDealed: {fileID: 7290582682852695768}
+  DamageDealed: {fileID: 2542112848956369925}
   DamagePrefab: {fileID: 5542084467600100352, guid: e10fd8a70efbd9f4ca19f31726131a46,
     type: 3}
   SelfCanvas: {fileID: 8330948660829514685}
@@ -3542,6 +3566,15 @@ MonoBehaviour:
   GreenBallSprite: {fileID: 21300000, guid: ce4e290aa55e59143b560bd82d1d1ce0, type: 3}
   RedBallSprite: {fileID: 21300000, guid: 7043ea1f5addf064085793370eddc165, type: 3}
   VelletBallSprite: {fileID: 21300000, guid: 71fe6cd4c1bf46444ae26555ee28100a, type: 3}
+  ExplosiveBallSprite: {fileID: 21300000, guid: f0f018f0a0deb9343a0b60e9c8f3e89a,
+    type: 3}
+  BlueMat: {fileID: 2100000, guid: d32b053a6e586b94abdae5580dd8fb2c, type: 2}
+  RedMat: {fileID: 2100000, guid: 7df86efa74bc75940b58dd972972ae60, type: 2}
+  GreeneMat: {fileID: 2100000, guid: 2f8f7a8348fc50d41a53e2993f7155d1, type: 2}
+  VelletMat: {fileID: 2100000, guid: d321a915dabfa484bbcc8a60c4bf0180, type: 2}
+  GoldMat: {fileID: 2100000, guid: ad5b0a5d41e3b8543a12a424ce48f210, type: 2}
+  NoMat: {fileID: 2100000, guid: e0273713ea6838340b790d90f5536daf, type: 2}
+  HandBallObj: {fileID: 0}
 --- !u!114 &5080315465346215853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5727,7 +5760,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.0050000004, y: 0.005, z: 0.0050000004}
   m_Children:
-  - {fileID: 7290582682852695768}
+  - {fileID: 2542112848956369925}
   m_Father: {fileID: 4641306783159796720}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -8391,7 +8424,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e10fd8a70efbd9f4ca19f31726131a46, type: 3}
---- !u!224 &7290582682852695768 stripped
+--- !u!224 &2542112848956369925 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5073934418227015851, guid: e10fd8a70efbd9f4ca19f31726131a46,
     type: 3}

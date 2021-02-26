@@ -16,12 +16,12 @@ GameObject:
   - component: {fileID: 2721057201132239576}
   - component: {fileID: 1920165912651744873}
   - component: {fileID: 7219216547937397260}
-  - component: {fileID: -5458446192678672678}
-  - component: {fileID: 2834812840057965777}
-  - component: {fileID: 1644959502708953649}
-  - component: {fileID: -139357777268868357}
+  - component: {fileID: -7225816899244570848}
+  - component: {fileID: -3231986789415670294}
+  - component: {fileID: 6453125932689072888}
+  - component: {fileID: 3162113268373815534}
   m_Layer: 10
-  m_Name: Twollet
+  m_Name: ExplosiveBall
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7df86efa74bc75940b58dd972972ae60, type: 2}
+  - {fileID: 2100000, guid: ad5b0a5d41e3b8543a12a424ce48f210, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -247,7 +247,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-5458446192678672678
+--- !u!114 &-7225816899244570848
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,33 +256,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8895199635919249747}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 579d0abf615d1b54484832d676604631, type: 3}
+  m_Script: {fileID: 11500000, guid: ee706122842e85549b06a4232d3e6c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  player: 0
-  teamBlue: 0
-  touchedGround: 0
-  BulletType: 0
-  LocalPlayer: {fileID: 0}
-  BallEffect: 0
-  pullRadius: 2
-  pullForce: 1
-  InitialDir: {x: 0, y: 0, z: 0}
---- !u!122 &2834812840057965777
-Halo:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8895199635919249747}
-  m_Enabled: 1
-  m_Color:
-    serializedVersion: 2
-    rgba: 4278190335
-  m_Size: 0.2
---- !u!96 &1644959502708953649
+  Id: 0
+--- !u!96 &-3231986789415670294
 TrailRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
@@ -301,7 +279,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e215d59d382de454f9374a8db5950426, type: 2}
+  - {fileID: 2100000, guid: 9033449b19663d54883ca19998331e16, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -352,7 +330,7 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.029988142, b: 0, a: 1}
+      key0: {r: 1, g: 0.7847121, b: 0.02352941, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -388,7 +366,19 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!114 &-139357777268868357
+--- !u!122 &6453125932689072888
+Halo:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8895199635919249747}
+  m_Enabled: 1
+  m_Color:
+    serializedVersion: 2
+    rgba: 4280864255
+  m_Size: 0.2
+--- !u!114 &3162113268373815534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -397,7 +387,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8895199635919249747}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee706122842e85549b06a4232d3e6c2a, type: 3}
+  m_Script: {fileID: 11500000, guid: ba94d1e70dfd95140b92582e1df0579c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 0
+  syncMode: 0
+  syncInterval: 0
+  player: 0
+  teamBlue: 0
+  touchedGround: 0
+  BulletType: 0
+  LocalPlayer: {fileID: 0}
+  BallEffect: 0
+  pullRadius: 20
+  pullForce: 10
+  InitialDir: {x: 0, y: 0, z: 0}
