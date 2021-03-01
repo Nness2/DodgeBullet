@@ -174,6 +174,11 @@ MonoBehaviour:
   pullRadius: 2
   pullForce: 1
   InitialDir: {x: 0, y: 0, z: 0}
+  BlueMat: {fileID: 2100000, guid: d32b053a6e586b94abdae5580dd8fb2c, type: 2}
+  RedMat: {fileID: 2100000, guid: 7df86efa74bc75940b58dd972972ae60, type: 2}
+  GreeneMat: {fileID: 2100000, guid: 2f8f7a8348fc50d41a53e2993f7155d1, type: 2}
+  VelletMat: {fileID: 2100000, guid: d321a915dabfa484bbcc8a60c4bf0180, type: 2}
+  GoldMat: {fileID: 2100000, guid: ad5b0a5d41e3b8543a12a424ce48f210, type: 2}
 --- !u!82 &7219216547937397260
 AudioSource:
   m_ObjectHideFlags: 0

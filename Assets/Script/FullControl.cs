@@ -100,7 +100,7 @@ public class FullControl : NetworkBehaviour
     public GameObject PreBulletPrefab;
     [SerializeField] private IntVariable _ballPower;
 
-
+    public bool isFalling;
 
     void Start()
     {
@@ -113,6 +113,7 @@ public class FullControl : NetworkBehaviour
         var ZL = GetComponent<ZoneLimitations>();
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         killNbr = 0;
+        isGrounded = true;
 
 
         if (isLocalPlayer)
@@ -138,7 +139,7 @@ public class FullControl : NetworkBehaviour
                     Transform topCam = child;
                     LocalPlayer = GameObject.FindGameObjectWithTag("traveling");
                     LocalPlayer.transform.parent = topCam;
-                    LocalPlayer.transform.localPosition = new Vector3();
+                    LocalPlayer.transform.localPosition = new Vector3(0.2f,0,0);
                     LocalPlayer.tag = "oldTraveling";
                 }
 
@@ -224,8 +225,8 @@ public class FullControl : NetworkBehaviour
         //CmdUpdateTargetAnim(SpherePose.transform.position, SpherePose.transform.rotation, PlayerID);
 
 
-
         Jump();
+        
 
         if (cam == null)
         {
@@ -431,7 +432,7 @@ public class FullControl : NetworkBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded && !GetComponent<AnimationStateControler>().isLaunchingIdle)
         {
             //var GI = GetComponent<GameInfos>().enabled = false; //toggle this script to re-invoke it // Bug Je ne sais pas ce que cette ligne faisait là
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Jumping : y = √(h * -2 * g)
@@ -443,8 +444,6 @@ public class FullControl : NetworkBehaviour
 
 
     }
-
-
 
 
     #region Unity FireVFXBall
@@ -545,7 +544,7 @@ public class FullControl : NetworkBehaviour
         {
             //Debug.DrawRay(cam.transform.position, cam.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             //Debug.Log(hit.point);
-            dir = hit.point - bulletSpawn.position;
+            dir = hit.point - bulletSpawn.transform.position;
             dir = dir.normalized;
             //bullet.GetComponent<Rigidbody>().AddForce(dir * 15000);
         }
@@ -586,6 +585,7 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<Bullet>().player = nb;
             bullet.GetComponent<Bullet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
+            bullet.GetComponent<Bullet>().BulletType = 0;
 
 
             NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients

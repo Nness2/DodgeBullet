@@ -3,7 +3,14 @@ guid: f465bba048bd48147bbe7ba4145b7fb0
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - LocalPlayer: {instanceID: 0}
+  - BlueMat: {instanceID: 0}
+  - RedMat: {instanceID: 0}
+  - GreeneMat: {instanceID: 0}
+  - VelletMat: {instanceID: 0}
+  - GoldMat: {instanceID: 0}
+  - NoMat: {fileID: 2100000, guid: e0273713ea6838340b790d90f5536daf, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

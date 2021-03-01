@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class Bullet : NetworkBehaviour
 {
     public enum BallEffects : int { Kill, Heal, Stun, Slow, TwoKill };
+    enum BallTypes : int { Bullet, Vellet, Twollet, RainBall, ShotBall, ExplosiveBall };
 
 
     // Start is called before the first frame update
@@ -16,6 +17,7 @@ public class Bullet : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeTeam))]
     public bool teamBlue;
     public bool touchedGround;
+    [SyncVar(hook = nameof(OnChangeBulletType))]
     public int BulletType;
     public GameObject LocalPlayer;
     public int BallEffect;
@@ -26,11 +28,17 @@ public class Bullet : NetworkBehaviour
     [SyncVar(hook = nameof(OnChangeInitialDir))]
     public Vector3 InitialDir;
 
+    public Material BlueMat;
+    public Material RedMat;
+    public Material GreeneMat;
+    public Material VelletMat;
+    public Material GoldMat;
+
     private void Start()
     {
         //BallEffect = (int)BallEffects.Heal;
-        BulletType = 0;
         GetComponent<Identifier>().Id = player;
+        ChangeBallMat();
 
         /*GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
@@ -104,8 +112,10 @@ public class Bullet : NetworkBehaviour
         //Destroy(gameObject);
     }
 
+
     private void FixedUpdate()
     {
+
         if (gameObject.tag == "SplittedBall")
         {
             return;
@@ -153,9 +163,41 @@ public class Bullet : NetworkBehaviour
         teamBlue = newValue;
     }
 
+    
+    void OnChangeBulletType(int oldValue, int newValue)
+    {
+        BulletType = newValue;
+    }
+
     void OnChangeInitialDir(Vector3 oldValue, Vector3 newValue)
     {
         InitialDir = newValue;
+    }
+
+    public void ChangeBallMat()
+    {
+
+        if (BulletType == (int)BallTypes.Bullet)
+        {
+            GetComponent<MeshRenderer>().material = GreeneMat;
+        }
+        else if (BulletType == (int)BallTypes.Vellet)
+        {
+            GetComponent<MeshRenderer>().material = VelletMat;
+        }
+        else if (BulletType == (int)BallTypes.RainBall)
+        {
+            GetComponent<MeshRenderer>().material = BlueMat;
+        }
+        else if (BulletType == (int)BallTypes.ShotBall)
+        {
+            gameObject.GetComponent<MeshRenderer>().material = RedMat;
+
+        }
+        else if (BulletType == (int)BallTypes.ExplosiveBall)
+        {
+            GetComponent<MeshRenderer>().material = GoldMat;
+        }
     }
 }
 

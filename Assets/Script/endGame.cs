@@ -98,6 +98,12 @@ public class endGame : MonoBehaviour
         FC.CmdBackToLobby(FC.PlayerID);
         FC.DeleteBalls();
 
+        var BM = player.gameObject.GetComponent<BulletManager>();
+        BM.InitStartBall();
+
+        var SpellM = player.gameObject.GetComponent<SpellManager>();
+        SpellM.InitStartUpDown();
+
         GameObject.FindGameObjectWithTag("cinemachineCamera").GetComponent<CinemachineFreeLook>().enabled = true;
 
 
@@ -129,8 +135,8 @@ public class endGame : MonoBehaviour
 
         var gameManager = GameObject.FindGameObjectWithTag("GameManager");
         gameManager.GetComponent<GameManager>().firstKill = false;
-        var SM = gameManager.GetComponent<StartManager>();
-        SM.ShowStartButton();
+        var StartM = gameManager.GetComponent<StartManager>();
+        StartM.ShowStartButton();
 
         //FC.UpdateDeadCam();
         //FC.CmdDisplayPlayer(FC.PlayerID, true);

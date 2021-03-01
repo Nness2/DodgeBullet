@@ -60,7 +60,7 @@ public class SpellManager : NetworkBehaviour
         reloadReady = true;
         UpZoneReady = true;
         DownZoneReady = true;
-
+        InitStartUpDown();
     }
 
     // Update is called once per frame
@@ -74,7 +74,9 @@ public class SpellManager : NetworkBehaviour
             return;
 
         //WALLSPELL
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        var FC = GetComponent<FullControl>();
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) && FC.InGame)
         {
             if (wallReady)
             {
@@ -93,7 +95,7 @@ public class SpellManager : NetworkBehaviour
         }
 
         //BACKWALLSPELL
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && FC.InGame)
         {
             if (bcWallReady)
             {
@@ -107,7 +109,7 @@ public class SpellManager : NetworkBehaviour
         }
 
         //CATCHWALLSPELL
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && FC.InGame)
         {
             if (catchWallReady)
             {
@@ -121,7 +123,7 @@ public class SpellManager : NetworkBehaviour
 
 
         //UpZoneSPELL
-        if (Input.GetKeyDown(KeyCode.Q) && _upZone.Value > 0 && GetComponent<ZoneLimitations>().state > 1 && GetComponent<FullControl>().InGame)
+        if (Input.GetKeyDown(KeyCode.Q) && _upZone.Value > 0 && GetComponent<ZoneLimitations>().state > 1 && FC.InGame)
         {
             if (UpZoneReady)
             {
@@ -134,7 +136,7 @@ public class SpellManager : NetworkBehaviour
         }
 
         //DownZoneSPELL
-        if (Input.GetKeyDown(KeyCode.E) && _downZone.Value > 0 && GetComponent<FullControl>().InGame)
+        if (Input.GetKeyDown(KeyCode.E) && _downZone.Value > 0 && FC.InGame)
         {
             if (DownZoneReady)
             {
@@ -160,6 +162,12 @@ public class SpellManager : NetworkBehaviour
             CmdReload(gameObject);
 
         }*/
+    }
+
+    public void InitStartUpDown()
+    {
+        _upZone.Value = 0;
+        _downZone.Value = 1;
     }
 
     [Command] //Appelé par le client mais lu par le serveur
