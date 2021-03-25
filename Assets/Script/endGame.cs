@@ -72,10 +72,10 @@ public class endGame : MonoBehaviour
         StopAllCoroutines();
 
         //gameObject.transform.parent.GetComponent<ZoneLimitations>().InitState();
-        gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
+        //gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
 
-        _munition.Value = 30;
-        _ball.Value = 0;
+        //_munition.Value = 30;
+        //_ball.Value = 0;
         QuitBtn.GetComponent<Image>().enabled = false;
         AgainBtn.GetComponent<Image>().enabled = false;
         QuitText.GetComponent<Text>().enabled = false;
@@ -83,16 +83,19 @@ public class endGame : MonoBehaviour
         WinImg.GetComponent<Image>().enabled = false;
         Losemg.GetComponent<Image>().enabled = false;
 
-        var player = gameObject.transform.parent;
-        var FC = player.gameObject.GetComponent<FullControl>();
-
-        player.GetComponent<GameInfos>().LockTab = false;
-        player.GetComponent<GameInfos>().blueButton.interactable = true;
-        player.GetComponent<GameInfos>().redButton.interactable = true;
-        player.GetComponent<GameInfos>().spectatButton.interactable = true;
-
+        var player = transform.parent;
         player.GetComponent<FullControl>().enabled = true;
         player.GetComponent<AnimationStateControler>().enabled = true;
+
+        var GI = player.gameObject.GetComponent<GameInfos>();
+
+        GI.LockTab = false;
+        GI.blueButton.interactable = true;
+        GI.redButton.interactable = true;
+        GI.spectatButton.interactable = true;
+
+        var FC = player.gameObject.GetComponent<FullControl>();
+
         FC.dead = false;
         FC.InGame = false;
         FC.CmdBackToLobby(FC.PlayerID);
@@ -121,14 +124,15 @@ public class endGame : MonoBehaviour
         {
             child.GetComponent<Stats>().ResetStats();
         }
-        var GI = player.GetComponent<GameInfos>();
-        GI.callKda = true;
+        player.gameObject.GetComponent<Stats>().ResetStats();
 
+        GI.callKda = true;
+        GI.callMe = true;
         //GI.BlueTeam = new List<GameObject>();
         //GI.RedTeam = new List<GameObject>();
         //GI.selfColor = 0;
 
-        GI.callMe = true;
+
 
         var Hlth = gameObject.transform.parent.GetComponent<Health>();
         Hlth.InitHealth();
@@ -145,7 +149,7 @@ public class endGame : MonoBehaviour
         //TimerText.GetComponent<StartTimer>().top = false;
         gameObject.transform.parent.GetComponent<ZoneLimitations>().CmdInitState();
 
-        StopAllCoroutines();
+        //StopAllCoroutines();
 
     }
 

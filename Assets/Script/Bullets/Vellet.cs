@@ -39,7 +39,7 @@ public class Vellet : Bullet
 
             if (child1.GetComponent<FullControl>().isLocal && child1.GetComponent<FullControl>().PlayerID == player)
             {
-                child1.GetComponent<BulletManager>().SpliBallSync(gameObject.transform.position, gameObject.transform);
+                child1.GetComponent<BulletManager>().SpliBallSync(gameObject.transform.position, gameObject.transform, plyTouched);
 
             }
         }

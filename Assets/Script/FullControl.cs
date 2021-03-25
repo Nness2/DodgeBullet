@@ -102,6 +102,10 @@ public class FullControl : NetworkBehaviour
 
     public bool isFalling;
 
+    private AudioSource[] mySounds;
+    private AudioSource TargetSd;
+    private AudioSource TargetWarningSd;
+
     void Start()
     {
         InitPlayerBody();
@@ -114,12 +118,17 @@ public class FullControl : NetworkBehaviour
         cam = GameObject.FindGameObjectWithTag("MainCamera");
         killNbr = 0;
         isGrounded = true;
-
+        mySounds = GetComponents<AudioSource>();
+        TargetSd = mySounds[1];
+        TargetWarningSd = mySounds[2];
 
         if (isLocalPlayer)
         {
             //DontDestroyOnLoad(transform.gameObject);
             InGame = false;
+            mySounds = GetComponents<AudioSource>();
+            TargetSd = mySounds[1];
+            TargetWarningSd = mySounds[2];
 
             Replay = false;
             dead = false;
@@ -417,10 +426,25 @@ public class FullControl : NetworkBehaviour
 
                     }
                 }
+
+                if (hitColliders[i].tag == "Bullet" || hitColliders[i].tag == "SplittedBall")
+                {
+                    GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+                    foreach (GameObject child in characters)
+                    {
+                        var FCScript = child.GetComponent<FullControl>();
+
+                        if (FCScript.PlayerID == hitColliders[i].GetComponent<Bullet>().plyTouched)
+                        {
+                            Transform coin = hitColliders[i].transform;
+                            float distance = Vector3.Distance(hitColliders[i].transform.position, child.transform.position + new Vector3(0, 1, 0));
+                            coin.position = Vector3.MoveTowards(coin.position, child.transform.position + new Vector3(0,1,0), 10 * Time.deltaTime);
+                        }
+                    }
+                }
             }
         }
     }
-
 
 
     private void Jump()
@@ -521,11 +545,13 @@ public class FullControl : NetworkBehaviour
     }*/
 
 
+    #region Unity BallKill
     public void BallFire(int nb, Vector3 position, Vector3 forward, bool lobb, int BallType)
     {
         //int layerMask = 1 << 11;
         int grnd = 1 << LayerMask.NameToLayer("Ground");
         int plyr = 1 << LayerMask.NameToLayer("Player");
+
 
         int SecondLayer = 1 << LayerMask.NameToLayer("SecondLayer");
         int mask3 = SecondLayer;
@@ -554,16 +580,17 @@ public class FullControl : NetworkBehaviour
             dir = Vector3.zero;
             //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
         }
-
-        CmdBallFire(nb, dir, lobb, BallType);
+        int targetFollow = GetComponent<BulletManager>().TargetFollow;
+        CmdBallFire(nb, dir, lobb, BallType, targetFollow);
     }
 
-
-    #region Unity BallKill
     [Command] //Appelé par le client mais lu par le serveur
-    void CmdBallFire(int nb, Vector3 dir, bool lobb, int ballType)
+    void CmdBallFire(int nb, Vector3 dir, bool lobb, int ballType, int targetFollow)
     {
         GameObject bullet = null;
+        float bulletSpeed = 13000;
+        if (GetComponent<BulletManager>().TargetFollow != -1)
+            bulletSpeed = 8000;
 
         if (ballType == (int)BallTypes.Bullet)
         {
@@ -578,7 +605,7 @@ public class FullControl : NetworkBehaviour
             }
 
             if (!lobb)
-                bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
+                bullet.GetComponent<Rigidbody>().AddForce(dir * (bulletSpeed));//p + (_ballPower.Value) * 200));
             else
                 bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0, 1.1f, 0).normalized) * (2000));//p + (_ballPower.Value) * 200));
 
@@ -588,7 +615,6 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<Bullet>().BulletType = 0;
 
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
@@ -599,13 +625,12 @@ public class FullControl : NetworkBehaviour
             bulletSpawn.position,
             bulletSpawn.rotation);
 
-            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (bulletSpeed));
             bullet.GetComponent<Vellet>().player = nb;
             bullet.GetComponent<Vellet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
@@ -624,7 +649,6 @@ public class FullControl : NetworkBehaviour
             bullet.GetComponent<RainBall>().BallEffect = (int)BallEffects.Kill;
 
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
@@ -636,14 +660,13 @@ public class FullControl : NetworkBehaviour
             bulletSpawn.rotation);
 
 
-            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (bulletSpeed));
 
             bullet.GetComponent<ShotBall>().player = nb;
             bullet.GetComponent<ShotBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<ShotBall>().BallEffect = (int)BallEffects.Kill;
             bullet.GetComponent<ShotBall>().InitialDir = dir;
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
@@ -655,13 +678,12 @@ public class FullControl : NetworkBehaviour
             bulletSpawn.rotation);
 
 
-            bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));
+            bullet.GetComponent<Rigidbody>().AddForce(dir * (bulletSpeed));
 
             bullet.GetComponent<ExplosiveBall>().player = nb;
             bullet.GetComponent<ExplosiveBall>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
             bullet.GetComponent<Bullet>().BallEffect = (int)BallEffects.Kill;
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
@@ -678,17 +700,22 @@ public class FullControl : NetworkBehaviour
             }
 
             if (!lobb)
-                bullet.GetComponent<Rigidbody>().AddForce(dir * (13000));//p + (_ballPower.Value) * 200));
+                bullet.GetComponent<Rigidbody>().AddForce(dir * (bulletSpeed));//p + (_ballPower.Value) * 200));
             else
                 bullet.GetComponent<Rigidbody>().AddForce((dir + new Vector3(0, 1.1f, 0).normalized) * (2000));//p + (_ballPower.Value) * 200));
 
             bullet.GetComponent<Twollet>().player = nb;
             bullet.GetComponent<Twollet>().teamBlue = GetComponent<ZoneLimitations>().teamBlue;
 
-            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
 
         }
 
+        if (bullet != null)
+        {
+            bullet.GetComponent<Bullet>().plyTouched = targetFollow;
+            GetComponent<BulletManager>().TargetFollow = -1;
+            NetworkServer.Spawn(bullet); //Spawn sur le serveur et les clients
+        }
     }
 
     //[ClientRpc]
@@ -707,7 +734,66 @@ public class FullControl : NetworkBehaviour
 
     #endregion
 
-    #region Unity TargetAnim
+
+    public void BallFireTarget(Vector3 position, Vector3 forward)
+    {
+        //int layerMask = 1 << 11;
+        int grnd = 1 << LayerMask.NameToLayer("Ground");
+        int plyr = 1 << LayerMask.NameToLayer("Player");
+
+
+        int SecondLayer = 1 << LayerMask.NameToLayer("SecondLayer");
+        int mask3 = SecondLayer;
+        RaycastHit hit3;
+
+        Vector3 SecondPose = Vector3.zero;
+        if (Physics.Raycast(position, forward, out hit3, Mathf.Infinity, mask3))
+            SecondPose = hit3.point;
+        else
+            return;
+
+        int mask = grnd | plyr;
+        RaycastHit hit;
+        Vector3 dir;
+        if (Physics.Raycast(SecondPose, forward, out hit, Mathf.Infinity, mask))
+        {
+
+            if (hit.transform.gameObject.GetComponent<BulletManager>())
+            {
+                GetComponent<BulletManager>().TargetFollow = hit.transform.gameObject.GetComponent<FullControl>().PlayerID;
+                TargetSd.Play();
+                CmdWarningTarget(hit.transform.gameObject.GetComponent<FullControl>().PlayerID);
+            }
+        }
+        else
+        {
+            Debug.Log("WRONNG");
+            dir = Vector3.zero;
+            //bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 50;
+        }
+        
+    }
+
+    [Command]
+    void CmdWarningTarget(int ply)
+    {
+        ClientWarningTarget(ply);
+    }
+    [ClientRpc]
+    void ClientWarningTarget(int ply)
+    {
+        GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
+
+        foreach (GameObject child in characters)
+        {
+            if (child.GetComponent<FullControl>().PlayerID == ply && child.GetComponent<FullControl>().isLocal)// && ZLScript.state > 0)
+            {
+                TargetWarningSd.Play();
+            }
+        }
+    }
+
+    /*#region Unity TargetAnim
     [Command] //Appelé par le client mais lu par le serveur
     void CmdTargetAnim(int playerId)
     {
@@ -780,7 +866,7 @@ public class FullControl : NetworkBehaviour
         }
     }
 
-    #endregion
+    #endregion*/
 
     /*#region Unity Shoot
     [Command]

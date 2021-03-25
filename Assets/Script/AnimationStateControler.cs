@@ -20,7 +20,7 @@ public class AnimationStateControler : NetworkBehaviour
     bool currentRunnig;
 
     public float penalty;
-
+    
     //sound
     private AudioSource[] mySounds;
     private AudioSource RunSd;
@@ -33,8 +33,8 @@ public class AnimationStateControler : NetworkBehaviour
         penalty = 1;
         newOffset = 43;
 
-        _fastRun = 13;
-        _slowRun = 7;
+        _fastRun = 10;
+        _slowRun = 5;
         isRunning = false;
         currentRunnig = false;
         mySounds = GetComponents<AudioSource>();
@@ -63,7 +63,7 @@ public class AnimationStateControler : NetworkBehaviour
             int upDateState = 0;
             bool isLaunching = animator.GetCurrentAnimatorStateInfo(0).IsName("Launch");
             isLaunchingIdle = animator.GetCurrentAnimatorStateInfo(0).IsName("LaunchIdle");
-            if (Input.GetMouseButton(0) && FCScritp.InGame)
+            if (Input.GetMouseButton(0) && FCScritp.InGame && !GetComponent<BulletManager>().shotCancel)
             {
                 upDateState = 11;
                 FCScritp.speed = 0;
@@ -176,7 +176,7 @@ public class AnimationStateControler : NetworkBehaviour
 
         }
 
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("LaunchIdle") && state != 11)
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("LaunchIdle") && state != 11 && !GetComponent<BulletManager>().shotCancel)
         {
             state = 12;
         }

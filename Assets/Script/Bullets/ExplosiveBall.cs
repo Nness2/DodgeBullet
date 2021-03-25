@@ -37,7 +37,7 @@ public class ExplosiveBall : Bullet
 
             if (child.GetComponent<FullControl>().isLocal && child.GetComponent<FullControl>().PlayerID == player)
             {
-                child.GetComponent<BulletManager>().CmdBallExplosion(gameObject.transform);
+                child.GetComponent<BulletManager>().CmdBallExplosion(gameObject.transform, plyTouched);
             }
         }
     }

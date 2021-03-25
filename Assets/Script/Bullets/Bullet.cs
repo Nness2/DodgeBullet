@@ -34,12 +34,15 @@ public class Bullet : NetworkBehaviour
     public Material VelletMat;
     public Material GoldMat;
 
+    [SyncVar(hook = nameof(OnChangeplyTouched))]
+    public int plyTouched;
+
+
     private void Start()
     {
         //BallEffect = (int)BallEffects.Heal;
         GetComponent<Identifier>().Id = player;
         ChangeBallMat();
-
         /*GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
 
         foreach (GameObject child in characters)
@@ -56,7 +59,6 @@ public class Bullet : NetworkBehaviour
     {
 
         var hit = collision.gameObject;
-
 
         if (hit.tag == "CatchWall")
         {
@@ -84,7 +86,7 @@ public class Bullet : NetworkBehaviour
         {
             if (hit.GetComponent<FullControl>().PlayerID == player)
                 return;
-            if (touchedGround)
+            if ((touchedGround && gameObject.tag == "Bullet"))
                 return;
 
             GameObject[] characters = GameObject.FindGameObjectsWithTag("MainCharacter");
@@ -92,18 +94,19 @@ public class Bullet : NetworkBehaviour
             {
                 if (child.GetComponent<FullControl>().isLocal && hit.GetComponent<FullControl>().PlayerID == child.GetComponent<FullControl>().PlayerID)
                 {
-                    //Debug.Log("******************KILL*********************");
                     child.GetComponent<BulletManager>().CmdBallEffect(hit.GetComponent<FullControl>().PlayerID, BallEffect, hit.GetComponent<ZoneLimitations>().teamBlue, teamBlue);
                     child.GetComponent<Health>().KillManager(player, hit.GetComponent<FullControl>().PlayerID);
+                    plyTouched = -1;
                 }
             }
 
             return;
         }
 
-        if (hit.tag == "GroundField")
+        if (hit.tag == "GroundField" && gameObject.tag == "Bullet")
         {
             touchedGround = true;
+            plyTouched = -1;
             return;
         }
 
@@ -115,7 +118,7 @@ public class Bullet : NetworkBehaviour
 
     private void FixedUpdate()
     {
-
+        //RayCastCollider();
         if (gameObject.tag == "SplittedBall")
         {
             return;
@@ -163,8 +166,12 @@ public class Bullet : NetworkBehaviour
         teamBlue = newValue;
     }
 
-    
-    void OnChangeBulletType(int oldValue, int newValue)
+    void OnChangeplyTouched(int oldValue, int newValue)
+    {
+        plyTouched = newValue;
+    }
+
+void OnChangeBulletType(int oldValue, int newValue)
     {
         BulletType = newValue;
     }
@@ -199,6 +206,59 @@ public class Bullet : NetworkBehaviour
             GetComponent<MeshRenderer>().material = GoldMat;
         }
     }
+
+    public void RayCastCollider()
+    {
+        List<Vector3> Raydir = new List<Vector3>();
+
+        Raydir.Add(new Vector3(-1, -1, -1));
+        Raydir.Add(new Vector3(1, -1, -1));
+        Raydir.Add(new Vector3(-1, 1, -1));
+        Raydir.Add(new Vector3(-1, -1, 1));
+        Raydir.Add(new Vector3(1, 1, -1));
+        Raydir.Add(new Vector3(-1, 1, 1));
+        Raydir.Add(new Vector3(1, -1, 1));
+        Raydir.Add(new Vector3(1, 1, 1));
+
+        Raydir.Add(new Vector3(1, -1, 0));
+        Raydir.Add(new Vector3(-1, 1, 0));
+        Raydir.Add(new Vector3(-1, -1, 0));
+        Raydir.Add(new Vector3(1, 1, 0));
+
+        Raydir.Add(new Vector3(0, 1, -1));
+        Raydir.Add(new Vector3(0, -1, 1));
+        Raydir.Add(new Vector3(0, 1, 1));
+        Raydir.Add(new Vector3(0, -1, -1));
+
+        Raydir.Add(new Vector3(-1, 0, -1));
+        Raydir.Add(new Vector3(1, 0, 1));
+        Raydir.Add(new Vector3(-1, 0, 1));
+        Raydir.Add(new Vector3(1, 0, -1));
+
+        Raydir.Add(new Vector3(1, 0, 0));
+        Raydir.Add(new Vector3(-1, 0, 0));
+
+        Raydir.Add(new Vector3(0, 1, 0));
+        Raydir.Add(new Vector3(0, -1, 0));
+
+        Raydir.Add(new Vector3(0, 0, 1));
+        Raydir.Add(new Vector3(0, 0, -1));
+
+        int layerMask = 1 << 11;
+        foreach (Vector3 Rdir in Raydir)
+        {
+            RaycastHit hit;
+            // Does the ray intersect any objects excluding the player layer
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 15f, layerMask))
+            {
+                Debug.Log("HIT");
+            }
+            //else
+            //    Debug.DrawRay(transform.position, transform.TransformDirection(Rdir) * 0.15f, Color.yellow);
+            
+        }
+    }
+
 }
 
 
